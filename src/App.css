@@ -1571,7 +1571,7 @@ body.scrollable {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 48px;
+  margin-top: 80px;
   font-family: var(--db-font-heading);
   font-size: 0.8rem;
   font-weight: 600;

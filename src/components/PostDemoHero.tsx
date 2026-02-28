@@ -364,7 +364,7 @@ export function PostDemoHero() {
           <button
             className="back-to-demo-btn"
             onClick={() => {
-              const wrapper = document.querySelector('.dashboard-with-hero');
+              const wrapper = document.querySelector('.dashboard-with-hero') || document.querySelector('.home-with-hero');
               if (wrapper) wrapper.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           >
