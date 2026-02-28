@@ -361,6 +361,18 @@ export function PostDemoHero() {
             </div>
             </div>
           )}
+          <button
+            className="back-to-demo-btn"
+            onClick={() => {
+              const wrapper = document.querySelector('.dashboard-with-hero');
+              if (wrapper) wrapper.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="18 15 12 9 6 15" />
+            </svg>
+            BACK TO DEMO
+          </button>
         </div>
       </section>
     </>

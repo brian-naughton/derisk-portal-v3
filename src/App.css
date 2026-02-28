@@ -1565,6 +1565,31 @@ body.scrollable {
   margin: 0;
 }
 
+/* ========== BACK TO DEMO BUTTON ========== */
+
+.back-to-demo-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 48px;
+  font-family: var(--db-font-heading);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--db-text-muted);
+  background: none;
+  border: 1px solid var(--db-border);
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.back-to-demo-btn:hover {
+  color: var(--db-accent);
+  border-color: var(--db-accent);
+}
+
 /* ========== END CARD (V2 STYLE) ========== */
 
 .end-card {
