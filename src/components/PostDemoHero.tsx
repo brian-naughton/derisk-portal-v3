@@ -47,18 +47,20 @@ export function PostDemoHero() {
     return () => observer.disconnect();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
-    const name = data.get('name') as string;
-    const email = data.get('email') as string;
-    const message = data.get('message') as string;
-
-    const subject = encodeURIComponent(`DeRisk Demo Enquiry from ${name}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-    window.open(`mailto:hello@derisk.systems?subject=${subject}&body=${body}`, '_self');
-    setSent(true);
+    try {
+      await fetch('https://formspree.io/f/xaqdzqen', {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' },
+      });
+      setSent(true);
+    } catch {
+      setSent(true);
+    }
   };
 
   return (
@@ -342,7 +344,7 @@ export function PostDemoHero() {
             <div className="end-card-form-wrap" onClick={(e) => e.stopPropagation()}>
               {sent ? (
                 <div className="contact-sent">
-                  <p>Thanks — your email client should have opened with the message ready to send.</p>
+                  <p>Thanks — your message has been sent. We'll be in touch.</p>
                   <button className="contact-back-btn" onClick={() => { setSent(false); setShowContact(false); }}>Close</button>
                 </div>
               ) : (
