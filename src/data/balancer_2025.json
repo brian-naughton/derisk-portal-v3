@@ -1,0 +1,197 @@
+{
+  "exploit_id": "balancer_2025",
+  "scan_result": {
+    "Name": "Balancer V2 ($128M Hack, 2025)",
+    "ContractAddress": "0xA13a9247ea42D743238089903570127DdA72fE44",
+    "RiskScore": 85,
+    "RiskCategory": "high",
+    "RiskDescription": "High Risk",
+    "RiskFactors": [
+      {
+        "score": 5,
+        "description": "Flash loan with post-execution invariant enforcement",
+        "key": null,
+        "full_evidence": "Flash loan with post-execution invariant enforcement",
+        "cir_explanation": {
+          "title": "Flash loan functionality",
+          "summary": "Flash loan helpers (e.g., ERC-3156 or bespoke pool hooks) let users borrow the entire pool within one transaction; ensure invariants and reentrancy guards cover the borrow path.",
+          "guidance": {
+            "investor": "Protocols with flash loans are powerful but can be abused—prefer pools that publish invariant checks, fee schedules, and post-incident reviews.",
+            "developer": "Validate `amount <= reserves`, ensure the callback cannot re-enter unsafe code, and integrate ERC-3156 style `onFlashLoan` checks with revert-on-failure semantics."
+          }
+        }
+      },
+      {
+        "score": 20,
+        "description": "Financial operations depend on block_number - MEV risk",
+        "key": null,
+        "full_evidence": "Financial operations depend on block_number - MEV risk",
+        "cir_explanation": {
+          "title": "Time-dependent financial operations",
+          "summary": "Functions use `block.timestamp` for interest accrual, vesting schedules, or auction mechanics. Validators can adjust timestamps by up to ~15 seconds, which may be enough to skew time-sensitive calculations in their favour.",
+          "guidance": {
+            "investor": "Time-dependent logic is a moderate risk in most protocols. It becomes material when calculations are sensitive to small time differences (high-frequency interest accrual, auction deadlines, or MEV-sensitive operations).",
+            "developer": "Use `block.number` for ordering-sensitive logic. For time-based calculations, add 15-second tolerance margins and ensure interest rates are not manipulable within the validator's timestamp adjustment window."
+          }
+        }
+      },
+      {
+        "score": 40,
+        "description": "Precision loss exploitable via repeated operations",
+        "key": null,
+        "full_evidence": "Precision loss exploitable via repeated operations",
+        "cir_explanation": {
+          "title": "Rounding and precision manipulation",
+          "summary": "Functions use integer division without rounding safeguards, so `amount * rate / PRECISION` can be manipulated to consistently truncate in one direction. Balancer lost $128M in 2023 when rounding in the StablePool join/exit math let an attacker drain reserves across many transactions.",
+          "guidance": {
+            "investor": "Protocols handling large volumes with complex fee math are at elevated risk. Ask whether the team has formal verification or fuzzing covering their arithmetic invariants. If the protocol has a composable pool or multi-asset vault, treat rounding as a primary concern.",
+            "developer": "Adopt OpenZeppelin's Math.mulDiv with rounding direction, enforce minimum transaction sizes, and write Foundry invariant tests that verify no sequence of joins/exits can extract value beyond fees."
+          }
+        }
+      },
+      {
+        "score": 26,
+        "description": "Lending perfect storm (3 vectors): 1.4x multiplier",
+        "key": null,
+        "full_evidence": "Lending perfect storm (3 vectors): 1.4x multiplier",
+        "explanation_investors": "This lending protocol has 3 distinct vulnerability classes creating a critical compounding risk. When oracle price manipulation exposure, flash-loan invariant risks, and arithmetic precision/rounding vulnerabilities are all present in the same protocol, it is exposed to the full spectrum of lending attacks — from oracle manipulation through flash-loan exploitation to reserve drainage. Lending protocols are prime targets for large-scale attacks with proven losses exceeding $500M across historical incidents. The 1.4x multiplier reflects the reality that each additional vulnerability vector makes every other weakness more exploitable.",
+        "explanation_developers": "CRITICAL: 3 distinct lending vectors compound catastrophically. Vectors: oracle price manipulation exposure, flash-loan invariant risks, and arithmetic precision/rounding vulnerabilities. Comprehensive lending security audit required — partial remediation is insufficient when attack paths chain across oracle feeds, reserve accounting, mint/burn operations, and collateral calculations. Commission an independent security audit before deploying or continuing to operate."
+      }
+    ],
+    "MitigationsAndSignals": [
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined amm_pool: +4% (42 incidents, $25M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined flashloan: +4% (87 incidents, $17M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined mev_manipulation: +4% (35 incidents, $8M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined precision_manipulation: +4% (12 incidents, $45M avg)"
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Reentrancy Protection (-4 pts)",
+        "points_saved": 4
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Governance Authority Control (-3 pts)",
+        "points_saved": 3
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Battle Tested Patterns (-2 pts)",
+        "points_saved": 2
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Oz Standards (-1 pts)",
+        "points_saved": 1
+      },
+      {
+        "type": "actuarial_intelligence",
+        "key": "actuarial_analysis",
+        "name": "Actuarial analysis",
+        "value": "Base 81 | Refined 85"
+      }
+    ],
+    "ScanDate": "2025-11-03",
+    "ScanDuration": 0.633
+  },
+  "exploit_meta": {
+    "name": "Balancer V2",
+    "date": "2025-11-03",
+    "loss_amount_usd": 128000000,
+    "attack_vector": "math_precision_loss",
+    "description": "Math precision loss in _upscaleArray() causing liquidity pool manipulation",
+    "chain": "ethereum"
+  },
+  "chain_display_name": "Ethereum",
+  "actuarial": {
+    "pre_actuarial_score": 81,
+    "slider_deltas": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      7,
+      8,
+      10,
+      12,
+      13,
+      15
+    ],
+    "show_max_risk_message": false,
+    "base": 81,
+    "refined": 85,
+    "delta": 4,
+    "full_delta": 15,
+    "weight": 0.3,
+    "uplift_pct": 4,
+    "multiplier": 1.4
+  },
+  "composition": {
+    "raw_risk_score": 65,
+    "mitigation_credit": 10,
+    "multiplier_details": [
+      {
+        "cluster": "Lending Cluster 1.4x",
+        "added_points": 26
+      }
+    ]
+  },
+  "context_data": {
+    "archetype": "AMMPool",
+    "confidence": 0.6,
+    "evidence": [
+      "capability:Bridge.ValidatorThreshold",
+      "capability:FT.Allowance",
+      "capability:FT.Transfer",
+      "capability:Financial.FlashLoan",
+      "capability:Gov.Quorum",
+      "capability:Gov.Vote"
+    ],
+    "should_gate_expensive_rules": false
+  },
+  "primitive_count": 145,
+  "narrative": {
+    "sections": [
+      {
+        "title": "Death by a Thousand Rounding Errors",
+        "text": "November 3, 2025: Balancer V2's ComposableStablePool is drained of $128M through a precision manipulation attack. The vulnerability isn't a single catastrophic bug — it's an accumulation of tiny rounding errors across batch operations that an attacker amplifies into a liquidity drain."
+      },
+      {
+        "title": "The Mathematics of Manipulation",
+        "text": "Balancer's pool mathematics involve scaling arrays of token amounts between internal precision and external decimals. The _upscaleArray() and _downscaleArray() functions introduce micro-rounding on every swap. In isolation, each rounding is negligible. But an attacker who executes thousands of precisely calibrated operations within a single flash loan can compound those micro-errors into a macro-scale extraction. The pool's invariant degrades imperceptibly with each operation — until the cumulative drift is catastrophic."
+      },
+      {
+        "title": "Complexity as Attack Surface",
+        "text": "Balancer V2 is one of the most sophisticated AMM designs ever deployed — multi-asset weighted pools, boosted pools, composable stable pools. That sophistication creates a vast surface area for precision attacks. Our engine identifies 37 instances of rounding-down in financial operations, loop amplification patterns, and batch compounding — the exact combination needed to exploit the pool's mathematical assumptions."
+      },
+      {
+        "title": "When DeFi's Flagship Math Fails",
+        "text": "Balancer had been audited multiple times by leading firms. The precision vulnerability survived because it requires reasoning about the cumulative effect of individually-safe operations — something that static analysis and manual review struggle with. The CIR engine's precision rule doesn't just flag rounding; it detects the structural conditions (batch ops + loops + scaling arrays) that make rounding exploitable at scale."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Cumulative rounding errors exploited via flash-loan-funded batch operations",
+      "steps": "1) Flash-borrow massive token amounts from external lending protocols. 2) Enter the ComposableStablePool with imbalanced token ratios to maximise scaling operations. 3) Execute thousands of small swaps, each introducing micro-rounding in the pool's internal accounting. 4) The cumulative rounding drift shifts the pool's invariant, creating extractable value. 5) Exit the pool with more tokens than deposited, capturing the accumulated precision loss. 6) Repay flash loan and pocket the difference — $128M extracted."
+    }
+  }
+}

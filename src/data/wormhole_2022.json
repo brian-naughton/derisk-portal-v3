@@ -1,0 +1,152 @@
+{
+  "exploit_id": "wormhole_2022",
+  "scan_result": {
+    "Name": "Wormhole Bridge (EVM) ($320M Hack, 2022)",
+    "ContractAddress": "0x3ee18B2214AFF97000D974cf647E7C347E8fa585",
+    "RiskScore": 94,
+    "RiskCategory": "high",
+    "RiskDescription": "High Risk",
+    "RiskFactors": [
+      {
+        "score": 50,
+        "description": "Bridge Signature Verification Bypass",
+        "key": null,
+        "full_evidence": "Signature verification bypass — critical bridge vulnerability",
+        "explanation_investors": "This factor shows that signature verification bypass — critical bridge vulnerability. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that signature verification bypass — critical bridge vulnerability is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Bridge Signature Verification Bypass",
+          "summary": "Ensure bridge handlers verify unique nonces and enforce signature thresholds before calling mint or withdraw functions.",
+          "guidance": {
+            "investor": "The bridge's signature verification — the process that confirms withdrawals are legitimate — can be bypassed. Bridges require multiple signers to approve transactions (like a safe needing multiple keys). When replay protection or threshold checks are missing, an attacker can reuse old approvals or forge new ones to drain funds. The Ronin Bridge lost $625M through a similar signature bypass. Do not hold significant value on bridges where this weakness exists.",
+            "developer": "Hash payloads with domain-separated replay IDs, enforce minimum signature thresholds, and reject already-processed message hashes before executing withdrawals."
+          }
+        }
+      },
+      {
+        "score": 35,
+        "description": "Guardian Signature Bypass",
+        "key": null,
+        "full_evidence": "Guardian signature bypass detected - critical validation weakness",
+        "explanation_investors": "The bridge validation logic contains a critical flaw where signature verification can be bypassed. This is the exact vulnerability that enabled the $320M Wormhole exploit. Funds can be drained through unauthorized cross-chain message validation.",
+        "explanation_developers": "Fix signature verification to require proper guardian quorum validation. Ensure guardianSetIndex validation prevents index manipulation. Implement proper threshold checking before accepting any VAA messages.",
+        "cir_explanation": {
+          "title": "Guardian Signature Bypass",
+          "summary": "Guardian signature verification accepts empty inputs or fails to validate the guardian set, enabling forged VAAs.",
+          "guidance": {
+            "investor": "The bridge uses 'guardians' — a trusted group whose signatures prove that a cross-chain message is real. This contract has a flaw where the guardian check can be tricked with empty or fake signatures. This is exactly how the Wormhole Bridge lost $320M: the attacker submitted an empty guardian set that the contract accepted as valid, then minted tokens without any real approval. This is one of the most dangerous bridge vulnerabilities. Avoid holding value on bridges with this weakness.",
+            "developer": "Check `guardianSet.keys.length > 0` and verify each recovered signer against the current on-chain guardian set before honoring VAAs."
+          }
+        }
+      }
+    ],
+    "MitigationsAndSignals": [
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined bridge: +60% (270 incidents, $37M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined signature_validation: +4% (18 incidents, $85M avg)"
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Battle Tested Patterns (-3 pts)",
+        "points_saved": 3
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Oz Standards (-1 pts)",
+        "points_saved": 1
+      },
+      {
+        "type": "actuarial_intelligence",
+        "key": "actuarial_analysis",
+        "name": "Actuarial analysis",
+        "value": "Base 81 | Refined 94"
+      }
+    ],
+    "ScanDate": "2022-02-02",
+    "ScanDuration": 0.028
+  },
+  "exploit_meta": {
+    "name": "Wormhole Bridge (EVM)",
+    "date": "2022-02-02",
+    "loss_amount_usd": 320000000,
+    "attack_vector": "signature_verification",
+    "description": "Guardian signature bypass via fake sysvar account (Ethereum side)",
+    "chain": "ethereum"
+  },
+  "chain_display_name": "Ethereum",
+  "actuarial": {
+    "pre_actuarial_score": 81,
+    "slider_deltas": [
+      0,
+      4,
+      8,
+      13,
+      18,
+      19,
+      19,
+      19,
+      19,
+      19,
+      19
+    ],
+    "show_max_risk_message": false,
+    "base": 81,
+    "refined": 94,
+    "delta": 13,
+    "full_delta": 19,
+    "weight": 0.3,
+    "uplift_pct": 13,
+    "multiplier": 1.0
+  },
+  "composition": {
+    "raw_risk_score": 85,
+    "mitigation_credit": 4,
+    "multiplier_details": []
+  },
+  "context_data": {
+    "archetype": "BridgeEndpoint",
+    "confidence": 0.85,
+    "evidence": [
+      "capability:Bridge.DomainBinding",
+      "capability:Bridge.MessageId",
+      "capability:Bridge.ValidatorSet",
+      "capability:Bridge.ValidatorThreshold",
+      "capability:Bridge.VerifySignatures",
+      "capability:Crypto.SignatureVerify",
+      "capability:Gov.Quorum",
+      "capability:Gov.Vote",
+      "capability:Proxy.Indirection",
+      "capability:Proxy.UpgradeSlot"
+    ],
+    "should_gate_expensive_rules": false
+  },
+  "primitive_count": 15,
+  "narrative": {
+    "sections": [
+      {
+        "title": "Cross-Chain Catastrophe",
+        "text": "February 2, 2022: Wormhole, Solana's premier bridge to Ethereum, suffers a devastating attack. The hacker exploits an outdated guardian system to mint 120,000 wETH on Ethereum without depositing the corresponding ETH — effectively creating $320M from thin air."
+      },
+      {
+        "title": "The Trust Machine Breaks",
+        "text": "The attack exposes the fundamental challenge of cross-chain bridges: they require trusted validators to attest to events on other chains. When those validators fail, the entire bridge becomes a liability. Wormhole's guardians become its weakest link."
+      },
+      {
+        "title": "Jump Crypto's $320M Bailout",
+        "text": "In an unprecedented move, Jump Crypto (Wormhole's parent company) deposits $320M of their own funds to restore the bridge's solvency. The bailout saves users but raises questions about true decentralization when billion-dollar companies backstop protocols."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Guardian set validation bypass on cross-chain bridge",
+      "steps": "1) Attacker exploits outdated guardian verification system. 2) Creates fake Solana sysvar account containing fake guardian signatures. 3) Uses fake signatures to authorise mint of 120,000 wETH on Ethereum. 4) Bridges fake wETH back to Solana for real tokens. 5) Drains $320M without depositing backing assets."
+    }
+  }
+}

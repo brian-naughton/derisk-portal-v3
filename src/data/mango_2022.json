@@ -1,0 +1,199 @@
+{
+  "exploit_id": "mango_2022",
+  "scan_result": {
+    "Name": "Mango Markets ($114M Hack, 2022)",
+    "ContractAddress": "mv3ekLzLbnVPNxjSKvqBpU3ZeZXPQdEC3bp5MDEBG68",
+    "RiskScore": 100,
+    "RiskCategory": "high",
+    "RiskDescription": "High Risk",
+    "RiskFactors": [
+      {
+        "score": 35,
+        "description": "Flash Loan Oracle Manipulation",
+        "key": null,
+        "full_evidence": "Oracle manipulation vulnerability: Price-dependent borrowing/liquidation, Single oracle source",
+        "explanation_investors": "This contract uses an oracle that can be manipulated within a single transaction via flash loans. The Tellor oracle pattern without dispute windows, or LP-based pricing without TWAP, allows attackers to inflate/deflate prices and exploit price-dependent operations. This is the exact pattern used in the BonqDAO ($120M) and Inverse Finance ($15M) exploits.",
+        "explanation_developers": "Never consume oracle prices that can be manipulated in the same block. For Tellor, use dispute windows or time delays. For LP oracles, use TWAP not spot reserves. Add sanity checks comparing against secondary price sources.",
+        "cir_explanation": {
+          "title": "Advanced oracle manipulation pathways",
+          "summary": "Programs consume raw oracle slots or Pyth feeds without confidence gating, allowing short-lived spoofed prices to pass risk checks.",
+          "guidance": {
+            "investor": "The protocol relies on a price feed (an 'oracle') to know how much assets are worth, but it does not verify whether the price data is fresh, accurate, or being manipulated. An attacker can use a flash loan to temporarily distort the price and trick the protocol into making bad trades or unfair liquidations. This is how bZx lost $8M and Makina Finance lost $4.2M. Avoid protocols with unprotected price feeds.",
+            "developer": "Add deviation limits, TWAP windows, circuit breakers, and fallback sources; log oracle usage so anomalies trigger incident response."
+          }
+        }
+      },
+      {
+        "score": 30,
+        "description": "Trusted Root Accepts Zero Values",
+        "key": null,
+        "full_evidence": "Trusted root accepts zero/default values during initialization",
+        "explanation_investors": "This contract accepts zero or default values for trusted root parameters during initialization. In bridge and cross-chain protocols, a zero-initialized trusted root means ANY message can be validated as authentic. This is the exact pattern that caused the Nomad Bridge hack ($190M). If you see this finding, the contract may accept unauthorized cross-chain messages.",
+        "explanation_developers": "Never allow zero values for trusted roots, merkle roots, or other security-critical initialization parameters. Add explicit validation: require(trustedRoot != bytes32(0), 'Invalid root'). Use initializer modifiers that can only be called once. Consider using OpenZeppelin's Initializable with reinitializer protection.",
+        "cir_explanation": {
+          "title": "Trusted root initialization vulnerability",
+          "summary": "The protocol's trust root (Merkle root, validator set, or initial state) can be initialised to a zero or attacker-controlled value, enabling arbitrary message acceptance.",
+          "guidance": {
+            "investor": "Initialisation vulnerabilities are particularly dangerous because they can lurk undetected until exploited. After any upgrade or deployment, verify that trust anchors (roots, guardian sets, admin keys) are set to intended values.",
+            "developer": "Never allow zero values for trust roots, guardian sets, or initial state anchors. Add explicit non-zero checks in both initialisation and upgrade paths. Verify the initialised state matches expected values in deployment scripts."
+          }
+        }
+      },
+      {
+        "score": 23,
+        "description": "Lending cluster (2 vectors): 1.3x multiplier",
+        "key": null,
+        "full_evidence": "Lending cluster (2 vectors): 1.3x multiplier",
+        "explanation_investors": "This lending protocol has multiple vulnerability classes that compound each other's risk. When a protocol exhibits oracle price manipulation exposure and initialisation/trusted-root weaknesses, an attacker can chain these weaknesses to drain reserves in ways that individual safeguards cannot prevent. The Euler Finance ($196M) and Mango Markets ($114M) exploits both leveraged overlapping lending vulnerabilities — oracle manipulation combined with inadequate solvency checks enabled complete fund extraction. The 1.3x multiplier reflects this compounding: lending protocols with multiple exposed surfaces face multiplicative, not additive, risk.",
+        "explanation_developers": "Address both lending vulnerability vectors simultaneously — attackers will chain them. Vectors identified: oracle price manipulation exposure and initialisation/trusted-root weaknesses. Implement coordinated fixes across oracle protection (TWAP, staleness checks, deviation bounds), reserve solvency verification, mint/burn access controls, and collateral health calculations. If any of these vectors are unclear, commission an independent security audit before deploying."
+      },
+      {
+        "score": 15,
+        "description": "Single owner (EOA) control without timelock protection",
+        "key": null,
+        "full_evidence": "Single owner (EOA) control without timelock protection",
+        "explanation_investors": "On-chain governance analysis detected that this contract's privileged functions are controlled by a single externally owned account (EOA) with no timelock delay. Changes can be executed immediately without advance notice. IMPORTANT: This is strictly an on-chain assessment. The controlling entity may have robust off-chain governance (institutional approval workflows, compliance oversight, regulated custodianship) that provides substantial risk mitigation not visible on the blockchain. Conduct due diligence on the owner's identity and operational security before finalising your risk assessment.",
+        "explanation_developers": "Best practice is to implement both a multisig (requiring multiple signatures) AND a timelock (enforcing a delay before execution). At minimum, a 24-48 hour timelock gives users time to react to proposed changes. Consider OpenZeppelin's TimelockController combined with a Gnosis Safe for comprehensive protection.",
+        "cir_explanation": {
+          "title": "Concentrated control risk",
+          "summary": "Program upgrade authority is centralized. Transfer authority to a multi-signature PDA or governance program with enforced cooldowns.",
+          "guidance": {
+            "investor": "Review who controls upgrades, parameter changes, and emergency switches. If one party has unilateral power, treat the protocol as custodial.",
+            "developer": "Adopt the SPL governance program or a multi-sig requiring >60% approval, and publish upgrade proposals on-chain before activation."
+          }
+        }
+      },
+      {
+        "score": 10,
+        "description": "Unprotected Oracle Dependency",
+        "key": null,
+        "full_evidence": "Oracle dependency without protection: No TWAP protection, No circuit breaker",
+        "explanation_investors": "This contract relies on oracle price feeds without essential protections like time-weighted average prices (TWAP), staleness checks, or deviation limits. Flash loan attacks can manipulate spot prices within a single block to exploit price-dependent operations like borrowing, liquidations, or swaps.",
+        "explanation_developers": "Implement TWAP oracles instead of spot prices. Add staleness validation (reject prices older than X blocks). Include price deviation checks against historical values. Consider using multiple oracle sources with median aggregation.",
+        "cir_explanation": {
+          "title": "Oracle dependency without safeguards",
+          "summary": "The contract consumes external price data without sufficient protection against stale, manipulated, or zero-value feeds. Missing safeguards can let an attacker inflate or deflate prices to drain collateral.",
+          "guidance": {
+            "investor": "Oracle quality directly determines whether liquidations are fair and borrowing limits are safe. Missing protections mean a flash-loan attack could manipulate prices within one transaction. Check whether the team has addressed oracle security in their audit reports.",
+            "developer": "Layer multiple oracle defences: TWAP or time-weighted smoothing, staleness validation (revert if the price is older than N seconds), deviation checks (reject price moves larger than X% per block), and circuit breakers (pause operations if the feed looks anomalous)."
+          }
+        }
+      }
+    ],
+    "MitigationsAndSignals": [
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined access_control: +5% (48 incidents, $35M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined logic_error: +5% (65 incidents, $18M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined oracle: +5% (52 incidents, $22M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined validator_compromise: +5% (15 incidents, $95M avg)"
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Battle Tested Patterns (-3 pts)",
+        "points_saved": 3
+      },
+      {
+        "type": "actuarial_intelligence",
+        "key": "actuarial_analysis",
+        "name": "Actuarial analysis",
+        "value": "Base 110 | Refined 100"
+      }
+    ],
+    "ScanDate": "2022-10-11",
+    "ScanDuration": 1.214
+  },
+  "exploit_meta": {
+    "name": "Mango Markets",
+    "date": "2022-10-11",
+    "loss_amount_usd": 114000000,
+    "attack_vector": "oracle_manipulation",
+    "description": "Oracle price manipulation on illiquid MNGO-PERP market enabled massive undercollateralized borrowing",
+    "chain": "solana"
+  },
+  "chain_display_name": "Solana",
+  "actuarial": {
+    "pre_actuarial_score": 110,
+    "slider_deltas": [
+      0,
+      -10,
+      -10,
+      -10,
+      -10,
+      -10,
+      -10,
+      -10,
+      -10,
+      -10,
+      -10
+    ],
+    "show_max_risk_message": true,
+    "base": 110,
+    "refined": 100,
+    "delta": -10,
+    "full_delta": -10,
+    "weight": 0.3,
+    "uplift_pct": -10,
+    "multiplier": 1.256
+  },
+  "composition": {
+    "raw_risk_score": 113,
+    "mitigation_credit": 3,
+    "multiplier_details": [
+      {
+        "cluster": "Lending cluster",
+        "added_points": 23
+      }
+    ]
+  },
+  "context_data": {
+    "archetype": "LendingMarket",
+    "confidence": 0.7,
+    "evidence": [
+      "capability:Admin.Authority.SingleKey",
+      "capability:Crypto.SignatureVerify",
+      "capability:FT.Blacklist",
+      "capability:FT.Transfer",
+      "capability:Financial.Lending",
+      "capability:Oracle.PriceRead",
+      "capability:Oracle.PriceUpdate",
+      "lending_mechanics"
+    ],
+    "should_gate_expensive_rules": false
+  },
+  "primitive_count": 23,
+  "narrative": {
+    "sections": [
+      {
+        "title": "The $114M Solana Heist",
+        "text": "October 11, 2022: Avraham Eisenberg publicly executes the most brazen DeFi exploit in history. Using two accounts and $10M in USDC, he manipulates the MNGO-PERP oracle price from $0.038 to $0.91 — a 24x spike — then borrows $114M against the inflated collateral. He livestreams it."
+      },
+      {
+        "title": "The Oracle Problem, Distilled",
+        "text": "Mango Markets relied on a single oracle feed for MNGO-PERP — a perpetual futures contract on its own governance token with paper-thin liquidity. The protocol had no TWAP protection, no circuit breakers, and no deviation checks. A textbook setup for manipulation that our scanner flags pre-exploit."
+      },
+      {
+        "title": "Crime and Punishment",
+        "text": "Unlike anonymous hackers, Eisenberg boasted about his \"profitable trading strategy\" on Twitter. The FBI disagreed. He was arrested in Puerto Rico in December 2022, tried under commodities fraud charges, and convicted in April 2024. The case set precedent: exploiting DeFi protocols is not just \"code is law\" — it's a federal crime."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Unprotected oracle on illiquid market enables price manipulation",
+      "steps": "1) Fund two accounts with $5M USDC each. 2) Take opposing MNGO-PERP positions: Account A goes long, Account B goes short. 3) Buy MNGO spot on thin order books across DEXes, spiking price 24x. 4) Oracle updates reflect manipulated spot price. 5) Account A's long position now shows $423M unrealised profit. 6) Borrow $114M against inflated collateral across all Mango lending markets. 7) Withdraw borrowed funds. Account B's losses are socialised."
+    }
+  }
+}

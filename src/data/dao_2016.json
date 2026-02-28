@@ -1,0 +1,162 @@
+{
+  "exploit_id": "dao_2016",
+  "scan_result": {
+    "Name": "The DAO ($60M Hack, 2016)",
+    "ContractAddress": "0xbb9bc244d798123fde783fcc1c72d3bb8c189413",
+    "RiskScore": 90,
+    "RiskCategory": "high",
+    "RiskDescription": "High Risk",
+    "RiskFactors": [
+      {
+        "score": 40,
+        "description": "Reentrancy: Call Before State Update",
+        "key": null,
+        "full_evidence": "External call before state update enables reentrancy drain",
+        "explanation_investors": "This contract makes external calls before updating internal balances, creating a critical reentrancy vulnerability. Attackers can repeatedly call withdraw functions before balances are updated, draining the contract. This is the exact pattern that enabled the $60M DAO hack.",
+        "explanation_developers": "Implement the checks-effects-interactions pattern: update all state variables before making external calls. Use OpenZeppelin's ReentrancyGuard modifier for additional protection.",
+        "cir_explanation": {
+          "title": "Reentrancy exposure",
+          "summary": "This is the classic Solidity reentrancy pattern: `call`/`delegatecall` running before `balance` updates. Apply the CEI pattern or a reentrancy guard to close the loop.",
+          "guidance": {
+            "investor": "Reentrancy is one of the most dangerous smart contract flaws. It lets an attacker call the 'withdraw' function over and over before the contract updates the balance — draining funds in a loop. This is exactly how The DAO lost $60M in 2016, the first major DeFi exploit. If a protocol has this vulnerability, your deposited funds are at immediate risk.",
+            "developer": "Use the checks-effects-interactions pattern and a guard (e.g., mutex or OpenZeppelin ReentrancyGuard). Replace `call.value` with helpers that revert on failure."
+          }
+        }
+      },
+      {
+        "score": 30,
+        "description": "Flash-Loanable Governance Tokens",
+        "key": null,
+        "full_evidence": "Voting power derived from flash-loanable ERC20 balance without snapshot protection",
+        "explanation_investors": "Voting power in this system is determined by current token holdings with no snapshot mechanism. This means token balances can be manipulated within the same transaction as a vote. Flash loan attacks can temporarily inflate an attacker's voting power to pass any proposal. This is a well-known critical vulnerability pattern that has resulted in major exploits.",
+        "explanation_developers": "Upgrade to ERC20Votes or implement a custom checkpoint system. Each transfer should record the balance change with a block number. When counting votes, use the balance as of a specific historical block (the proposal creation block or earlier). This breaks the atomicity that flash loan attacks depend on.",
+        "cir_explanation": {
+          "title": "Voting power vulnerable to flash loans",
+          "summary": "Governance reads live balanceOf() for voting weight without checkpointing. An attacker can flash-borrow tokens, vote, execute, and repay in one block.",
+          "guidance": {
+            "investor": "Voting power in this protocol comes directly from how many tokens you hold right now — with no snapshot or lock-up. That means an attacker can borrow millions of tokens through a flash loan (a zero-collateral loan that lasts one transaction), use them to outvote everyone, pass a malicious proposal, execute it, and return the tokens — all in a single transaction. This is how Beanstalk was drained of $182M. It is one of the most proven governance attack patterns. Avoid governance participation or staking until snapshot voting is implemented.",
+            "developer": "Use ERC20Votes or ERC20Snapshot so voting power is locked at proposal creation time. Add TimelockController to enforce execution delay."
+          }
+        }
+      },
+      {
+        "score": 25,
+        "description": "State Modified After External Calls",
+        "key": null,
+        "full_evidence": "Contract state modified after external calls",
+        "explanation_investors": "The contract updates critical state (balances, token supply) after making external calls. This allows malicious contracts to re-enter and manipulate state during execution, potentially leading to fund loss or double spending.",
+        "explanation_developers": "Follow the checks-effects-interactions pattern: perform all state changes before external calls. Consider using ReentrancyGuard and avoid state modifications in fallback functions.",
+        "cir_explanation": {
+          "title": "State changes after external calls",
+          "summary": "State variables are written after `call` or `delegatecall` returns. If the external contract calls back before the update, it sees outdated values.",
+          "guidance": {
+            "investor": "The contract updates its internal records (like balances) after sending money out, not before. This creates a brief window where the records are wrong — and an attacker can exploit that window to withdraw more than they should. The DAO lost $60M because of this exact ordering mistake. This is a fundamental safety violation that puts all deposited funds at risk.",
+            "developer": "Move all storage writes (balance decrements, flag updates) above the `call`/`transfer`/`send`. Add a ReentrancyGuard as defense-in-depth."
+          }
+        }
+      }
+    ],
+    "MitigationsAndSignals": [
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined governance: +5% (66 incidents, $60M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined reentrancy: +5% (45 incidents, $28M avg)"
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Governance Authority Control (-4 pts)",
+        "points_saved": 4
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Battle Tested Patterns (-3 pts)",
+        "points_saved": 3
+      },
+      {
+        "type": "actuarial_intelligence",
+        "key": "actuarial_analysis",
+        "name": "Actuarial analysis",
+        "value": "Base 88 | Refined 90"
+      }
+    ],
+    "ScanDate": "2016-06-17",
+    "ScanDuration": 0.222
+  },
+  "exploit_meta": {
+    "name": "The DAO",
+    "date": "2016-06-17",
+    "loss_amount_usd": 60000000,
+    "attack_vector": "reentrancy",
+    "description": "Classic reentrancy attack exploiting recursive withdrawal",
+    "chain": "ethereum"
+  },
+  "chain_display_name": "Ethereum",
+  "actuarial": {
+    "pre_actuarial_score": 88,
+    "slider_deltas": [
+      0,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "show_max_risk_message": false,
+    "base": 88,
+    "refined": 90,
+    "delta": 2,
+    "full_delta": 9,
+    "weight": 0.3,
+    "uplift_pct": 2,
+    "multiplier": 1.0
+  },
+  "composition": {
+    "raw_risk_score": 95,
+    "mitigation_credit": 7,
+    "multiplier_details": []
+  },
+  "context_data": {
+    "archetype": "DelegatedVotingToken",
+    "confidence": 0.8,
+    "evidence": [
+      "capability:FT.Allowance",
+      "capability:FT.Transfer",
+      "capability:Gov.Quorum",
+      "capability:Gov.Vote"
+    ],
+    "should_gate_expensive_rules": false
+  },
+  "primitive_count": 86,
+  "narrative": {
+    "sections": [
+      {
+        "title": "The Revolutionary Experiment",
+        "text": "May 2016: The DAO launches as crypto's first autonomous organization, raising $150M (11% of all ETH) in 28 days. Vitalik Buterin calls it \"a new form of human organization.\" The world is watching this grand experiment in decentralized governance."
+      },
+      {
+        "title": "The Slow-Motion Catastrophe",
+        "text": "June 17, 7:45 AM UTC: An attacker begins methodically draining The DAO through a reentrancy bug. The crypto world watches in horror as 3.6M ETH disappears over 3 hours. Ethereum's price crashes 50%. The community faces an impossible choice: let the hacker keep the funds, or break immutability forever."
+      },
+      {
+        "title": "The Great Schism",
+        "text": "The hard fork on July 20 saves the funds but splits Ethereum into two chains. Ethereum Classic preserves the \"code is law\" philosophy while Ethereum chooses pragmatic intervention. This moment defines crypto's philosophical divide that persists today."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Reentrancy in the splitDAO function — external call before balance update",
+      "steps": "1) Attacker calls splitDAO to create child DAO with 3.6M ETH. 2) During external call, attacker recursively calls splitDAO again before balance is updated. 3) Process repeats 376 times, draining ETH while ledger shows single withdrawal. 4) Attack completes when gas limit reached."
+    }
+  }
+}

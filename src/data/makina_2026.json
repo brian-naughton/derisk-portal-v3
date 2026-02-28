@@ -1,0 +1,242 @@
+{
+  "exploit_id": "makina_2026",
+  "scan_result": {
+    "Name": "Makina Finance ($4M Hack, 2026)",
+    "ContractAddress": "0x06147e073B854521c7B778280E7d7dBAfB2D4898",
+    "RiskScore": 100,
+    "RiskCategory": "high",
+    "RiskDescription": "High Risk",
+    "RiskFactors": [
+      {
+        "score": 20,
+        "description": "Flash loan functionality without invariant enforcement",
+        "key": null,
+        "full_evidence": "Flash loan functionality without invariant enforcement",
+        "cir_explanation": {
+          "title": "Flash loan functionality",
+          "summary": "Flash loan helpers (e.g., ERC-3156 or bespoke pool hooks) let users borrow the entire pool within one transaction; ensure invariants and reentrancy guards cover the borrow path.",
+          "guidance": {
+            "investor": "Protocols with flash loans are powerful but can be abused—prefer pools that publish invariant checks, fee schedules, and post-incident reviews.",
+            "developer": "Validate `amount <= reserves`, ensure the callback cannot re-enter unsafe code, and integrate ERC-3156 style `onFlashLoan` checks with revert-on-failure semantics."
+          }
+        }
+      },
+      {
+        "score": 8,
+        "description": "Flash loan + governance with timelock protection",
+        "key": null,
+        "full_evidence": "Flash loan + governance with timelock protection",
+        "cir_explanation": {
+          "title": "Flash loan + governance intersection",
+          "summary": "The protocol has both flash loan capability and governance functions. With a timelock this is manageable; without one, borrowed tokens can pass and execute proposals instantly.",
+          "guidance": {
+            "investor": "This protocol has both flash loan and governance features, which creates a potential attack path. Flash loans let anyone temporarily borrow huge amounts of tokens. If those tokens carry voting power, an attacker could borrow enough to pass a malicious proposal. If the protocol has a timelock (a mandatory waiting period before proposals execute), the risk is lower but still worth monitoring. Beanstalk lost $182M to exactly this attack pattern.",
+            "developer": "Use ERC-20 snapshot or delegated voting locks, mandate TimelockController delays, and cap borrowed voting weight within a block."
+          }
+        }
+      },
+      {
+        "score": 20,
+        "description": "Oracle dependency without protection: No TWAP protection, No price deviation checks, No circuit breaker",
+        "key": null,
+        "full_evidence": "Oracle dependency without protection: No TWAP protection, No price deviation checks, No circuit breaker",
+        "cir_explanation": {
+          "title": "Oracle dependency without safeguards",
+          "summary": "Price feeds are consumed without TWAP smoothing, staleness checks, deviation bounds, or circuit breakers. A single-block oracle manipulation (e.g., via flash loan) could move prices enough to trigger unfair liquidations or over-borrowing.",
+          "guidance": {
+            "investor": "Oracle quality directly determines whether liquidations are fair and borrowing limits are safe. Missing protections mean a flash-loan attack could manipulate prices within one transaction. Check whether the team has addressed oracle security in their audit reports.",
+            "developer": "For Chainlink feeds, check `updatedAt` against a maximum age and validate `answer > 0`. For Uniswap TWAP, use a sufficiently long observation window (30+ minutes). Consider fallback oracles from independent providers."
+          }
+        }
+      },
+      {
+        "score": 30,
+        "description": "Voting power derived from flash-loanable ERC20 balance without snapshot protection",
+        "key": null,
+        "full_evidence": "Voting power derived from flash-loanable ERC20 balance without snapshot protection",
+        "cir_explanation": {
+          "title": "Voting power vulnerable to flash loans",
+          "summary": "Governance reads live balanceOf() for voting weight without checkpointing. An attacker can flash-borrow tokens, vote, execute, and repay in one block.",
+          "guidance": {
+            "investor": "Voting power in this protocol comes directly from how many tokens you hold right now — with no snapshot or lock-up. That means an attacker can borrow millions of tokens through a flash loan (a zero-collateral loan that lasts one transaction), use them to outvote everyone, pass a malicious proposal, execute it, and return the tokens — all in a single transaction. This is how Beanstalk was drained of $182M. It is one of the most proven governance attack patterns. Avoid governance participation or staking until snapshot voting is implemented.",
+            "developer": "Use ERC20Votes or ERC20Snapshot so voting power is locked at proposal creation time. Add TimelockController to enforce execution delay."
+          }
+        }
+      },
+      {
+        "score": 25,
+        "description": "Timelock present but execute() function lacks access control - allows permissionless execution after delay",
+        "key": null,
+        "full_evidence": "Timelock present but execute() function lacks access control - allows permissionless execution after delay",
+        "cir_explanation": {
+          "title": "Governance execution without delay or guard",
+          "summary": "The Governor or DAO executor calls target contracts directly without queuing through a TimelockController. Sonne Finance's May 2024 exploit involved governance executing a market activation without delay, enabling a first-deposit attack in the same block.",
+          "guidance": {
+            "investor": "Protocols without execution delays give you no exit window if a malicious proposal passes. Monitor governance proposals actively and set up alerts for unusual voting patterns. Prefer protocols with 24-48 hour timelocks.",
+            "developer": "Route all governance execution through a TimelockController with a minimum delay of 24 hours. Add a Guardian role that can veto proposals during the delay period."
+          }
+        }
+      },
+      {
+        "score": 25,
+        "description": "Governance cluster (2 vectors): 1.3x multiplier",
+        "key": null,
+        "full_evidence": "Governance cluster (2 vectors): 1.3x multiplier",
+        "explanation_investors": "This protocol has multiple governance vulnerabilities that amplify each other's risk. When a protocol exhibits flash-loan governance manipulation and timelock bypass vulnerabilities, an attacker can manipulate protocol governance in ways that individual safeguards cannot prevent. The $180M Beanstalk exploit demonstrated how flash-loan voting combined with instant execution enabled complete protocol takeover in a single transaction. The 1.3x multiplier reflects that governance attack vectors compound — each additional weakness doesn't just widen the attack surface, it makes every other weakness more exploitable.",
+        "explanation_developers": "Address both governance vectors simultaneously — attackers will chain them. Vectors identified: flash-loan governance manipulation and timelock bypass vulnerabilities. Implement coordinated fixes: voting power snapshots, mandatory timelock delays, separation of proposal and execution phases, and multisig oversight for critical operations. If any of these vectors are unclear, commission an independent security audit before deploying."
+      },
+      {
+        "score": 23,
+        "description": "Lending cluster (2 vectors): 1.3x multiplier",
+        "key": null,
+        "full_evidence": "Lending cluster (2 vectors): 1.3x multiplier",
+        "explanation_investors": "This lending protocol has multiple vulnerability classes that compound each other's risk. When a protocol exhibits oracle price manipulation exposure and flash-loan invariant risks, an attacker can chain these weaknesses to drain reserves in ways that individual safeguards cannot prevent. The Euler Finance ($196M) and Mango Markets ($114M) exploits both leveraged overlapping lending vulnerabilities — oracle manipulation combined with inadequate solvency checks enabled complete fund extraction. The 1.3x multiplier reflects this compounding: lending protocols with multiple exposed surfaces face multiplicative, not additive, risk.",
+        "explanation_developers": "Address both lending vulnerability vectors simultaneously — attackers will chain them. Vectors identified: oracle price manipulation exposure and flash-loan invariant risks. Implement coordinated fixes across oracle protection (TWAP, staleness checks, deviation bounds), reserve solvency verification, mint/burn access controls, and collateral health calculations. If any of these vectors are unclear, commission an independent security audit before deploying."
+      }
+    ],
+    "MitigationsAndSignals": [
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined access_control: +4% (48 incidents, $35M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined flashloan: +4% (87 incidents, $17M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined flashloan_governance: +5% (12 incidents, $75M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined governance: +4% (66 incidents, $60M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined oracle: +4% (52 incidents, $22M avg)"
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Timelock Governance (-4 pts)",
+        "points_saved": 4
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Reentrancy Protection (-3 pts)",
+        "points_saved": 3
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Chainlink Oracles (-2 pts)",
+        "points_saved": 2
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Governance Authority Control (-1 pts)",
+        "points_saved": 1
+      },
+      {
+        "type": "actuarial_intelligence",
+        "key": "actuarial_analysis",
+        "name": "Actuarial analysis",
+        "value": "Base 141 | Refined 100"
+      }
+    ],
+    "ScanDate": "2026-01-19",
+    "ScanDuration": 0.594
+  },
+  "exploit_meta": {
+    "name": "Makina Finance",
+    "date": "2026-01-19",
+    "loss_amount_usd": 4200000,
+    "attack_vector": "oracle_manipulation",
+    "description": "Flashloan oracle manipulation — permissionless updateTotalAum() with no TWAP, no deviation checks, no circuit breaker on Curve pool spot prices",
+    "chain": "ethereum"
+  },
+  "chain_display_name": "Ethereum",
+  "actuarial": {
+    "pre_actuarial_score": 141,
+    "slider_deltas": [
+      0,
+      -41,
+      -41,
+      -41,
+      -41,
+      -41,
+      -41,
+      -41,
+      -41,
+      -41,
+      -41
+    ],
+    "show_max_risk_message": true,
+    "base": 141,
+    "refined": 100,
+    "delta": -41,
+    "full_delta": -41,
+    "weight": 0.3,
+    "uplift_pct": -41,
+    "multiplier": 1.466
+  },
+  "composition": {
+    "raw_risk_score": 103,
+    "mitigation_credit": 10,
+    "multiplier_details": [
+      {
+        "cluster": "Governance Cluster 1.3x",
+        "added_points": 25
+      },
+      {
+        "cluster": "Lending Cluster 1.3x",
+        "added_points": 23
+      }
+    ]
+  },
+  "context_data": {
+    "archetype": "DelegatedVotingToken",
+    "confidence": 0.8,
+    "evidence": [
+      "capability:Admin.Authority.SingleKey",
+      "capability:FT.Allowance",
+      "capability:FT.Transfer",
+      "capability:Financial.FlashLoan",
+      "capability:Gov.Quorum",
+      "capability:Gov.Vote"
+    ],
+    "should_gate_expensive_rules": false
+  },
+  "primitive_count": 63,
+  "narrative": {
+    "sections": [
+      {
+        "title": "A Quiet Eureka Moment",
+        "text": "January 19, 2026: Makina Finance is exploited for $4.2M through a flash-loan-powered oracle manipulation attack. When we ran the Makina contract through our CIR engine, every vulnerability the attacker used was flagged — with no new rules added. The engine's existing rule set, calibrated through months of Time Machine training, caught it all. Had we been scanning the waterfront at scale, we'd have flagged it before the hack."
+      },
+      {
+        "title": "How We Got Here",
+        "text": "The Time Machine module was never just a demo. It was our calibration workflow. We used it to train and refine the CIR engine — running it against the pre-exploit source code of major historical exploits to make sure we could reliably detect the vulnerabilities that led to billions in losses, while simultaneously validating against battle-tested contracts to ensure we weren't producing false positives. Every exploit in this collection sharpened the rules. Every clean contract kept them honest."
+      },
+      {
+        "title": "What the Engine Saw",
+        "text": "The Caliber contract's updateTotalAum() function was permissionless — anyone could call it. It read asset valuations directly from Curve pool spot prices with no TWAP smoothing, no deviation checks, no circuit breaker. The engine flagged unprotected oracle dependency, flash loan functionality without invariant enforcement, and flash-loanable governance tokens without snapshot protection. Two cluster multipliers fired: governance (1.3x) and lending (1.3x). Final score: 100/100. Every finding mapped directly to the attack path the exploiter would later use."
+      },
+      {
+        "title": "Ready for the Wild",
+        "text": "Makina was the moment we realised the CIR engine was fully calibrated — not just capable of catching historical exploits in hindsight, but ready to detect threats in live contracts out in the wild, without any manual intervention. The same rules that were trained against years of DeFi exploitation history had generalised into genuine predictive capability. That's the whole story. A quiet eureka moment that means we're ready for next steps."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Flash loan oracle manipulation — unprotected price feed drained the vault",
+      "steps": "1) Flash-borrow large position from external lending protocol. 2) Deposit into Curve pool to manipulate spot price. 3) Call permissionless updateTotalAum() on the Caliber contract — it reads the inflated Curve spot price as ground truth. 4) The inflated AUM valuation allows the attacker to withdraw more than their fair share from the vault. 5) Remove liquidity from Curve to restore the price. 6) Repay flash loan and pocket the $4.2M difference."
+    }
+  }
+}

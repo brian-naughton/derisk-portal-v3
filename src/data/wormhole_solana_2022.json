@@ -1,0 +1,201 @@
+{
+  "exploit_id": "wormhole_solana_2022",
+  "scan_result": {
+    "Name": "Wormhole Bridge (SVM) ($320M Hack, 2022)",
+    "ContractAddress": "worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth",
+    "RiskScore": 100,
+    "RiskCategory": "high",
+    "RiskDescription": "High Risk",
+    "RiskFactors": [
+      {
+        "score": 25,
+        "description": "Insufficient Validator Quorum",
+        "key": null,
+        "full_evidence": "Insufficient validator quorum: Threshold 2/3 (66.7%) below 67% BFT threshold",
+        "explanation_investors": "This factor shows that insufficient validator quorum: threshold 2/3 (66.7%) below 67% bft threshold. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that insufficient validator quorum: threshold 2/3 (66.7%) below 67% bft threshold is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Bridge validator threshold risk",
+          "summary": "Bridge withdrawals can be authorized by too few validators, making it feasible to collude or compromise the signers and mint assets without backing.",
+          "guidance": {
+            "investor": "Bridges work like a group of guards who must all agree before releasing funds. If the required number of guards is too low, an attacker only needs to compromise a few to steal everything. Ronin required only 5 of 9 — and lost $625M. Prefer bridges that require a strong majority (at least two-thirds) of their validators to approve any withdrawal.",
+            "developer": "Raise the approval threshold, add rotation and slashing, and publish validator membership on-chain so users can audit who controls withdrawals."
+          }
+        }
+      },
+      {
+        "score": 20,
+        "description": "Bridge Architecture Vulnerability",
+        "key": null,
+        "full_evidence": "Bridge architecture contains known vulnerability patterns",
+        "explanation_investors": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses (Ronin $625M, Wormhole $320M, Poly Network $611M). The complexity of coordinating security across multiple chains creates attack surfaces that don't exist in single-chain protocols. Limit exposure and monitor bridge security announcements closely.",
+        "explanation_developers": "Conduct a thorough security review comparing your architecture against known bridge exploits. Key areas to audit: validator key management, message verification logic, replay protection, and upgrade mechanisms. Consider implementing defense-in-depth: rate limiting, pause mechanisms, and monitoring systems that can detect anomalies before full exploitation.",
+        "cir_explanation": {
+          "title": "Bridge architecture vulnerabilities",
+          "summary": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses.",
+          "guidance": {
+            "investor": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses (Ronin $625M, Wormhole $326M, Nomad $190M). The complexity of coordinating security across multiple chains creates attack surfaces that do not exist in single-chain protocols. Limit exposure and monitor bridge security announcements closely.",
+            "developer": "Conduct a thorough security review comparing your architecture against known bridge exploits. Key areas: validator key management, message verification logic, replay protection, and upgrade mechanisms. Implement defense-in-depth: rate limiting, pause mechanisms, and monitoring that can detect anomalies before full exploitation."
+          }
+        }
+      },
+      {
+        "score": 17,
+        "description": "Bridge cluster (2 vectors): 1.3x multiplier",
+        "key": null,
+        "full_evidence": "Bridge cluster (2 vectors): 1.3x multiplier",
+        "explanation_investors": "This bridge has multiple vulnerability classes that compound each other's risk. Cross-chain bridges custody enormous value and are prime targets for large-scale attacks — the Ronin Bridge ($625M), Poly Network ($611M), and Wormhole ($320M) hacks all exploited overlapping weaknesses. When a protocol exhibits validator/guardian key management risks and cross-chain message validation gaps, an attacker can chain these in a single transaction to bypass defences that would individually hold. The 1.3x multiplier reflects this compounding: each additional attack surface doesn't just add risk, it multiplies it.",
+        "explanation_developers": "Address both vulnerability vectors simultaneously — fixing one in isolation leaves the other exploitable, and attackers will chain them. Vectors identified: validator/guardian key management risks and cross-chain message validation gaps. Implement defence-in-depth across signature validation, message verification, validator key management, and execution controls. If any of these vectors are unclear, commission an independent security audit before deploying."
+      },
+      {
+        "score": 15,
+        "description": "Missing Reentrancy Protection",
+        "key": null,
+        "full_evidence": "Missing reentrancy protection in vulnerable functions",
+        "explanation_investors": "Functions that handle fund transfers lack reentrancy protection, making them vulnerable to attack. Without proper guards, attackers can exploit the contract's external calls to drain funds repeatedly.",
+        "explanation_developers": "Add OpenZeppelin's ReentrancyGuard modifier to all functions that make external calls or transfer funds. Use the nonReentrant modifier consistently across vulnerable functions.",
+        "cir_explanation": {
+          "title": "Reentrancy exposure",
+          "summary": "Ensure cross-program invocations cannot loop back into the same instruction without state commitments. Use explicit account locks or state flags to prevent re-entry.",
+          "guidance": {
+            "investor": "Reentrancy is one of the most dangerous smart contract flaws. It lets an attacker call the 'withdraw' function over and over before the contract updates the balance — draining funds in a loop. This is exactly how The DAO lost $60M in 2016, the first major DeFi exploit. If a protocol has this vulnerability, your deposited funds are at immediate risk.",
+            "developer": "Commit withdrawals to state using atomic flags before CPI and gate re-entry with a rent-exempt record or PDA write."
+          }
+        }
+      },
+      {
+        "score": 10,
+        "description": "Bridge Message Manipulation Risk",
+        "key": null,
+        "full_evidence": "Bridge message processing vulnerable to manipulation attacks",
+        "explanation_investors": "This bridge may accept cross-chain messages without adequately verifying their authenticity or origin. Attackers could potentially forge messages to unlock or mint assets they don't own. This class of vulnerability was exploited in the Wormhole ($320M) and Poly Network ($611M) hacks. Treat this as a critical risk indicator.",
+        "explanation_developers": "Implement comprehensive message validation: verify source chain ID, sender address, nonce for replay protection, and cryptographic signatures from a sufficient validator set. Use structured data formats (like EIP-712) that prevent type confusion attacks. Add sanity checks on amounts and recipients. Consider implementing fraud proofs or challenge periods for large transfers.",
+        "cir_explanation": {
+          "title": "Bridge message manipulation risk",
+          "summary": "The bridge may accept cross-chain messages without adequately verifying their authenticity or origin, allowing attackers to forge messages that unlock or mint assets they do not own.",
+          "guidance": {
+            "investor": "This bridge may accept cross-chain messages without adequately verifying their authenticity or origin. Attackers could forge messages to unlock or mint assets they do not own. This class of vulnerability was central to the Wormhole ($326M) and Poly Network ($611M) exploits. Treat this as a critical risk — do not bridge significant value until message validation has been independently audited.",
+            "developer": "Implement comprehensive message validation: verify source chain ID, sender address, nonce for replay protection, and cryptographic signatures from a sufficient validator set. Add sanity checks on amounts and recipients. Consider fraud proofs or challenge periods for large transfers."
+          }
+        }
+      }
+    ],
+    "MitigationsAndSignals": [
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined bridge: +58% (270 incidents, $37M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined logic_error: +5% (65 incidents, $18M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined reentrancy: +5% (45 incidents, $28M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined validator_compromise: +4% (15 incidents, $95M avg)"
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Battle Tested Patterns (-3 pts)",
+        "points_saved": 3
+      },
+      {
+        "type": "actuarial_intelligence",
+        "key": "actuarial_analysis",
+        "name": "Actuarial analysis",
+        "value": "Base 84 | Refined 100"
+      }
+    ],
+    "ScanDate": "2022-02-02",
+    "ScanDuration": 0.081
+  },
+  "exploit_meta": {
+    "name": "Wormhole Bridge (SVM)",
+    "date": "2022-02-02",
+    "loss_amount_usd": 320000000,
+    "attack_vector": "signature_verification_bypass",
+    "description": "verify_signatures used deprecated load_instruction_at allowing fake sysvar — attacker forged guardian set to mint 120k wETH",
+    "chain": "solana"
+  },
+  "chain_display_name": "Solana",
+  "actuarial": {
+    "pre_actuarial_score": 84,
+    "slider_deltas": [
+      0,
+      5,
+      10,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "show_max_risk_message": false,
+    "base": 84,
+    "refined": 100,
+    "delta": 16,
+    "full_delta": 16,
+    "weight": 0.3,
+    "uplift_pct": 16,
+    "multiplier": 1.243
+  },
+  "composition": {
+    "raw_risk_score": 87,
+    "mitigation_credit": 3,
+    "multiplier_details": [
+      {
+        "cluster": "Bridge cluster",
+        "added_points": 17
+      }
+    ]
+  },
+  "context_data": {
+    "archetype": "BridgeEndpoint",
+    "confidence": 0.85,
+    "evidence": [
+      "capability:Bridge.DomainBinding",
+      "capability:Bridge.MessageId",
+      "capability:Bridge.ValidatorSet",
+      "capability:Bridge.ValidatorThreshold",
+      "capability:Bridge.VerifySignatures",
+      "capability:Crypto.SignatureVerify"
+    ],
+    "should_gate_expensive_rules": false
+  },
+  "primitive_count": 17,
+  "narrative": {
+    "sections": [
+      {
+        "title": "The $320M Sysvar Forgery",
+        "text": "February 2, 2022: An attacker exploits a single deprecated function call in the Wormhole Solana bridge program to forge guardian signatures, minting 120,000 wETH ($320M) out of thin air. The vulnerability existed for months in plain sight — a one-line fix would have prevented it."
+      },
+      {
+        "title": "Both Sides of the Bridge",
+        "text": "This is the Solana side of the Wormhole exploit. The Ethereum side validated guardian signatures correctly. But on Solana, the verify_signatures instruction used a deprecated function that didn't validate the sysvar account — the attacker simply passed a fake one."
+      },
+      {
+        "title": "The Fix Was One Line",
+        "text": "Solana had introduced the checked version months earlier. Wormhole's Solana program hadn't migrated. After the exploit, the fix was literally swapping one function call. This is why our scanner checks for deprecated instruction loading patterns — the smoking gun is in the function name itself."
+      },
+      {
+        "title": "Two Sides, One Perfect Storm",
+        "text": "The Time Machine scans of both sides of the bridge — Solana and Ethereum — add up to a forensic assessment of all of the interlocking exploit vectors that amount to the perfect storm. Each side of the bridge carried distinct vulnerabilities, and our engine detects the full cross-chain attack surface that made the $320M exploit possible."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Forged sysvar account bypasses signature verification",
+      "steps": "1) Create a fake SignatureSet account with forged guardian signatures. 2) Pass a spoofed sysvar account to verify_signatures that returns \"valid\" for any input. 3) Call post_vaa with the forged SignatureSet — it passes guardian quorum check. 4) Use the valid VAA to call complete_transfer on the Token Bridge. 5) Mint 120,000 wETH on Solana. 6) Bridge 93,750 ETH back to Ethereum."
+    }
+  }
+}

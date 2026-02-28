@@ -1,0 +1,211 @@
+{
+  "exploit_id": "beanstalk_2022",
+  "scan_result": {
+    "Name": "Beanstalk Farms ($180M Hack, 2022)",
+    "ContractAddress": "0xC1E088fC1323b20BCBee9bd1B9fC9546db5624C5",
+    "RiskScore": 100,
+    "RiskCategory": "high",
+    "RiskDescription": "High Risk",
+    "RiskFactors": [
+      {
+        "score": 60,
+        "description": "Governance perfect storm (3 vectors): 1.4x multiplier",
+        "key": null,
+        "full_evidence": "Governance perfect storm (3 vectors): 1.4x multiplier",
+        "explanation_investors": "This protocol has 3 distinct governance vulnerability classes creating a critical compounding risk. When flash-loan governance manipulation, timelock bypass vulnerabilities, and proposal execution manipulation are all present in the same protocol, it is vulnerable to the full spectrum of governance attacks — from flash-loan vote manipulation through to instant execution of malicious proposals. The 1.4x multiplier reflects the multiplicative nature of this risk: governance protocols with this profile have historically suffered catastrophic, total-value-at-risk losses.",
+        "explanation_developers": "CRITICAL: 3 distinct governance vectors compound catastrophically. Vectors: flash-loan governance manipulation, timelock bypass vulnerabilities, and proposal execution manipulation. Comprehensive governance security overhaul required — partial fixes are insufficient when attack paths chain across voting, timelock, and execution layers. Commission an independent security audit before deploying or continuing to operate."
+      },
+      {
+        "score": 30,
+        "description": "Governance Bypasses Diamond Owner",
+        "key": null,
+        "full_evidence": "Diamond proxy owner bypass via governance delegatecall path",
+        "explanation_investors": "This Diamond proxy has a vulnerability where governance can execute code that bypasses the normal owner restrictions on diamondCut(). Essentially, while direct calls might be protected, there's a backdoor path through governance execution. An attacker who controls governance (even temporarily via flash loan) could use this path to replace contract logic. This is a critical architectural flaw.",
+        "explanation_developers": "Ensure that governance execution cannot call diamondCut() even indirectly. Implement a check in diamondCut() that reverts if called via delegatecall from an unauthorized context. Consider using a dedicated 'DiamondAdmin' role that is separate from general governance execution. Add invariant tests that verify diamondCut() cannot be triggered through any governance proposal.",
+        "cir_explanation": {
+          "title": "Diamond owner checks bypassed",
+          "summary": "Delegatecall-based governance executors bypass the `LibDiamond.enforceIsContractOwner` check, exactly matching the Beanstalk exploit surface.",
+          "guidance": {
+            "investor": "The protocol uses a modular upgrade system (a 'diamond proxy') where governance votes can swap out core contract logic. However, the governance path bypasses the normal owner security checks, meaning a malicious governance proposal could replace critical contract code without the owner approving it — exactly the pattern used in the Beanstalk $182M exploit.",
+            "developer": "Check `diamondCut` caller identity inside the executor, disable delegatecall upgrade paths, or require multisig co-signing for facet changes."
+          }
+        }
+      },
+      {
+        "score": 30,
+        "description": "Flash-Loanable Governance Tokens",
+        "key": null,
+        "full_evidence": "Voting power derived from flash-loanable ERC20 balance without snapshot protection",
+        "explanation_investors": "Voting power in this system is determined by current token holdings with no snapshot mechanism. This means token balances can be manipulated within the same transaction as a vote. Flash loan attacks can temporarily inflate an attacker's voting power to pass any proposal. This is a well-known critical vulnerability pattern that has resulted in major exploits.",
+        "explanation_developers": "Upgrade to ERC20Votes or implement a custom checkpoint system. Each transfer should record the balance change with a block number. When counting votes, use the balance as of a specific historical block (the proposal creation block or earlier). This breaks the atomicity that flash loan attacks depend on.",
+        "cir_explanation": {
+          "title": "Voting power vulnerable to flash loans",
+          "summary": "Governance reads live balanceOf() for voting weight without checkpointing. An attacker can flash-borrow tokens, vote, execute, and repay in one block.",
+          "guidance": {
+            "investor": "Voting power in this protocol comes directly from how many tokens you hold right now — with no snapshot or lock-up. That means an attacker can borrow millions of tokens through a flash loan (a zero-collateral loan that lasts one transaction), use them to outvote everyone, pass a malicious proposal, execute it, and return the tokens — all in a single transaction. This is how Beanstalk was drained of $182M. It is one of the most proven governance attack patterns. Avoid governance participation or staking until snapshot voting is implemented.",
+            "developer": "Use ERC20Votes or ERC20Snapshot so voting power is locked at proposal creation time. Add TimelockController to enforce execution delay."
+          }
+        }
+      },
+      {
+        "score": 25,
+        "description": "Diamond proxy diamondCut without owner protection",
+        "key": null,
+        "full_evidence": "Diamond proxy diamondCut without owner protection",
+        "explanation_investors": "The diamondCut() function, which controls all upgrades to this Diamond proxy, may be callable by unauthorized parties. This is an extremely critical vulnerability - it would allow anyone to replace any contract logic, essentially giving them complete control over the protocol. Avoid this protocol until proper access controls are verified.",
+        "explanation_developers": "Implement strict access control on diamondCut(). Use OpenZeppelin's Ownable or AccessControl patterns. Ensure the owner is a multisig, not an EOA. Add explicit require statements checking msg.sender authorization. Consider implementing a two-step upgrade process: propose, then execute after delay.",
+        "cir_explanation": {
+          "title": "Unprotected diamond facet upgrades",
+          "summary": "The EIP-2535 `diamondCut` dispatcher lacks owner or selector checks, recreating known Beanstalk bypass paths; guard the function before shipping.",
+          "guidance": {
+            "investor": "Confirm upgrade permissions are locked behind governance or a multisig—if not, a malicious caller can replace contract logic instantly.",
+            "developer": "Enforce msg.sender checks on `diamondCut`, restrict selectors to approved facets, and pair upgrades with timelock-controlled multisigs."
+          }
+        }
+      },
+      {
+        "score": 25,
+        "description": "diamondCut() Owner Check Bypass",
+        "key": null,
+        "full_evidence": "Diamond proxy diamondCut() bypasses owner checks via governance delegatecall path",
+        "explanation_investors": "While diamondCut() is protected by owner checks, governance proposals can execute this function through delegatecall, where msg.sender becomes the contract itself, bypassing the owner protection. This creates a backdoor for governance to completely replace contract logic without proper authorization.",
+        "explanation_developers": "Ensure diamondCut() access controls account for delegatecall contexts. Consider using tx.origin checks or implementing separate governance-specific upgrade functions with their own protection mechanisms. Add explicit checks to prevent governance from calling diamondCut() directly.",
+        "cir_explanation": {
+          "title": "Diamond proxy governance bypass",
+          "summary": "`diamondCut` is reachable from governance modules that can delegatecall arbitrary targets, recreating the Beanstalk exploit chain.",
+          "guidance": {
+            "investor": "The protocol's governance system can execute arbitrary code upgrades that bypass normal security checks. A single governance proposal could replace core contract logic, redirect funds, or change all protocol rules — and the upgrade path does not require admin approval. Until governance upgrades require multi-party review and mandatory delays, treat the protocol as having single-party control.",
+            "developer": "Whitelist diamond facet addresses, block delegatecall passthrough, and require on-chain diff audits before upgrades settle."
+          }
+        }
+      },
+      {
+        "score": 20,
+        "description": "Diamond Upgrade Without Timelock",
+        "key": null,
+        "full_evidence": "Diamond governance execution without timelock delay",
+        "explanation_investors": "This Diamond proxy (EIP-2535) allows governance to replace contract logic instantly, without any delay. Diamond proxies are especially powerful because they can swap multiple 'facets' (contract modules) in a single transaction. If governance is compromised - through flash loan attacks, key theft, or malicious proposals - an attacker could instantly replace core contract logic with malicious code and drain all funds.",
+        "explanation_developers": "Place a Timelock contract between governance and the diamondCut() function. Ensure all facet additions, replacements, and removals must wait a minimum delay (24-72 hours) before execution. This gives users time to exit if a malicious upgrade is proposed. Also consider implementing a facet 'freeze' that prevents changes to critical facets.",
+        "cir_explanation": {
+          "title": "Diamond governance without delay",
+          "summary": "DAO proposals can call `diamondCut` and execute in the same block because the governance executor lacks a timelock—copying the Beanstalk exploit path.",
+          "guidance": {
+            "investor": "The protocol uses a modular upgrade system where governance can swap out contract logic, but there is no mandatory delay between a vote passing and the upgrade activating. This means malicious code can go live before anyone has time to review it or withdraw their funds. Monitor governance proposals actively and be prepared to exit quickly.",
+            "developer": "Wrap the governance executor with TimelockController or pauseable staging so `diamondCut` cannot run until the delay ends."
+          }
+        }
+      },
+      {
+        "score": 20,
+        "description": "Governance diamondCut() Bypass",
+        "key": null,
+        "full_evidence": "Governance execution can call diamondCut() in same transaction without timelock delay",
+        "explanation_investors": "This contract allows governance proposals to execute diamondCut() (complete logic replacement) in the same transaction without any time delay. This is the exact vulnerability exploited in the $180M Beanstalk attack, where an attacker used flash loans to gain governance control and instantly replace the contract logic to drain all funds.",
+        "explanation_developers": "Implement mandatory timelock delays for all governance actions that call diamondCut(). Add require(block.timestamp >= proposal.eta) checks before any diamondCut() execution. Consider implementing separate upgrade and execution phases with enforced delays between them.",
+        "cir_explanation": {
+          "title": "Same-transaction governance execution",
+          "summary": "No block delay between proposal creation and execution means an attacker can flash-loan governance tokens, vote, and execute a malicious payload atomically. This is exactly how Beanstalk was exploited for $182M in April 2022.",
+          "guidance": {
+            "investor": "Same-transaction execution is one of the most dangerous governance vulnerabilities. If a protocol allows this, any token holder with access to flash loans can effectively control the DAO for the cost of a transaction fee.",
+            "developer": "Set `votingDelay >= 1 block` and `executionDelay >= 1 day` in the Governor config. Use ERC-20Votes with checkpoint-based snapshots rather than live `balanceOf`."
+          }
+        }
+      }
+    ],
+    "MitigationsAndSignals": [
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined governance: +5% (66 incidents, $60M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined proxy: +5% (27 incidents, $32M avg)"
+      },
+      {
+        "type": "actuarial_intelligence",
+        "key": "actuarial_analysis",
+        "name": "Actuarial analysis",
+        "value": "Base 210 | Refined 100"
+      }
+    ],
+    "ScanDate": "2022-04-17",
+    "ScanDuration": 0.065
+  },
+  "exploit_meta": {
+    "name": "Beanstalk Farms",
+    "date": "2022-04-17",
+    "loss_amount_usd": 180000000,
+    "attack_vector": "governance_flash_loan",
+    "description": "Flash loan governance attack bypassing voting requirements",
+    "chain": "ethereum"
+  },
+  "chain_display_name": "Ethereum",
+  "actuarial": {
+    "pre_actuarial_score": 210,
+    "slider_deltas": [
+      0,
+      -110,
+      -110,
+      -110,
+      -110,
+      -110,
+      -110,
+      -110,
+      -110,
+      -110,
+      -110
+    ],
+    "show_max_risk_message": true,
+    "base": 210,
+    "refined": 100,
+    "delta": -110,
+    "full_delta": -110,
+    "weight": 0.3,
+    "uplift_pct": -110,
+    "multiplier": 1.4
+  },
+  "composition": {
+    "raw_risk_score": 210,
+    "mitigation_credit": 0,
+    "multiplier_details": [
+      {
+        "cluster": "Governance perfect storm 1.4x",
+        "added_points": 60
+      }
+    ]
+  },
+  "context_data": {
+    "archetype": "DelegatedVotingToken",
+    "confidence": 0.8,
+    "evidence": [
+      "capability:Gov.Quorum",
+      "capability:Gov.Vote",
+      "capability:Proxy.Indirection",
+      "capability:Proxy.UpgradeSlot"
+    ],
+    "should_gate_expensive_rules": false
+  },
+  "primitive_count": 13,
+  "narrative": {
+    "sections": [
+      {
+        "title": "The Perfect Crime",
+        "text": "April 17, 2022: In the most audacious DeFi heist ever, an attacker borrows nearly $1 billion across multiple protocols in a single transaction, uses it to acquire 67% voting power in Beanstalk's governance, votes to send all protocol funds to themselves, then pays back the flash loans with the stolen money."
+      },
+      {
+        "title": "Governance Theater Exposed",
+        "text": "The attack exposes the illusion of decentralized governance. Token-based voting systems can be hijacked by anyone with sufficient capital, even if borrowed for seconds. The $182M loss proves that flash loan governance attacks aren't theoretical — they're inevitable."
+      },
+      {
+        "title": "The New Attack Vector",
+        "text": "Within months, governance attacks become a playbook. Projects scramble to implement time delays, voting escrows, and delegation caps. The industry learns that governance isn't just about fairness — it's about survival."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Flash loan-enabled governance takeover with no time delays",
+      "steps": "1) Flash borrow $1B across Aave, Uniswap, and Curve. 2) Swap borrowed assets for BEAN tokens (67% supply). 3) Use voting power to pass emergency proposal sending all funds to attacker. 4) Execute proposal immediately. 5) Repay flash loans with stolen treasury funds. 6) Profit $182M."
+    }
+  }
+}

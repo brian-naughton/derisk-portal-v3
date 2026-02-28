@@ -1,0 +1,230 @@
+{
+  "exploit_id": "euler_2023",
+  "scan_result": {
+    "Name": "Euler Finance ($196M Hack, 2023)",
+    "ContractAddress": "0x27182842E098f60e3D576794A5bFFb0777E025d3",
+    "RiskScore": 100,
+    "RiskCategory": "high",
+    "RiskDescription": "High Risk",
+    "RiskFactors": [
+      {
+        "score": 40,
+        "description": "Lending perfect storm (4 vectors): 1.4x multiplier",
+        "key": null,
+        "full_evidence": "Lending perfect storm (4 vectors): 1.4x multiplier",
+        "explanation_investors": "This lending protocol has 4 distinct vulnerability classes creating a critical compounding risk. When oracle price manipulation exposure, reserve solvency verification gaps, flash-loan invariant risks, and collateral health calculation risks are all present in the same protocol, it is exposed to the full spectrum of lending attacks — from oracle manipulation through flash-loan exploitation to reserve drainage. Lending protocols are prime targets for large-scale attacks with proven losses exceeding $500M across historical incidents. The 1.4x multiplier reflects the reality that each additional vulnerability vector makes every other weakness more exploitable.",
+        "explanation_developers": "CRITICAL: 4 distinct lending vectors compound catastrophically. Vectors: oracle price manipulation exposure, reserve solvency verification gaps, flash-loan invariant risks, and collateral health calculation risks. Comprehensive lending security audit required — partial remediation is insufficient when attack paths chain across oracle feeds, reserve accounting, mint/burn operations, and collateral calculations. Commission an independent security audit before deploying or continuing to operate."
+      },
+      {
+        "score": 35,
+        "description": "Donation Without Solvency Check",
+        "key": null,
+        "full_evidence": "External donation to reserves without post-action solvency verification",
+        "explanation_investors": "This contract allows external parties to donate funds to protocol reserves, but doesn't verify that the protocol remains solvent afterwards. This is the exact vulnerability that enabled the $196M Euler exploit - attackers can donate reserves to manipulate health calculations.",
+        "explanation_developers": "Add mandatory solvency checks after all reserve donations using require(isSolvent()) or equivalent. Every function that credits reserves must verify protocol health before completing execution.",
+        "cir_explanation": {
+          "title": "Donation without solvency checks",
+          "summary": "Functions like `donateToReserve` skip `_checkLiquidity` or health checks—add invariant assertions immediately after balance updates.",
+          "guidance": {
+            "investor": "The lending pool allows anyone to donate funds to its reserves without rechecking whether the pool is still solvent afterwards. An attacker can exploit this gap to manipulate internal accounting and drain borrower funds — this is exactly how Euler Finance lost $197M in 2023. Avoid lending pools that accept reserve donations without automatic health checks.",
+            "developer": "Call `_checkLiabilities` or equivalent after `donateToReserve` and revert if health factors fall below thresholds."
+          }
+        }
+      },
+      {
+        "score": 35,
+        "description": "Flash Loan Oracle Manipulation",
+        "key": null,
+        "full_evidence": "Oracle manipulation vulnerability: Price-dependent borrowing/liquidation, Single oracle source",
+        "explanation_investors": "This contract uses an oracle that can be manipulated within a single transaction via flash loans. The Tellor oracle pattern without dispute windows, or LP-based pricing without TWAP, allows attackers to inflate/deflate prices and exploit price-dependent operations. This is the exact pattern used in the BonqDAO ($120M) and Inverse Finance ($15M) exploits.",
+        "explanation_developers": "Never consume oracle prices that can be manipulated in the same block. For Tellor, use dispute windows or time delays. For LP oracles, use TWAP not spot reserves. Add sanity checks comparing against secondary price sources.",
+        "cir_explanation": {
+          "title": "Advanced oracle manipulation pathways",
+          "summary": "The contract trusts direct `latestAnswer` calls or AMM spot quotes without TWAPs or caps, recreating bZx-style price swings.",
+          "guidance": {
+            "investor": "The protocol relies on a price feed (an 'oracle') to know how much assets are worth, but it does not verify whether the price data is fresh, accurate, or being manipulated. An attacker can use a flash loan to temporarily distort the price and trick the protocol into making bad trades or unfair liquidations. This is how bZx lost $8M and Makina Finance lost $4.2M. Avoid protocols with unprotected price feeds.",
+            "developer": "Add deviation limits, TWAP windows, circuit breakers, and fallback sources; log oracle usage so anomalies trigger incident response."
+          }
+        }
+      },
+      {
+        "score": 15,
+        "description": "Unprotected Oracle Dependency",
+        "key": null,
+        "full_evidence": "Oracle dependency without protection: No price deviation checks, No circuit breaker, Single oracle dependency",
+        "explanation_investors": "This contract relies on oracle price feeds without essential protections like time-weighted average prices (TWAP), staleness checks, or deviation limits. Flash loan attacks can manipulate spot prices within a single block to exploit price-dependent operations like borrowing, liquidations, or swaps.",
+        "explanation_developers": "Implement TWAP oracles instead of spot prices. Add staleness validation (reject prices older than X blocks). Include price deviation checks against historical values. Consider using multiple oracle sources with median aggregation.",
+        "cir_explanation": {
+          "title": "Oracle dependency without safeguards",
+          "summary": "Price feeds are consumed without TWAP smoothing, staleness checks, deviation bounds, or circuit breakers. A single-block oracle manipulation (e.g., via flash loan) could move prices enough to trigger unfair liquidations or over-borrowing.",
+          "guidance": {
+            "investor": "Oracle quality directly determines whether liquidations are fair and borrowing limits are safe. Missing protections mean a flash-loan attack could manipulate prices within one transaction. Check whether the team has addressed oracle security in their audit reports.",
+            "developer": "For Chainlink feeds, check `updatedAt` against a maximum age and validate `answer > 0`. For Uniswap TWAP, use a sufficiently long observation window (30+ minutes). Consider fallback oracles from independent providers."
+          }
+        }
+      },
+      {
+        "score": 10,
+        "description": "Collateral Ops Lack Price Protection",
+        "key": null,
+        "full_evidence": "3 collateral operations have ratio checks but lack price manipulation protection",
+        "explanation_investors": "This factor shows that 3 collateral operations have ratio checks but lack price manipulation protection. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that 3 collateral operations have ratio checks but lack price manipulation protection is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Collateral ratio manipulation",
+          "summary": "Functions skip `accrueInterest()` or health-factor assertions before updating borrows, so flash loans can distort collateral ratios until liquidation bots react.",
+          "guidance": {
+            "investor": "The protocol allows collateral ratios to be changed without first verifying that the price data is current. An attacker can use stale or manipulated prices to borrow more than their collateral is worth, leaving the pool with bad debt that all depositors absorb. Treat this as high risk until the protocol demonstrates that every collateral operation verifies price freshness.",
+            "developer": "Call `_accrueInterest()` and `_checkLiquidity()` before mutating reserves and revert when collateral ratios fall below thresholds."
+          }
+        }
+      },
+      {
+        "score": 5,
+        "description": "Flash loan with post-execution invariant enforcement",
+        "key": null,
+        "full_evidence": "Flash loan with post-execution invariant enforcement",
+        "explanation_investors": "This factor shows that flash loan with post-execution invariant enforcement. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that flash loan with post-execution invariant enforcement is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Flash loan functionality",
+          "summary": "Flash loan helpers (e.g., ERC-3156 or bespoke pool hooks) let users borrow the entire pool within one transaction; ensure invariants and reentrancy guards cover the borrow path.",
+          "guidance": {
+            "investor": "Protocols with flash loans are powerful but can be abused—prefer pools that publish invariant checks, fee schedules, and post-incident reviews.",
+            "developer": "Validate `amount <= reserves`, ensure the callback cannot re-enter unsafe code, and integrate ERC-3156 style `onFlashLoan` checks with revert-on-failure semantics."
+          }
+        }
+      }
+    ],
+    "MitigationsAndSignals": [
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined flashloan: +4% (87 incidents, $17M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined lending_protocol: +5% (38 incidents, $42M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined oracle: +4% (52 incidents, $22M avg)"
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Reentrancy Protection (-4 pts)",
+        "points_saved": 4
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Chainlink Oracles (-3 pts)",
+        "points_saved": 3
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Governance Authority Control (-2 pts)",
+        "points_saved": 2
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Battle Tested Patterns (-1 pts)",
+        "points_saved": 1
+      },
+      {
+        "type": "actuarial_intelligence",
+        "key": "actuarial_analysis",
+        "name": "Actuarial analysis",
+        "value": "Base 130 | Refined 100"
+      }
+    ],
+    "ScanDate": "2023-03-13",
+    "ScanDuration": 0.18
+  },
+  "exploit_meta": {
+    "name": "Euler Finance",
+    "date": "2023-03-13",
+    "loss_amount_usd": 196000000,
+    "attack_vector": "donation_attack",
+    "description": "Donation attack exploiting health calculation in lending protocol",
+    "chain": "ethereum"
+  },
+  "chain_display_name": "Ethereum",
+  "actuarial": {
+    "pre_actuarial_score": 130,
+    "slider_deltas": [
+      0,
+      -30,
+      -30,
+      -30,
+      -30,
+      -30,
+      -30,
+      -30,
+      -30,
+      -30,
+      -30
+    ],
+    "show_max_risk_message": true,
+    "base": 130,
+    "refined": 100,
+    "delta": -30,
+    "full_delta": -30,
+    "weight": 0.3,
+    "uplift_pct": -30,
+    "multiplier": 1.4
+  },
+  "composition": {
+    "raw_risk_score": 140,
+    "mitigation_credit": 10,
+    "multiplier_details": [
+      {
+        "cluster": "Lending perfect storm 1.4x",
+        "added_points": 40
+      }
+    ]
+  },
+  "context_data": {
+    "archetype": "LendingMarket",
+    "confidence": 0.75,
+    "evidence": [
+      "capability:FT.Allowance",
+      "capability:FT.Burn",
+      "capability:FT.Mint",
+      "capability:FT.Transfer",
+      "capability:Financial.Donation",
+      "capability:Financial.FlashLoan",
+      "capability:Financial.Lending",
+      "capability:Gov.Delegate",
+      "capability:Oracle.PriceRead",
+      "capability:Oracle.PriceUpdate"
+    ],
+    "should_gate_expensive_rules": false
+  },
+  "primitive_count": 81,
+  "narrative": {
+    "sections": [
+      {
+        "title": "The Sophisticated Strike",
+        "text": "March 13, 2023: Euler Finance, known for its complex lending mathematics, falls victim to an elegant exploit. The attacker uses the protocol's own \"donation\" feature to manipulate health calculations, allowing them to borrow far more than their collateral should permit."
+      },
+      {
+        "title": "The $196M Question",
+        "text": "The attack drains nearly $200M in under 20 minutes through a series of precisely crafted transactions. The hacker exploits a subtle interaction between Euler's donation mechanism and liquidation logic — a vulnerability hidden in the protocol's sophisticated design."
+      },
+      {
+        "title": "When Complexity Kills",
+        "text": "Euler's downfall illustrates DeFi's double-edged sword: complex protocols can offer superior capital efficiency, but complexity also creates attack surfaces. The incident reshapes lending protocol design, favouring simplicity over sophistication."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Donation attack via donateToReserves function bypassing health checks",
+      "steps": "1) Attacker borrows large amounts against minimal collateral. 2) Uses donateToReserves to artificially inflate collateral value. 3) Health check calculations incorrectly account for donated reserves. 4) Borrows exceed actual collateral value. 5) Liquidation system fails due to manipulated health ratios. 6) Drains $196M across 4 transactions in 20 minutes."
+    }
+  }
+}
