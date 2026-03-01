@@ -38,7 +38,7 @@ export function ScorePanel({ data, currentScore, delta }: ScorePanelProps) {
       {/* Score hero */}
       <div className={`score-hero ${glowClass}`}>
         <div className={`score-number risk-${riskClass}`}>{currentScore}</div>
-        <div className={`score-label ${labelClass}`}>{getRiskLabel(currentScore)}</div>
+        <div className={`score-label ${labelClass}`}>{getRiskLabel(currentScore, data.exploit_id)}</div>
       </div>
 
       {/* Waterfall */}

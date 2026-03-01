@@ -11,8 +11,8 @@ export function getRiskClass(score: number): 'high' | 'med' | 'low' {
   return 'low';
 }
 
-export function getRiskLabel(score: number): string {
-  if (score >= 66) return 'SMOKING GUN';
+export function getRiskLabel(score: number, exploitId?: string): string {
+  if (score >= 66) return exploitId === 'makina_2026' ? 'SMOKING GUN' : 'HIGH RISK';
   if (score >= 26) return 'CAUTION';
   return 'MINIMAL';
 }
