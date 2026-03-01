@@ -1,8 +1,22 @@
-import type { ExploitData } from '../types/exploit.ts';
+import type { ExploitData, MitigationSignal } from '../types/exploit.ts';
 import { FindingCard } from './FindingCard.tsx';
 
 function isMultiplierFinding(description: string): boolean {
   return /multiplier/i.test(description);
+}
+
+/** Short explanations for each mitigation type */
+const MITIGATION_EXPLANATIONS: Record<string, string> = {
+  'Reentrancy Protection': 'The contract implements reentrancy guards (e.g. OpenZeppelin ReentrancyGuard) that prevent recursive external calls from draining funds mid-execution.',
+  'Chainlink Oracles': 'Price feeds are sourced from Chainlink decentralised oracles, reducing exposure to single-source price manipulation attacks.',
+  'Governance Authority Control': 'Administrative functions are gated behind access control modifiers, limiting who can execute privileged operations.',
+  'Battle Tested Patterns': 'The codebase uses established, widely-audited contract patterns that have survived extensive real-world usage.',
+  'Timelock Governance': 'Governance actions are subject to a time delay, giving stakeholders a window to review and react before changes take effect.',
+  'Oz Standards': 'The contract inherits from OpenZeppelin\'s audited standard library, benefiting from battle-hardened implementations of common patterns.',
+};
+
+function cleanMitigationName(description: string): string {
+  return description.replace(/\s*\(-?\d+\s*pts?\)/i, '');
 }
 
 interface FindingsPanelProps {
@@ -13,6 +27,10 @@ export function FindingsPanel({ data }: FindingsPanelProps) {
   const allFindings = data.scan_result.RiskFactors;
   const regular = allFindings.filter(f => !isMultiplierFinding(f.description)).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
   const multipliers = allFindings.filter(f => isMultiplierFinding(f.description));
+
+  const mitigations = data.scan_result.MitigationsAndSignals
+    .filter((s: MitigationSignal) => s.type === 'positive_signal')
+    .sort((a: MitigationSignal, b: MitigationSignal) => (b.points_saved ?? 0) - (a.points_saved ?? 0));
 
   const narrative = data.narrative;
   const breakdown = narrative?.breakdown;
@@ -27,6 +45,35 @@ export function FindingsPanel({ data }: FindingsPanelProps) {
           {regular.map((f, i) => <FindingCard key={i} finding={f} />)}
           {multipliers.length > 0 && <hr className="multiplier-divider" />}
           {multipliers.map((f, i) => <FindingCard key={`m-${i}`} finding={f} isMultiplier />)}
+        </>
+      )}
+
+      {/* Mitigations section */}
+      {mitigations.length > 0 && (
+        <>
+          <hr className="multiplier-divider" />
+          <div className="section-heading prominent">Mitigations</div>
+          {mitigations.map((m: MitigationSignal, i: number) => {
+            const name = cleanMitigationName(m.description ?? '');
+            const explanation = MITIGATION_EXPLANATIONS[name];
+            return (
+              <details key={`mit-${i}`} className="finding-card border-mitigation">
+                <summary className="finding-summary">
+                  <span className="sev-pip mitigation" />
+                  <span className="finding-title">{name}</span>
+                  <span className="finding-pts-badge mitigation-pts">-{m.points_saved ?? 0}</span>
+                  <svg className="finding-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </summary>
+                {explanation && (
+                  <div className="finding-body">
+                    <p>{explanation}</p>
+                  </div>
+                )}
+              </details>
+            );
+          })}
         </>
       )}
 

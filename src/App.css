@@ -530,6 +530,7 @@ body {
 .finding-card.border-med  { border-left-color: var(--db-risk-med); }
 .finding-card.border-low  { border-left-color: var(--db-risk-low); }
 .finding-card.border-multiplier { border-left-color: #ffe600; }
+.finding-card.border-mitigation { border-left-color: var(--db-risk-low); }
 
 .finding-card:hover { background: var(--db-panel-raised); }
 
@@ -570,6 +571,11 @@ body {
 .sev-pip.med  { background: var(--db-risk-med);  box-shadow: 0 0 6px rgba(255,140,0,0.5); }
 .sev-pip.low  { background: var(--db-risk-low);  box-shadow: 0 0 6px rgba(110,169,0,0.4); }
 .sev-pip.multiplier { background: #ffe600; box-shadow: 0 0 6px rgba(255,230,0,0.4); }
+.sev-pip.mitigation { background: var(--db-risk-low); box-shadow: 0 0 6px rgba(110,169,0,0.4); }
+
+.mitigation-pts {
+  color: var(--db-risk-low);
+}
 
 .finding-chevron {
   width: 18px;
