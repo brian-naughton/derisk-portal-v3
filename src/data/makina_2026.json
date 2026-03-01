@@ -219,19 +219,19 @@
     "sections": [
       {
         "title": "A Quiet Eureka Moment",
-        "text": "January 19, 2026: Makina Finance is exploited for $4.2M through a flash-loan-powered oracle manipulation attack. When we ran the Makina contract through our CIR engine, every vulnerability the attacker used was flagged — with no new rules added. The engine's existing rule set, calibrated through months of Time Machine training, caught it all. Had we been scanning the waterfront at scale, we'd have flagged it before the hack."
+        "text": "January 19, 2026: Makina Finance is exploited for $4.2M through a flash-loan-powered oracle manipulation attack. The Caliber vault's updateTotalAum() function was permissionless — anyone could call it — and it read asset valuations directly from Curve pool spot prices. No TWAP. No deviation checks. No circuit breaker. The attacker flash-borrowed into the Curve pool, inflated the spot price, called updateTotalAum(), and drained the vault in a single transaction."
       },
       {
         "title": "How We Got Here",
-        "text": "The Time Machine module was never just a demo. It was our calibration workflow. We used it to train and refine the CIR engine — running it against the pre-exploit source code of major historical exploits to make sure we could reliably detect the vulnerabilities that led to billions in losses, while simultaneously validating against battle-tested contracts to ensure we weren't producing false positives. Every exploit in this collection sharpened the rules. Every clean contract kept them honest."
+        "text": "When we ran the Makina contract through our CIR engine, every vulnerability the attacker used was already flagged — with no new rules added. The engine's existing rule set, calibrated through months of Time Machine training against the exploits in this collection, caught it all. Had we been scanning the waterfront at scale, we'd have flagged it before the hack."
       },
       {
         "title": "What the Engine Saw",
-        "text": "The Caliber contract's updateTotalAum() function was permissionless — anyone could call it. It read asset valuations directly from Curve pool spot prices with no TWAP smoothing, no deviation checks, no circuit breaker. The engine flagged unprotected oracle dependency, flash loan functionality without invariant enforcement, and flash-loanable governance tokens without snapshot protection. Two cluster multipliers fired: governance (1.3x) and lending (1.3x). Final score: 100/100. Every finding mapped directly to the attack path the exploiter would later use."
+        "text": "The engine flagged unprotected oracle dependency, flash loan functionality without invariant enforcement, and flash-loanable governance tokens without snapshot protection. Two cluster multipliers fired: governance (1.3x) and lending (1.3x). Final score: 100/100. Every finding mapped directly to the attack path the exploiter would later use."
       },
       {
         "title": "Ready for the Wild",
-        "text": "Makina was the moment we realised the CIR engine was fully calibrated — not just capable of catching historical exploits in hindsight, but ready to detect threats in live contracts out in the wild, without any manual intervention. The same rules that were trained against years of DeFi exploitation history had generalised into genuine predictive capability. That's the whole story. A quiet eureka moment that means we're ready for next steps."
+        "text": "The Time Machine was never just a demo — it was our calibration workflow. Every exploit in this collection sharpened the rules. Every clean contract kept them honest. Makina was the moment we realised the engine had generalised: not just catching historical exploits in hindsight, but ready to detect threats in live contracts out in the wild, without any manual intervention. The same rules trained against years of DeFi exploitation history had become genuinely predictive."
       }
     ],
     "breakdown": {

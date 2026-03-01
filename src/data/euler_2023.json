@@ -211,11 +211,11 @@
     "sections": [
       {
         "title": "The Sophisticated Strike",
-        "text": "March 13, 2023: Euler Finance, known for its complex lending mathematics, falls victim to an elegant exploit. The attacker uses the protocol's own \"donation\" feature to manipulate health calculations, allowing them to borrow far more than their collateral should permit."
+        "text": "March 13, 2023: Euler Finance, known for its sophisticated lending mathematics, falls victim to an elegant exploit. The attacker uses the protocol's own donateToReserves function — which lacked a post-action health check — to destroy their own collateral, create an artificial bad debt position, then self-liquidate at a profit. A missing sanity check on a single function opens the door to a $196M drain."
       },
       {
         "title": "The $196M Question",
-        "text": "The attack drains nearly $200M in under 20 minutes through a series of precisely crafted transactions. The hacker exploits a subtle interaction between Euler's donation mechanism and liquidation logic — a vulnerability hidden in the protocol's sophisticated design."
+        "text": "The attack drains $196M in under 20 minutes through a series of precisely crafted transactions. The hacker leverages a subtle interaction between Euler's donation mechanism, health factor calculations, and liquidation logic. By donating collateral to reserves, the attacker's sub-account becomes insolvent — but the liquidation discount lets them recover more value than they destroyed."
       },
       {
         "title": "When Complexity Kills",
@@ -224,7 +224,7 @@
     ],
     "breakdown": {
       "vulnerability": "Donation attack via donateToReserves function bypassing health checks",
-      "steps": "1) Attacker borrows large amounts against minimal collateral. 2) Uses donateToReserves to artificially inflate collateral value. 3) Health check calculations incorrectly account for donated reserves. 4) Borrows exceed actual collateral value. 5) Liquidation system fails due to manipulated health ratios. 6) Drains $196M across 4 transactions in 20 minutes."
+      "steps": "1) Create a leveraged position: deposit collateral, mint eTokens, borrow heavily via sub-accounts. 2) Call donateToReserves to destroy sub-account's eTokens (collateral) — this function has no health check. 3) Sub-account is now deeply insolvent: debt remains but collateral is gone. 4) Self-liquidate the insolvent sub-account — the liquidation discount lets the attacker repay debt at a fraction of face value. 5) Repeat across multiple sub-accounts and token markets. 6) Drain $196M across multiple transactions in under 20 minutes."
     }
   }
 }

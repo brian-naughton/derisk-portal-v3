@@ -1,7 +1,7 @@
 {
   "exploit_id": "beanstalk_2022",
   "scan_result": {
-    "Name": "Beanstalk Farms ($180M Hack, 2022)",
+    "Name": "Beanstalk Farms ($182M Hack, 2022)",
     "ContractAddress": "0xC1E088fC1323b20BCBee9bd1B9fC9546db5624C5",
     "RiskScore": 100,
     "RiskCategory": "high",
@@ -136,9 +136,9 @@
   "exploit_meta": {
     "name": "Beanstalk Farms",
     "date": "2022-04-17",
-    "loss_amount_usd": 180000000,
+    "loss_amount_usd": 182000000,
     "attack_vector": "governance_flash_loan",
-    "description": "Flash loan governance attack bypassing voting requirements",
+    "description": "Flash loan governance takeover — $1B borrowed to seize 67% voting power and drain $182M in a single transaction",
     "chain": "ethereum"
   },
   "chain_display_name": "Ethereum",
@@ -200,7 +200,7 @@
       },
       {
         "title": "The New Attack Vector",
-        "text": "Within months, governance attacks become a playbook. Projects scramble to implement time delays, voting escrows, and delegation caps. The industry learns that governance isn't just about fairness — it's about survival."
+        "text": "Within months, governance attacks become a playbook. Projects scramble to implement time delays, voting escrows, and delegation caps. The industry learns that governance isn't just about fairness — it's about survival. The $182M lesson reshapes how every serious protocol designs its voting system."
       }
     ],
     "breakdown": {

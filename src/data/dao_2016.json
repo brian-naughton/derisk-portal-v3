@@ -143,7 +143,7 @@
     "sections": [
       {
         "title": "The Revolutionary Experiment",
-        "text": "May 2016: The DAO launches as crypto's first autonomous organization, raising $150M (11% of all ETH) in 28 days. Vitalik Buterin calls it \"a new form of human organization.\" The world is watching this grand experiment in decentralized governance."
+        "text": "May 2016: The DAO launches as crypto's first autonomous organization, raising $150M (14% of all ETH) in 28 days. The world is watching this grand experiment in decentralized governance — the largest crowdfund in history at the time."
       },
       {
         "title": "The Slow-Motion Catastrophe",
@@ -156,7 +156,7 @@
     ],
     "breakdown": {
       "vulnerability": "Reentrancy in the splitDAO function — external call before balance update",
-      "steps": "1) Attacker calls splitDAO to create child DAO with 3.6M ETH. 2) During external call, attacker recursively calls splitDAO again before balance is updated. 3) Process repeats 376 times, draining ETH while ledger shows single withdrawal. 4) Attack completes when gas limit reached."
+      "steps": "1) Attacker calls splitDAO to create child DAO with 3.6M ETH. 2) During external call, attacker recursively calls splitDAO again before balance is updated. 3) Process repeats hundreds of times, draining ETH while ledger shows a single withdrawal. 4) Attack completes when gas limit reached."
     }
   }
 }

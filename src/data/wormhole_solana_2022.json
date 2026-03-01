@@ -182,7 +182,7 @@
       },
       {
         "title": "Both Sides of the Bridge",
-        "text": "This is the Solana side of the Wormhole exploit. The Ethereum side validated guardian signatures correctly. But on Solana, the verify_signatures instruction used a deprecated function that didn't validate the sysvar account — the attacker simply passed a fake one."
+        "text": "This is the Solana side of the Wormhole exploit — the origin point. While the Ethereum bridge contract had its own structural vulnerabilities, the exploit's entry point was here: the verify_signatures instruction used a deprecated function that didn't validate the sysvar account. The attacker simply passed a fake one."
       },
       {
         "title": "The Fix Was One Line",

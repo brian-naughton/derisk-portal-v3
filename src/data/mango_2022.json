@@ -180,7 +180,7 @@
     "sections": [
       {
         "title": "The $114M Solana Heist",
-        "text": "October 11, 2022: Avraham Eisenberg publicly executes the most brazen DeFi exploit in history. Using two accounts and $10M in USDC, he manipulates the MNGO-PERP oracle price from $0.038 to $0.91 — a 24x spike — then borrows $114M against the inflated collateral. He livestreams it."
+        "text": "October 11, 2022: Avraham Eisenberg executes the most brazen DeFi exploit in history. Using two accounts and $10M in USDC, he manipulates the MNGO-PERP oracle price from $0.038 to $0.91 — a 24x spike — then borrows $114M against the inflated collateral. Hours later, he openly takes credit on Twitter, calling it a 'highly profitable trading strategy.'"
       },
       {
         "title": "The Oracle Problem, Distilled",

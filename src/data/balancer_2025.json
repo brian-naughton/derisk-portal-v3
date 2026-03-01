@@ -42,7 +42,7 @@
         "full_evidence": "Precision loss exploitable via repeated operations",
         "cir_explanation": {
           "title": "Rounding and precision manipulation",
-          "summary": "Functions use integer division without rounding safeguards, so `amount * rate / PRECISION` can be manipulated to consistently truncate in one direction. Balancer lost $128M in 2023 when rounding in the StablePool join/exit math let an attacker drain reserves across many transactions.",
+          "summary": "Functions use integer division without rounding safeguards, so `amount * rate / PRECISION` can be manipulated to consistently truncate in one direction. Balancer lost $128M in 2025 when rounding in the Composable Stable Pool invariant math let an attacker drain reserves across hundreds of batch swaps.",
           "guidance": {
             "investor": "Protocols handling large volumes with complex fee math are at elevated risk. Ask whether the team has formal verification or fuzzing covering their arithmetic invariants. If the protocol has a composable pool or multi-asset vault, treat rounding as a primary concern.",
             "developer": "Adopt OpenZeppelin's Math.mulDiv with rounding direction, enforce minimum transaction sizes, and write Foundry invariant tests that verify no sequence of joins/exits can extract value beyond fees."
@@ -174,24 +174,24 @@
     "sections": [
       {
         "title": "Death by a Thousand Rounding Errors",
-        "text": "November 3, 2025: Balancer V2's ComposableStablePool is drained of $128M through a precision manipulation attack. The vulnerability isn't a single catastrophic bug — it's an accumulation of tiny rounding errors across batch operations that an attacker amplifies into a liquidity drain."
+        "text": "November 3, 2025: Balancer V2's Composable Stable Pools are drained of $128M across Ethereum and multiple L2s in under an hour. The vulnerability isn't a single catastrophic bug — it's a rounding-direction error in the stable invariant math that an attacker amplifies through hundreds of batch swaps into a full-scale liquidity drain."
       },
       {
         "title": "The Mathematics of Manipulation",
-        "text": "Balancer's pool mathematics involve scaling arrays of token amounts between internal precision and external decimals. The _upscaleArray() and _downscaleArray() functions introduce micro-rounding on every swap. In isolation, each rounding is negligible. But an attacker who executes thousands of precisely calibrated operations within a single flash loan can compound those micro-errors into a macro-scale extraction. The pool's invariant degrades imperceptibly with each operation — until the cumulative drift is catastrophic."
+        "text": "Composable Stable Pools maintain a stable-swap invariant D that governs pricing between closely pegged assets like stablecoins and LSTs. In the vulnerable implementation, integer division in the invariant calculation systematically rounded in the attacker's favour when pool balances were pushed to specific edge ranges. Each micro-swap via Balancer's batchSwap created a tiny discrepancy — receiving slightly more tokens than the math should have allowed. Individually negligible. Compounded across hundreds of operations within a single flash-loan-funded transaction, the cumulative drift was catastrophic."
       },
       {
         "title": "Complexity as Attack Surface",
-        "text": "Balancer V2 is one of the most sophisticated AMM designs ever deployed — multi-asset weighted pools, boosted pools, composable stable pools. That sophistication creates a vast surface area for precision attacks. Our engine identifies 37 instances of rounding-down in financial operations, loop amplification patterns, and batch compounding — the exact combination needed to exploit the pool's mathematical assumptions."
+        "text": "Balancer V2 is one of the most sophisticated AMM designs ever deployed — multi-asset weighted pools, boosted pools, composable stable pools, and a unified Vault with internal balance accounting. That sophistication creates a vast surface area for economic-logic attacks. The attacker used the Vault's internal balances to chain operations without repeated ERC-20 transfers, accumulating stolen value inside the Vault before withdrawing. Once proven on Ethereum, the same exploit was replayed across Base, Polygon, Arbitrum, Avalanche, Gnosis, and Berachain — draining identical pool deployments in minutes."
       },
       {
         "title": "When DeFi's Flagship Math Fails",
-        "text": "Balancer had been audited multiple times by leading firms. The precision vulnerability survived because it requires reasoning about the cumulative effect of individually-safe operations — something that static analysis and manual review struggle with. The CIR engine's precision rule doesn't just flag rounding; it detects the structural conditions (batch ops + loops + scaling arrays) that make rounding exploitable at scale."
+        "text": "Balancer V2 had been audited multiple times by leading firms including Certora and Trail of Bits. The precision vulnerability survived every review because it requires adversarial reasoning about the cumulative effect of individually-safe operations — a class of bug that traditional audits, focused on reentrancy and access control, consistently miss. The CIR engine's precision rule flags exactly this: the structural conditions — integer division without rounding safeguards, batch operation loops, and scaling transformations — that make rounding exploitable at scale."
       }
     ],
     "breakdown": {
       "vulnerability": "Cumulative rounding errors exploited via flash-loan-funded batch operations",
-      "steps": "1) Flash-borrow massive token amounts from external lending protocols. 2) Enter the ComposableStablePool with imbalanced token ratios to maximise scaling operations. 3) Execute thousands of small swaps, each introducing micro-rounding in the pool's internal accounting. 4) The cumulative rounding drift shifts the pool's invariant, creating extractable value. 5) Exit the pool with more tokens than deposited, capturing the accumulated precision loss. 6) Repay flash loan and pocket the difference — $128M extracted."
+      "steps": "1) Flash-borrow large token positions and deposit into Balancer V2 Vault as internal balances. 2) Execute carefully sized swaps to push pool balances into edge ranges where integer division rounds in the attacker's favour. 3) Chain hundreds of micro-swaps via batchSwap, each extracting a tiny surplus — the invariant checks pass under the flawed math. 4) As the invariant D drifts, BPT (pool tokens) become mispriced — mint BPT cheaply, redeem for more underlying than deposited. 5) Accumulate stolen value as internal Vault balances, then withdraw to external addresses. 6) Replay identical exploit across 6+ chains. Repay flash loans, pocket $128M."
     }
   }
 }
