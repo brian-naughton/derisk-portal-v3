@@ -1209,7 +1209,7 @@ body.scrollable {
 .dashboard-with-hero {
   height: 100vh;
   overflow-y: auto;
-  scroll-snap-type: y proximity;
+  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
 
@@ -1337,6 +1337,7 @@ body.scrollable {
   justify-content: center;
   background: var(--db-bg);
   padding: 80px 40px;
+  scroll-snap-align: start;
 }
 
 .foundation-stats {
@@ -1421,10 +1422,6 @@ body.scrollable {
   justify-content: center;
   background: var(--db-bg);
   padding: 80px 40px;
-}
-
-/* Snap sections — hard page-flip feel for key moments */
-.hero-snap {
   scroll-snap-align: start;
 }
 
@@ -1892,6 +1889,12 @@ body.scrollable {
 /* ========== MOBILE OVERRIDES ========== */
 
 @media (max-width: 768px) {
+  /* Relax snap on mobile — sections overflow viewport height */
+  .home-with-hero,
+  .dashboard-with-hero {
+    scroll-snap-type: y proximity;
+  }
+
   /* Layout & spacing */
   .post-demo-hero,
   .foundation-section,
