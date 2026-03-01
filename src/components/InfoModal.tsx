@@ -21,7 +21,11 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
     <div className="info-overlay" onClick={onClose}>
       <div className="info-modal" onClick={e => e.stopPropagation()}>
         <button className="info-modal-close" onClick={onClose}>&times;</button>
-        <h2 className="info-modal-title">DeRisk Time Machine</h2>
+        <svg className="contact-wordmark" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+          <defs><style>{`.im-wm { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; font-size: 32px; letter-spacing: 0.08em; fill: #ffffff; }`}</style></defs>
+          <text className="im-wm" x="100" y="32" textAnchor="middle">DeRisk</text>
+        </svg>
+        <h2 className="info-modal-title">Time Machine Demo</h2>
         <div className="info-modal-body">
           <p>
             The Time Machine module runs our <strong>universal risk intelligence engine</strong> against

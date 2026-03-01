@@ -1166,7 +1166,7 @@ details[open] > .act-methodology-toggle::before { content: '- '; }
   font-family: var(--db-font-heading);
   font-size: 1.8rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--db-accent);
   margin-bottom: 20px;
   text-align: center;
 }
