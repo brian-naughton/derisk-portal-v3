@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { ExploitData, MitigationSignal } from '../types/exploit.ts';
 import { FindingCard } from './FindingCard.tsx';
 
@@ -24,6 +25,7 @@ interface FindingsPanelProps {
 }
 
 export function FindingsPanel({ data }: FindingsPanelProps) {
+  const panelRef = useRef<HTMLDivElement>(null);
   const allFindings = data.scan_result.RiskFactors;
   const regular = allFindings.filter(f => !isMultiplierFinding(f.description)).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
   const multipliers = allFindings.filter(f => isMultiplierFinding(f.description));
@@ -36,7 +38,7 @@ export function FindingsPanel({ data }: FindingsPanelProps) {
   const breakdown = narrative?.breakdown;
 
   return (
-    <div className="panel-findings">
+    <div className="panel-findings" ref={panelRef}>
       {/* Risk scoring legend */}
       <div className="risk-legend">
         <div className="risk-legend-item">
@@ -101,7 +103,16 @@ export function FindingsPanel({ data }: FindingsPanelProps) {
         <>
           <hr className="multiplier-divider" />
           <div className="section-heading prominent">Time Machine Post-Mortem</div>
-          <details className="finding-card border-high">
+          <details
+            className="finding-card border-high"
+            onToggle={e => {
+              if ((e.target as HTMLDetailsElement).open) {
+                requestAnimationFrame(() => {
+                  panelRef.current?.scrollTo({ top: panelRef.current.scrollHeight, behavior: 'smooth' });
+                });
+              }
+            }}
+          >
             <summary className="finding-summary">
               <span className="sev-pip high" />
               <span className="finding-title">{breakdown.vulnerability}</span>
