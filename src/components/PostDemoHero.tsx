@@ -255,7 +255,7 @@ export function PostDemoHero() {
               A Rosetta Stone that learns to fill in the blanks.
             </h2>
             <h2 className="punchline-headline punchline-headline--accent">
-              Every exploit teaches it new vocabulary.
+              Every exploit teaches it<br />new syntax.
             </h2>
 
             <div className="hero-divider" />
