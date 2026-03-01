@@ -1678,6 +1678,13 @@ body.scrollable {
   cursor: default;
 }
 
+.contact-wordmark {
+  display: block;
+  width: 160px;
+  height: 44px;
+  margin: 0 auto 20px;
+}
+
 /* ========== ENTERPRISE BADGES ========== */
 
 .enterprise-badges {

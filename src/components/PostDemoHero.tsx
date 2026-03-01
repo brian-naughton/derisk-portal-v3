@@ -342,6 +342,10 @@ export function PostDemoHero() {
           ) : (
             <div className="end-card-form-backdrop" onClick={() => setShowContact(false)}>
             <div className="end-card-form-wrap" onClick={(e) => e.stopPropagation()}>
+              <svg className="contact-wordmark" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                <defs><style>{`.cw { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; font-size: 32px; letter-spacing: 0.08em; fill: #ffffff; }`}</style></defs>
+                <text className="cw" x="100" y="32" textAnchor="middle">DeRisk</text>
+              </svg>
               {sent ? (
                 <div className="contact-sent">
                   <p>Thanks — your message has been sent. We'll be in touch.</p>
