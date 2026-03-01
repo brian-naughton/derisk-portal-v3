@@ -1177,7 +1177,7 @@ details[open] > .act-methodology-toggle::before { content: '- '; }
 
 .info-modal {
   background: var(--db-panel);
-  border: 1px solid var(--db-border-strong);
+  border: 1px solid var(--db-accent);
   border-radius: 12px;
   width: 90%;
   max-width: 960px;
@@ -1772,7 +1772,7 @@ body.scrollable {
   max-width: 768px;
   margin: 0 auto;
   background: var(--db-panel);
-  border: 1px solid var(--db-border-strong);
+  border: 1px solid var(--db-accent);
   border-radius: 12px;
   padding: 48px;
   animation: info-modal-in 300ms ease-out;
