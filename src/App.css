@@ -491,7 +491,7 @@ body {
 }
 .signal-dot.green  { background: var(--db-risk-low); box-shadow: 0 0 6px rgba(124,198,41,0.4); }
 .signal-dot.amber  { background: var(--db-risk-med); box-shadow: 0 0 6px rgba(245,166,35,0.4); }
-.signal-dot.red    { background: var(--db-risk-high); box-shadow: 0 0 6px rgba(232,66,90,0.4); }
+.signal-dot.red    { background: var(--db-risk-high); box-shadow: 0 0 6px rgba(161,11,43,0.4); }
 
 .signal-text-compact {
   color: var(--db-text);
