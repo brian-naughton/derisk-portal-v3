@@ -183,7 +183,7 @@ export function PostDemoHero() {
               The "Rosetta Stone" innovation doesn't just translate backwards. The same universal
               language that detects vulnerabilities in historical exploits reads
               live contracts and pre-deployment code with equal fluency.
-              Point it at any chain, any VM, any contract — same language, same capabilities.
+              Point it at any chain, any VM, any smart contract — same language, same capabilities.
             </p>
           </div>
         </div>
