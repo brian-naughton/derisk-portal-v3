@@ -1,0 +1,173 @@
+{
+  "exploit_id": "ronin_2022",
+  "scan_result": {
+    "Name": "Ronin Bridge ($625M Hack, 2022)",
+    "ContractAddress": "0x1a2a1c938ce3ec39b6d47113c7955baa9dd454f2",
+    "RiskScore": 100,
+    "RiskCategory": "high",
+    "RiskDescription": "High Risk",
+    "RiskFactors": [
+      {
+        "score": 24,
+        "description": "Bridge synergy (2 vectors): 1.3x multiplier",
+        "key": null,
+        "full_evidence": "Bridge synergy (2 vectors): 1.3x multiplier",
+        "explanation_investors": "This bridge has 2 distinct vulnerability classes creating compounding risk. When signature verification weaknesses and cross-chain message validation gaps are both present, the attack surface compounds — a breach in one layer can be leveraged through the other. The 1.3x multiplier reflects the increased likelihood of exploitation when multiple vectors exist simultaneously.",
+        "explanation_developers": "CRITICAL: 2 distinct vulnerability vectors compound risk. Vectors: signature verification weaknesses and cross-chain message validation gaps. Both must be addressed simultaneously — partial remediation leaves the remaining vector exposed to exploitation through the unpatched path."
+      },
+      {
+        "score": 50,
+        "description": "Bridge Signature Verification Bypass",
+        "key": null,
+        "full_evidence": "Signature verification bypass — critical bridge vulnerability",
+        "explanation_investors": "The bridge's signature verification — the process that confirms withdrawals are legitimate — can be bypassed. Bridges require multiple signers to approve transactions (like a safe needing multiple keys). When replay protection or threshold checks are missing, an attacker can reuse old approvals or forge new ones to drain funds. The Ronin Bridge lost $625M through exactly this type of signature bypass. Do not hold significant value on bridges where this weakness exists.",
+        "explanation_developers": "Hash payloads with domain-separated replay IDs, enforce minimum signature thresholds, and reject already-processed message hashes before executing withdrawals.",
+        "cir_explanation": {
+          "title": "Bridge Signature Verification Bypass",
+          "summary": "Signature aggregation logic skips nonce or replay checks, letting forged payloads mint or withdraw across chains. Ensure bridge handlers verify unique nonces and enforce signature thresholds before calling mint or withdraw functions.",
+          "guidance": {
+            "investor": "The bridge's signature verification — the process that confirms withdrawals are legitimate — can be bypassed. Bridges require multiple signers to approve transactions (like a safe needing multiple keys). When replay protection or threshold checks are missing, an attacker can reuse old approvals or forge new ones to drain funds. The Ronin Bridge lost $625M through exactly this type of signature bypass. Do not hold significant value on bridges where this weakness exists.",
+            "developer": "Hash payloads with domain-separated replay IDs, enforce minimum signature thresholds, and reject already-processed message hashes before executing withdrawals."
+          }
+        }
+      },
+      {
+        "score": 20,
+        "description": "Bridge Architecture Vulnerability",
+        "key": null,
+        "full_evidence": "Bridge architecture contains known vulnerability patterns",
+        "explanation_investors": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses (Ronin $625M, Poly Network $611M, Wormhole $320M, Nomad $190M). Limit exposure and monitor bridge security announcements closely.",
+        "explanation_developers": "Conduct a thorough security review comparing your architecture against known bridge exploits. Key areas: validator key management, message verification logic, replay protection, and upgrade mechanisms. Implement defense-in-depth: rate limiting, pause mechanisms, and monitoring.",
+        "cir_explanation": {
+          "title": "Bridge architecture vulnerabilities",
+          "summary": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses.",
+          "guidance": {
+            "investor": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses (Ronin $625M, Poly Network $611M, Wormhole $320M, Nomad $190M). Limit exposure and monitor bridge security announcements closely.",
+            "developer": "Conduct a thorough security review comparing your architecture against known bridge exploits. Implement layered validation: gateway check, source whitelist, payload hash verification, nonce tracking, and rate limiting."
+          }
+        }
+      },
+      {
+        "score": 10,
+        "description": "Cross-Chain Message Manipulation",
+        "key": null,
+        "full_evidence": "Cross-chain message validation insufficient - manipulation possible",
+        "explanation_investors": "The bridge's cross-chain message handling has insufficient validation, meaning messages could be manipulated or forged. In the Ronin exploit, compromised validators signed fraudulent withdrawal messages that the bridge accepted as legitimate. Insufficient message validation is a root cause of the largest bridge exploits in history.",
+        "explanation_developers": "Implement comprehensive message validation: verify source chain finality, validate message format and contents, enforce nonce ordering, and require sufficient validator signatures from a diverse set before processing any cross-chain message.",
+        "cir_explanation": {
+          "title": "Cross-chain message manipulation",
+          "summary": "Cross-chain message validation is insufficient, enabling manipulation or forgery of bridge messages. The bridge may accept messages without adequate verification of their origin, format, or authorization.",
+          "guidance": {
+            "investor": "The bridge's cross-chain message handling has insufficient validation, meaning messages could be manipulated or forged. In the Ronin exploit, compromised validators signed fraudulent withdrawal messages that the bridge accepted as legitimate. Insufficient message validation is a root cause of the largest bridge exploits in history.",
+            "developer": "Implement comprehensive message validation: verify source chain finality, validate message format and contents, enforce nonce ordering, and require sufficient validator signatures from a diverse set before processing any cross-chain message."
+          }
+        }
+      }
+    ],
+    "MitigationsAndSignals": [
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined bridge: +58% (270 incidents, $37M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined signature_validation: +4% (18 incidents, $85M avg)"
+      },
+      {
+        "type": "positive_signal",
+        "key": "positive_signal",
+        "description": "Battle Tested Patterns (-3 pts)",
+        "points_saved": 3
+      },
+      {
+        "type": "actuarial_intelligence",
+        "key": "actuarial_analysis",
+        "name": "Actuarial analysis",
+        "value": "Base 104 | Refined 100"
+      }
+    ],
+    "ScanDate": "2022-03-23",
+    "ScanDuration": 0.065
+  },
+  "exploit_meta": {
+    "name": "Ronin Bridge",
+    "date": "2022-03-23",
+    "loss_amount_usd": 625000000,
+    "attack_vector": "validator_key_compromise",
+    "description": "State-sponsored attackers compromised 5 of 9 validator keys via social engineering, then signed fraudulent withdrawals to drain the bridge",
+    "chain": "ethereum"
+  },
+  "chain_display_name": "Ethereum",
+  "actuarial": {
+    "pre_actuarial_score": 104,
+    "slider_deltas": [
+      0,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1
+    ],
+    "show_max_risk_message": false,
+    "base": 104,
+    "refined": 100,
+    "delta": -4,
+    "full_delta": -4,
+    "weight": 0.3,
+    "uplift_pct": -4,
+    "multiplier": 1.3
+  },
+  "composition": {
+    "raw_risk_score": 80,
+    "mitigation_credit": 3,
+    "multiplier_details": [
+      {
+        "cluster": "Bridge synergy 1.3x",
+        "added_points": 24
+      }
+    ]
+  },
+  "context_data": {
+    "archetype": "BridgeEndpoint",
+    "confidence": 0.85,
+    "evidence": [
+      "capability:Bridge.DomainBinding",
+      "capability:Bridge.MessageId",
+      "capability:Bridge.ValidatorSet",
+      "capability:Crypto.SignatureVerify"
+    ],
+    "should_gate_expensive_rules": false
+  },
+  "primitive_count": 10,
+  "narrative": {
+    "sections": [
+      {
+        "title": "The Largest Smart Contract Exploit in History",
+        "text": "March 23, 2022: The Ronin Bridge — the sole gateway between the Ethereum mainnet and the Ronin sidechain powering Axie Infinity — is drained of $625M in ETH and USDC. The attack isn't a smart contract bug. It's a key compromise: North Korea's Lazarus Group obtains control of 5 out of 9 validator private keys, giving them signing authority over the bridge. They simply approve their own withdrawals."
+      },
+      {
+        "title": "The LinkedIn Job Offer",
+        "text": "The attack vector is social engineering at nation-state scale. Lazarus Group targets Sky Mavis engineers with fake LinkedIn job offers. One senior engineer downloads a malicious PDF disguised as a compensation package. The payload gives the attackers access to Sky Mavis's internal infrastructure and four of the nine validator keys. A fifth key is available through the Axie DAO — a temporary gas-free transaction arrangement that was never revoked. Five of nine. Threshold reached."
+      },
+      {
+        "title": "Six Days of Silence",
+        "text": "The most chilling detail: nobody notices for six days. The Ronin Bridge processes withdrawals normally during this period. It takes a user trying to withdraw 5,000 ETH and failing — because the bridge is empty — to trigger the discovery. Six days of a $625M breach going undetected exposes the monitoring gap that plagues bridge infrastructure across the industry."
+      },
+      {
+        "title": "The Validator Threshold Problem",
+        "text": "Ronin's 5-of-9 multisig was a known risk concentration. Nine validators is a small set. A 56% threshold means compromising just five keys — held by a single company and its close partners — grants total control. Our engine flags exactly this pattern: small validator sets, low thresholds, and bridge signature verification that accepts whatever the validators approve. The $625M loss is the cost of trusting a small group with an irreversible signing authority."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Validator key compromise — 5 of 9 keys obtained via social engineering, granting full bridge signing authority",
+      "steps": "1) Lazarus Group identifies Sky Mavis engineers as targets and sends fake LinkedIn job offers with malicious PDF attachments. 2) A senior engineer opens the payload, compromising internal infrastructure and exposing 4 validator private keys controlled by Sky Mavis. 3) A 5th key is accessible through the Axie DAO via a temporary gas-free RPC arrangement that was never revoked. 4) With 5 of 9 keys (above the signing threshold), the attackers forge withdrawal transactions and sign them with the compromised validators. 5) Two transactions drain 173,600 ETH and 25.5M USDC ($625M total) from the Ronin Bridge contract. 6) The breach goes undetected for 6 days until a user reports a failed withdrawal."
+    }
+  }
+}

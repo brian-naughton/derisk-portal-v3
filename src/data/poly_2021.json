@@ -186,8 +186,8 @@
   "narrative": {
     "sections": [
       {
-        "title": "The Biggest Heist in DeFi History",
-        "text": "August 10, 2021: An attacker drains $611M from Poly Network across Ethereum, BSC, and Polygon in a single coordinated strike — the largest DeFi exploit ever. The attack doesn't rely on flash loans, oracle manipulation, or reentrancy. Instead, the attacker finds a far more elegant entry point: a cross-chain message that rewrites the bridge's own access control list."
+        "title": "The $611M Access Control Exploit",
+        "text": "August 10, 2021: An attacker drains $611M from Poly Network across Ethereum, BSC, and Polygon in a single coordinated strike — at the time, the largest DeFi exploit ever. The attack doesn't rely on flash loans, oracle manipulation, or reentrancy. Instead, the attacker finds a far more elegant entry point: a cross-chain message that rewrites the bridge's own access control list."
       },
       {
         "title": "The Keeper Swap",
