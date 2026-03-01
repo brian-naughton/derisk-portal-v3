@@ -315,6 +315,18 @@ body {
   gap: 24px;
 }
 
+/* Time Machine module label */
+.tm-module-label {
+  font-family: var(--db-font-heading);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--db-accent);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
 /* Exploit badge cluster — centred above score */
 .tm-exploit-badge-cluster {
   display: flex;
