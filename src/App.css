@@ -283,6 +283,23 @@ body {
 }
 .cmd-home-btn:hover { border-color: var(--db-accent); color: #fff; background: rgba(79,143,230,0.08); }
 
+.cmd-guide-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--db-border-strong);
+  background: transparent;
+  color: var(--db-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.cmd-guide-btn:hover { border-color: var(--db-accent); color: #fff; background: rgba(79,143,230,0.08); }
+
 /* --- Panels (shared) --- */
 
 .panel-score,
