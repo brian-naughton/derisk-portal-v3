@@ -37,6 +37,25 @@ export function FindingsPanel({ data }: FindingsPanelProps) {
 
   return (
     <div className="panel-findings">
+      {/* Risk scoring legend */}
+      <div className="risk-legend">
+        <div className="risk-legend-item">
+          <span className="risk-legend-dot risk-legend-low" />
+          <span className="risk-legend-range">0–25</span>
+          <span className="risk-legend-label">Low Risk</span>
+        </div>
+        <div className="risk-legend-item">
+          <span className="risk-legend-dot risk-legend-med" />
+          <span className="risk-legend-range">26–65</span>
+          <span className="risk-legend-label">Moderate</span>
+        </div>
+        <div className="risk-legend-item">
+          <span className="risk-legend-dot risk-legend-high" />
+          <span className="risk-legend-range">66–100</span>
+          <span className="risk-legend-label">High Risk</span>
+        </div>
+      </div>
+
       <div className="section-heading prominent">Risk Findings</div>
       {allFindings.length === 0 ? (
         <div className="findings-empty">No significant risk factors detected.</div>
