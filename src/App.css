@@ -1344,14 +1344,6 @@ body.scrollable {
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
   margin-bottom: 48px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 600ms ease-out, transform 600ms ease-out;
-}
-
-.foundation-stats.visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .foundation-stat {
@@ -1363,13 +1355,25 @@ body.scrollable {
   background: var(--db-panel);
   border-radius: 12px;
   border: 1px solid var(--db-border);
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 600ms ease-out, transform 600ms ease-out;
 }
+
+/* Staggered reveal for foundation stats */
+.foundation-stats.visible .foundation-stat {
+  opacity: 1;
+  transform: translateY(0);
+}
+.foundation-stats.visible .foundation-stat:nth-child(1) { transition-delay: 0ms; }
+.foundation-stats.visible .foundation-stat:nth-child(2) { transition-delay: 150ms; }
+.foundation-stats.visible .foundation-stat:nth-child(3) { transition-delay: 300ms; }
 
 .foundation-number {
   font-family: var(--db-font-heading);
   font-size: 3rem;
   font-weight: 700;
-  color: var(--db-accent);
+  color: #ffe600;
   line-height: 1;
   letter-spacing: -0.02em;
   margin-bottom: 8px;
@@ -1434,51 +1438,6 @@ body.scrollable {
 .hero-dissolve.in-view > .hero-content {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* Inverted hero sections — white bg, dark text, Olympic blue accent */
-.hero-inverted {
-  background: #ffffff;
-}
-
-.hero-inverted .punchline-headline {
-  color: var(--db-bg);
-}
-
-.hero-inverted .punchline-headline--accent {
-  color: var(--db-accent);
-}
-
-.hero-inverted .hero-divider {
-  background: var(--db-bg);
-  opacity: 0.2;
-}
-
-.hero-inverted .punchline-text {
-  color: var(--db-bg);
-  opacity: 0.8;
-}
-
-.hero-inverted .hero-headline {
-  color: var(--db-bg);
-}
-
-.hero-inverted .foundation-number {
-  color: #ffe600;
-}
-
-.hero-inverted .foundation-label {
-  color: var(--db-accent);
-}
-
-.hero-inverted .foundation-detail {
-  color: #ffffff;
-  opacity: 0.7;
-}
-
-.hero-inverted .foundation-summary {
-  color: var(--db-bg);
-  opacity: 0.8;
 }
 
 /* Punchline block — closing statement */
@@ -1628,6 +1587,22 @@ body.scrollable {
   z-index: 1;
 }
 
+/* End card staggered reveal */
+.end-card-inner > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 600ms ease-out, transform 600ms ease-out;
+}
+
+.end-card.in-view .end-card-inner > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.end-card.in-view .end-card-inner > :nth-child(1) { transition-delay: 0ms; }
+.end-card.in-view .end-card-inner > :nth-child(2) { transition-delay: 200ms; }
+.end-card.in-view .end-card-inner > :nth-child(3) { transition-delay: 400ms; }
+.end-card.in-view .end-card-inner > :nth-child(4) { transition-delay: 600ms; }
+
 .end-card-wordmark {
   width: 420px;
   height: 140px;
@@ -1708,7 +1683,20 @@ body.scrollable {
   border-radius: 12px;
   padding: 28px 24px;
   text-align: center;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 600ms ease-out, transform 600ms ease-out;
 }
+
+/* Staggered reveal for enterprise badges */
+.punchline-block.visible .enterprise-badge {
+  opacity: 1;
+  transform: translateY(0);
+}
+.punchline-block.visible .enterprise-badge:nth-child(1) { transition-delay: 0ms; }
+.punchline-block.visible .enterprise-badge:nth-child(2) { transition-delay: 150ms; }
+.punchline-block.visible .enterprise-badge:nth-child(3) { transition-delay: 300ms; }
+.punchline-block.visible .enterprise-badge:nth-child(4) { transition-delay: 450ms; }
 
 .enterprise-badge-title {
   font-family: var(--db-font-heading);
@@ -2047,4 +2035,18 @@ body.scrollable {
   .hero-pillar {
     padding: 24px 20px;
   }
+
+  /* Tighter stagger delays for single-column stacks */
+  .hero-pillars.visible .hero-pillar:nth-child(2) { transition-delay: 100ms; }
+  .hero-pillars.visible .hero-pillar:nth-child(3) { transition-delay: 200ms; }
+
+  .foundation-stats.visible .foundation-stat:nth-child(2) { transition-delay: 100ms; }
+  .foundation-stats.visible .foundation-stat:nth-child(3) { transition-delay: 200ms; }
+
+  .punchline-block.visible .enterprise-badge:nth-child(2) { transition-delay: 100ms; }
+  .punchline-block.visible .enterprise-badge:nth-child(3) { transition-delay: 200ms; }
+  .punchline-block.visible .enterprise-badge:nth-child(4) { transition-delay: 300ms; }
+
+  .principles-stack.visible .principle-card:nth-child(2) { transition-delay: 100ms; }
+  .principles-stack.visible .principle-card:nth-child(3) { transition-delay: 200ms; }
 }

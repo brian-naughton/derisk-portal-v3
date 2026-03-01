@@ -27,7 +27,7 @@ export function PostDemoHero() {
   const [showContact, setShowContact] = useState(false);
   const [sent, setSent] = useState(false);
 
-  // Dissolve sections: toggle .in-view based on scroll visibility
+  // Dissolve sections: fire once, stay visible
   useEffect(() => {
     const sections = document.querySelectorAll('.hero-dissolve');
     if (!sections.length) return;
@@ -36,8 +36,7 @@ export function PostDemoHero() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('in-view');
-          } else {
-            entry.target.classList.remove('in-view');
+            observer.unobserve(entry.target);
           }
         });
       },
@@ -114,7 +113,7 @@ export function PostDemoHero() {
       </section>
 
       {/* Section 2: Research Foundation */}
-      <section className="foundation-section hero-dissolve hero-inverted">
+      <section className="foundation-section hero-dissolve">
         <div className="hero-content">
           <h2 className="hero-headline">Calibrated by Research, Refined by History</h2>
 
@@ -246,7 +245,7 @@ export function PostDemoHero() {
       </section>
 
       {/* Section 5: Scale + Recursive Self-Improvement */}
-      <section className="hero-section hero-dissolve hero-inverted">
+      <section className="hero-section hero-dissolve">
         <div className="hero-content">
           <div
             ref={scale.ref}
@@ -315,7 +314,7 @@ export function PostDemoHero() {
       </section>
 
       {/* Section 7: End Card (v2 style) */}
-      <section className="end-card">
+      <section className="end-card hero-dissolve">
         <div className="end-card-threads">
           <Threads color={[0.31, 0.56, 0.9]} amplitude={0.8} distance={0} enableMouseInteraction={true} />
         </div>
