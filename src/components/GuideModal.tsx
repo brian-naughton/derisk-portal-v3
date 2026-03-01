@@ -43,10 +43,10 @@ export function GuideModal({ isOpen, onClose }: GuideModalProps) {
             scores using data from 1,400+ historical incidents.
           </p>
           <p>
-            The colour system maps directly to risk: <strong>red</strong> for high-severity
-            findings (66–100), <strong>amber</strong> for moderate (26–65),
-            and <strong>green</strong> for low risk (0–25) or positive mitigations. Every
-            score, finding, and signal uses this same palette.
+            The colour system maps directly to risk: <strong style={{color:'#a10b2b'}}>red</strong> for
+            high-severity findings (66–100), <strong style={{color:'#ff8c00'}}>amber</strong> for
+            moderate (26–65), and <strong style={{color:'#6ea900'}}>green</strong> for low risk
+            (0–25) or positive mitigations. Every score, finding, and signal uses this same palette.
           </p>
         </div>
       </div>
