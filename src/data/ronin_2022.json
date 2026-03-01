@@ -166,7 +166,7 @@
       }
     ],
     "breakdown": {
-      "vulnerability": "Validator key compromise — 5 of 9 keys obtained via social engineering, granting full bridge signing authority",
+      "vulnerability": "Validator key compromise — 5 of 9 keys seized via social engineering",
       "steps": "1) Lazarus Group identifies Sky Mavis engineers as targets and sends fake LinkedIn job offers with malicious PDF attachments. 2) A senior engineer opens the payload, compromising internal infrastructure and exposing 4 validator private keys controlled by Sky Mavis. 3) A 5th key is accessible through the Axie DAO via a temporary gas-free RPC arrangement that was never revoked. 4) With 5 of 9 keys (above the signing threshold), the attackers forge withdrawal transactions and sign them with the compromised validators. 5) Two transactions drain 173,600 ETH and 25.5M USDC ($625M total) from the Ronin Bridge contract. 6) The breach goes undetected for 6 days until a user reports a failed withdrawal."
     }
   }
