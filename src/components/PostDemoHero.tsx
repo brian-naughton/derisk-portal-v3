@@ -69,7 +69,7 @@ export function PostDemoHero() {
         <div className="hero-content">
           <h2 className="hero-headline">
             Still in stealth mode, DeRisk is building the universal cross-chain layer
-            for risk and threat intelligence in digital assets
+            for risk and threat intelligence <span style={{ whiteSpace: 'nowrap' }}>in digital assets</span>
           </h2>
 
           <div className="hero-divider" />
