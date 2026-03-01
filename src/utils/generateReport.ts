@@ -403,6 +403,7 @@ export function generateReport({ data, currentScore, delta, weight }: ReportOpti
         <h1>${escapeHtml(meta.name)}</h1>
         <p><span class="info-label">Contract Address:</span> ${escapeHtml(scan.ContractAddress)}</p>
         <p><span class="info-label">Chain:</span> ${escapeHtml(data.chain_display_name)}</p>
+        <p><span class="info-label">Module:</span> Time Machine (CIR)</p>
         <p><span class="info-label">Scan Time:</span> ${escapeHtml(scan.ScanDate)} <span class="info-label">|</span> ${scan.ScanDuration.toFixed(2)} seconds</p>
         <p style="font-size:9px;color:#9ca3af;margin-top:4px;">Scan based on pre-exploit source code</p>
       </div>
