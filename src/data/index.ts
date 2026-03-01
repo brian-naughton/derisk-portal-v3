@@ -1,4 +1,5 @@
 import dao_2016 from "./dao_2016.json";
+import poly_2021 from "./poly_2021.json";
 import wormhole_2022 from "./wormhole_2022.json";
 import wormhole_solana_2022 from "./wormhole_solana_2022.json";
 import euler_2023 from "./euler_2023.json";
@@ -9,6 +10,7 @@ import makina_2026 from "./makina_2026.json";
 
 export const exploitsMap: Record<string, any> = {
   "dao_2016": dao_2016,
+  "poly_2021": poly_2021,
   "wormhole_2022": wormhole_2022,
   "wormhole_solana_2022": wormhole_solana_2022,
   "euler_2023": euler_2023,
