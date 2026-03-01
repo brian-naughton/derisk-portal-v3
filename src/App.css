@@ -298,7 +298,7 @@ body {
   flex-shrink: 0;
   margin-left: 8px;
 }
-.cmd-guide-btn:hover { border-color: var(--db-accent); color: #fff; background: rgba(79,143,230,0.08); }
+.cmd-guide-btn:hover { border-color: #ffe600; color: #ffe600; background: rgba(255,230,0,0.08); box-shadow: 0 0 12px rgba(255,230,0,0.3); }
 
 /* --- Panels (shared) --- */
 
