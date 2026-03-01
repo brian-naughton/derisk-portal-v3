@@ -37,7 +37,7 @@ export function Dashboard({ data, selectedId, onSelectExploit, onHome }: Dashboa
         weight={weight}
         onWeightChange={setWeight}
       />
-      <StatusBar scanResult={data.scan_result} />
+      <StatusBar scanResult={data.scan_result} selectedId={selectedId} onSelect={onSelectExploit} />
     </div>
   );
 }

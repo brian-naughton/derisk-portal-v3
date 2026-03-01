@@ -170,7 +170,7 @@ body {
 .dashboard {
   display: grid;
   grid-template-columns: 300px 1fr 300px;
-  grid-template-rows: 60px 1fr 32px;
+  grid-template-rows: 60px 1fr 44px;
   height: 100vh;
   overflow: hidden;
 }
@@ -961,6 +961,38 @@ details[open] > .act-methodology-toggle::before { content: '- '; }
   font-size: 0.78rem;
   color: var(--db-text-muted);
   font-family: var(--db-font-mono);
+}
+
+.status-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-wordmark {
+  width: 80px;
+  height: 24px;
+  opacity: 0.5;
+}
+
+.status-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--db-border-strong);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.status-nav-btn:hover {
+  border-color: #ffe600;
+  color: #ffe600;
+  background: rgba(255,230,0,0.08);
+  box-shadow: 0 0 12px rgba(255,230,0,0.3);
 }
 
 /* ========== POST-MORTEM MODAL ========== */
