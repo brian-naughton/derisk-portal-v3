@@ -1835,3 +1835,202 @@ body.scrollable {
 .contact-back-btn:hover {
   color: #fff;
 }
+
+/* ========== DESKTOP-ONLY CARD (mobile dashboard gate) ========== */
+
+.desktop-only-card {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--db-bg);
+  scroll-snap-align: start;
+}
+
+.desktop-only-title {
+  font-family: var(--db-font-heading);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--db-accent);
+  margin: 20px 0 12px;
+}
+
+.desktop-only-text {
+  font-family: var(--db-font-body);
+  font-size: 0.95rem;
+  color: var(--db-text-muted);
+  line-height: 1.6;
+  max-width: 400px;
+  margin-bottom: 28px;
+}
+
+.desktop-only-btn {
+  font-family: var(--db-font-heading);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--db-text-muted);
+  background: none;
+  border: 1px solid var(--db-border);
+  border-radius: 6px;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.desktop-only-btn:hover {
+  color: var(--db-accent);
+  border-color: var(--db-accent);
+}
+
+/* ========== MOBILE OVERRIDES ========== */
+
+@media (max-width: 768px) {
+  /* Layout & spacing */
+  .post-demo-hero,
+  .foundation-section,
+  .hero-section,
+  .end-card {
+    padding: 48px 20px;
+  }
+
+  .prescan-card {
+    padding: 32px 20px;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  /* Typography */
+  .hero-headline {
+    font-size: 1.4rem;
+    margin-bottom: 32px;
+  }
+
+  .punchline-headline {
+    font-size: 1.5rem;
+  }
+
+  .punchline-text {
+    font-size: 0.95rem;
+  }
+
+  .foundation-number {
+    font-size: 2.2rem;
+  }
+
+  .end-card-headline {
+    font-size: 1.8rem;
+    margin-bottom: 32px;
+  }
+
+  /* Grids → single column */
+  .hero-pillars {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .foundation-stats {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .enterprise-badges {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Fixed-width elements */
+  .derisk-wordmark {
+    width: 220px;
+    height: 72px;
+  }
+
+  .wordmark-container {
+    height: 80px;
+    margin-bottom: 12px;
+  }
+
+  .end-card-wordmark {
+    width: 240px;
+    height: 80px;
+    margin-bottom: 32px;
+  }
+
+  /* Modals */
+  .info-modal {
+    padding: 32px 24px;
+    min-height: auto;
+    max-width: 95vw;
+  }
+
+  .info-modal-title {
+    font-size: 1.3rem;
+  }
+
+  .info-modal-body p {
+    font-size: 1rem;
+  }
+
+  .pm-modal {
+    padding: 24px 20px;
+    max-width: 95vw;
+    max-height: 90vh;
+  }
+
+  /* Forms & buttons — prevent iOS zoom */
+  .end-card-form-wrap {
+    max-width: 100%;
+    padding: 28px 20px;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    font-size: 16px;
+  }
+
+  .contact-card {
+    padding: 28px 20px;
+  }
+
+  /* Intro splash */
+  .intro-progress-track {
+    max-width: 85vw;
+  }
+
+  .intro-content {
+    padding: 1.5rem;
+  }
+
+  .intro-step-text {
+    font-size: 1.05rem;
+  }
+
+  /* Principles */
+  .principles-stack {
+    gap: 1.2rem;
+  }
+
+  .principle-card {
+    padding: 1.5rem;
+  }
+
+  .principle-title {
+    font-size: 1.1rem;
+  }
+
+  /* Back to demo button */
+  .back-to-demo-btn {
+    margin-top: 48px;
+  }
+
+  /* Hero pillar text */
+  .hero-pillar {
+    padding: 24px 20px;
+  }
+}
