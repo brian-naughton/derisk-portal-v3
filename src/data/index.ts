@@ -15,9 +15,9 @@ export const exploitsMap: Record<string, any> = {
   "ronin_2022": ronin_2022,
   "wormhole_2022": wormhole_2022,
   "wormhole_solana_2022": wormhole_solana_2022,
-  "euler_2023": euler_2023,
   "beanstalk_2022": beanstalk_2022,
   "mango_2022": mango_2022,
+  "euler_2023": euler_2023,
   "balancer_2025": balancer_2025,
   "makina_2026": makina_2026,
 };
