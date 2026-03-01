@@ -33,7 +33,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
           </p>
           <p>
             Our engine has identified over <span className="info-highlight">$2B</span> in threat
-            patterns across our curated exploit collection, demonstrating detection capabilities
+            patterns across our curated exploit collection, demonstrating detection capabilities on the code
             that existed before each attack occurred.
           </p>
           <p>
