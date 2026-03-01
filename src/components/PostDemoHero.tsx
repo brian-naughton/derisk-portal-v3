@@ -106,7 +106,7 @@ export function PostDemoHero() {
             <p className="hero-pillar-text">
                 Scan pre-deployment source code for known vulnerability patterns
                 before going live — in Solidity, Rust, and soon Move.
-                The same Rosetta Stone, pointed forward instead of backward.
+                The same Rosetta Stone, pointed forward instead of backwards.
               </p>
             </div>
           </div>
@@ -181,7 +181,7 @@ export function PostDemoHero() {
             <div className="hero-divider" />
 
             <p className="punchline-text">
-              The "Rosetta Stone" innovation doesn't just translate backward. The same universal
+              The "Rosetta Stone" innovation doesn't just translate backwards. The same universal
               language that detects vulnerabilities in historical exploits reads
               live contracts and pre-deployment code with equal fluency.
               Point it at any chain, any VM, any contract — same language, same capabilities.
