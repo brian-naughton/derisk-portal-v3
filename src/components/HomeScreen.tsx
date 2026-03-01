@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ExploitData } from '../types/exploit.ts';
 import { exploitsList, exploitsMap } from '../data/index.ts';
-import { formatLoss, formatVector, formatYear } from '../utils/formatting.ts';
+import { formatYear } from '../utils/formatting.ts';
 import { InfoModal } from './InfoModal.tsx';
 
 interface HomeScreenProps {
@@ -56,7 +56,7 @@ export function HomeScreen({ onSelect }: HomeScreenProps) {
               const ex = exploitsMap[id] as ExploitData;
               return (
                 <option key={id} value={id}>
-                  {ex.exploit_meta.name} — {formatLoss(ex.exploit_meta.loss_amount_usd)} — {formatVector(ex.exploit_meta.attack_vector)} ({formatYear(ex.exploit_meta.date)})
+                  {ex.exploit_meta.name} ({formatYear(ex.exploit_meta.date)})
                 </option>
               );
             })}

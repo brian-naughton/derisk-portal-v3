@@ -31,7 +31,7 @@ export function CommandBar({ data, currentScore, selectedId, onSelect, onHome }:
           const ex = exploitsMap[id] as ExploitData;
           return (
             <option key={id} value={id}>
-              {ex.exploit_meta.name} ({ex.scan_result.RiskScore}/100)
+              {ex.exploit_meta.name} ({ex.exploit_meta.date.slice(0, 4)})
             </option>
           );
         })}
