@@ -28,10 +28,10 @@ export function HomeScreen({ onSelect }: HomeScreenProps) {
           title="What is the Time Machine?"
           aria-label="Information about DeRisk Time Machine"
         >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffe600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
           </svg>
         </button>
         {/* DeRisk wordmark */}
