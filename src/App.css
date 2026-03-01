@@ -395,7 +395,7 @@ body {
 .score-number.risk-high { color: var(--db-risk-high); }
 .score-number.risk-med  { color: var(--db-risk-med); }
 .score-number.risk-low  { color: var(--db-risk-low); }
-.risk-multiplier { color: #a6e6db; }
+.risk-multiplier { color: #ffe600; }
 
 .score-label {
   font-family: var(--db-font-heading);
@@ -529,7 +529,7 @@ body {
 .finding-card.border-high { border-left-color: var(--db-risk-high); }
 .finding-card.border-med  { border-left-color: var(--db-risk-med); }
 .finding-card.border-low  { border-left-color: var(--db-risk-low); }
-.finding-card.border-multiplier { border-left-color: #a6e6db; }
+.finding-card.border-multiplier { border-left-color: #ffe600; }
 
 .finding-card:hover { background: var(--db-panel-raised); }
 
@@ -569,7 +569,7 @@ body {
 .sev-pip.high { background: var(--db-risk-high); box-shadow: 0 0 6px rgba(161,11,43,0.5); }
 .sev-pip.med  { background: var(--db-risk-med);  box-shadow: 0 0 6px rgba(255,140,0,0.5); }
 .sev-pip.low  { background: var(--db-risk-low);  box-shadow: 0 0 6px rgba(110,169,0,0.4); }
-.sev-pip.multiplier { background: #a6e6db; box-shadow: 0 0 6px rgba(166,230,219,0.4); }
+.sev-pip.multiplier { background: #ffe600; box-shadow: 0 0 6px rgba(255,230,0,0.4); }
 
 .finding-chevron {
   width: 18px;

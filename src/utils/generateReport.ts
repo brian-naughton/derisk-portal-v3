@@ -316,7 +316,7 @@ export function generateReport({ data, currentScore, delta, weight }: ReportOpti
       gap: 8px;
     }
     .signal-card.positive-signal { border-left: 4px solid var(--color-risk-low); }
-    .signal-card.actuarial-intelligence { border-left: 4px solid #a6e6db; }
+    .signal-card.actuarial-intelligence { border-left: 4px solid #ffe600; }
     .signal-card.advisory-signal { border-left: 4px solid #f59e0b; }
     .signal-icon { font-size: 10px; margin-top: 2px; }
     .signal-description {
