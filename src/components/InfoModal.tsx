@@ -21,7 +21,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
     <div className="info-overlay" onClick={onClose}>
       <div className="info-modal" onClick={e => e.stopPropagation()}>
         <button className="info-modal-close" onClick={onClose}>&times;</button>
-        <svg className="contact-wordmark" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <svg className="info-modal-wordmark" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
           <defs><style>{`.im-wm { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; font-size: 32px; letter-spacing: 0.08em; fill: #ffffff; }`}</style></defs>
           <text className="im-wm" x="100" y="32" textAnchor="middle">DeRisk</text>
         </svg>
