@@ -14,7 +14,7 @@ export function ActuarialSlider({ actuarial, weight, onWeightChange, currentScor
       <div>
         <div className="section-heading">Actuarial Intelligence</div>
         <div className="act-max-risk-msg">
-          Maximum risk score reached (100). The actuarial overlay confirms this contract's risk profile is at the ceiling. All historical cohort data supports this assessment.
+          Maximum risk score reached (100). Actuarial amplification was not applied — the base heuristic analysis already indicates maximum risk.
         </div>
       </div>
     );
