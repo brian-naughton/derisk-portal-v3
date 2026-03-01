@@ -25,6 +25,7 @@ export function FindingsPanel({ data }: FindingsPanelProps) {
       ) : (
         <>
           {regular.map((f, i) => <FindingCard key={i} finding={f} />)}
+          {multipliers.length > 0 && <hr className="multiplier-divider" />}
           {multipliers.map((f, i) => <FindingCard key={`m-${i}`} finding={f} isMultiplier />)}
         </>
       )}
