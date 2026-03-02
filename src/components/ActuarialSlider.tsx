@@ -39,6 +39,7 @@ export function ActuarialSlider({ actuarial, weight, onWeightChange, currentScor
           </span>
         </div>
         <div className="act-slider-wrap">
+          <span className="act-label">Actuarial Weight</span>
           <input
             type="range"
             className="act-slider"
