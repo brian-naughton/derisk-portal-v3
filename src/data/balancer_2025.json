@@ -117,7 +117,7 @@
       }
     ],
     "ScanDate": "2025-11-03",
-    "ScanDuration": 0.626
+    "ScanDuration": 0.639
   },
   "exploit_meta": {
     "name": "Balancer V2",
@@ -176,5 +176,28 @@
     "should_gate_expensive_rules": false
   },
   "primitive_count": 145,
-  "narrative": null
+  "narrative": {
+    "sections": [
+      {
+        "title": "Death by a Thousand Rounding Errors",
+        "text": "November 3, 2025: Balancer V2’s Composable Stable Pools are drained of $128M across Ethereum and multiple L2s in under an hour. The vulnerability isn’t a single catastrophic bug — it’s a rounding-direction error in the stable invariant math that an attacker amplifies through hundreds of batch swaps into a full-scale liquidity drain."
+      },
+      {
+        "title": "The Mathematics of Manipulation",
+        "text": "Composable Stable Pools maintain a stable-swap invariant D that governs pricing between closely pegged assets like stablecoins and LSTs. In the vulnerable implementation, integer division in the invariant calculation systematically rounded in the attacker’s favour when pool balances were pushed to specific edge ranges. Each micro-swap via Balancer’s batchSwap created a tiny discrepancy — receiving slightly more tokens than the math should have allowed. Individually negligible. Compounded across hundreds of operations within a single flash-loan-funded transaction, the cumulative drift was catastrophic."
+      },
+      {
+        "title": "Complexity as Attack Surface",
+        "text": "Balancer V2 is one of the most sophisticated AMM designs ever deployed — multi-asset weighted pools, boosted pools, composable stable pools, and a unified Vault with internal balance accounting. That sophistication creates a vast surface area for economic-logic attacks. The attacker used the Vault’s internal balances to chain operations without repeated ERC-20 transfers, accumulating stolen value inside the Vault before withdrawing. Once proven on Ethereum, the same exploit was replayed across Base, Polygon, Arbitrum, Avalanche, Gnosis, and Berachain — draining identical pool deployments in minutes."
+      },
+      {
+        "title": "When DeFi’s Flagship Math Fails",
+        "text": "Balancer V2 had been audited multiple times by leading firms including Certora and Trail of Bits. The precision vulnerability survived every review because it requires adversarial reasoning about the cumulative effect of individually-safe operations — a class of bug that traditional audits, focused on reentrancy and access control, consistently miss. The CIR engine’s precision rule flags exactly this: the structural conditions — integer division without rounding safeguards, batch operation loops, and scaling transformations — that make rounding exploitable at scale."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Cumulative rounding errors exploited via flash-loan-funded batch operations",
+      "steps": "1) Flash-borrow large token positions and deposit into Balancer V2 Vault as internal balances. 2) Execute carefully sized swaps to push pool balances into edge ranges where integer division rounds in the attacker’s favour. 3) Chain hundreds of micro-swaps via batchSwap, each extracting a tiny surplus — the invariant checks pass under the flawed math. 4) As the invariant D drifts, BPT (pool tokens) become mispriced — mint BPT cheaply, redeem for more underlying than deposited. 5) Accumulate stolen value as internal Vault balances, then withdraw to external addresses. 6) Replay identical exploit across 6+ chains. Repay flash loans, pocket $128M."
+    }
+  }
 }
