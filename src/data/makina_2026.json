@@ -162,7 +162,7 @@
       }
     ],
     "ScanDate": "2026-01-19",
-    "ScanDuration": 0.596
+    "ScanDuration": 0.627
   },
   "exploit_meta": {
     "name": "Makina Finance",
@@ -225,5 +225,28 @@
     "should_gate_expensive_rules": false
   },
   "primitive_count": 63,
-  "narrative": null
+  "narrative": {
+    "sections": [
+      {
+        "title": "A Quiet Eureka Moment",
+        "text": "January 19, 2026: Makina Finance is exploited for $4.2M through a flash-loan-powered oracle manipulation attack. The Caliber vault’s updateTotalAum() function was permissionless — anyone could call it — and it read asset valuations directly from Curve pool spot prices. No TWAP. No deviation checks. No circuit breaker. The attacker flash-borrowed into the Curve pool, inflated the spot price, called updateTotalAum(), and drained the vault in a single transaction."
+      },
+      {
+        "title": "How We Got Here",
+        "text": "When we ran the Makina contract through our CIR engine, every vulnerability the attacker used was already flagged — with no new rules added. The engine’s existing rule set, calibrated through months of Time Machine training against the exploits in this collection, caught it all. Had we been scanning the waterfront at scale, we’d have flagged it before the hack."
+      },
+      {
+        "title": "What the Engine Saw",
+        "text": "The engine flagged unprotected oracle dependency, flash loan functionality without invariant enforcement, and flash-loanable governance tokens without snapshot protection. Two cluster multipliers fired: governance (1.3x) and lending (1.3x). Final score: 100/100. Every finding mapped directly to the attack path the exploiter would later use."
+      },
+      {
+        "title": "Ready for the Wild",
+        "text": "The Time Machine was never just a demo — it was our calibration workflow. Every exploit in this collection sharpened the rules. Every clean contract kept them honest. Makina was the moment we realised the engine had generalised: not just catching historical exploits in hindsight, but ready to detect threats in live contracts out in the wild, without any manual intervention. The same rules trained against years of DeFi exploitation history had become genuinely predictive."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Flash loan oracle manipulation — unprotected price feed drained the vault",
+      "steps": "1) Flash-borrow large position from external lending protocol. 2) Deposit into Curve pool to manipulate spot price. 3) Call permissionless updateTotalAum() on the Caliber contract — it reads the inflated Curve spot price as ground truth. 4) The inflated AUM valuation allows the attacker to withdraw more than their fair share from the vault. 5) Remove liquidity from Curve to restore the price. 6) Repay flash loan and pocket the $4.2M difference."
+    }
+  }
 }
