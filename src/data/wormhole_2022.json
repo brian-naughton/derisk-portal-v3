@@ -18,7 +18,7 @@
           "title": "Bridge Signature Verification Bypass",
           "summary": "Ensure bridge handlers verify unique nonces and enforce signature thresholds before calling mint or withdraw functions.",
           "guidance": {
-            "investor": "The bridge's signature verification — the process that confirms withdrawals are legitimate — can be bypassed. Bridges require multiple signers to approve transactions (like a safe needing multiple keys). When replay protection or threshold checks are missing, an attacker can reuse old approvals or forge new ones to drain funds. The Ronin Bridge lost $625M through a similar signature bypass. Do not hold significant value on bridges where this weakness exists.",
+            "investor": "The bridge's signature verification — the process that confirms withdrawals are legitimate — can be bypassed. Bridges require multiple signers to approve transactions (like a safe needing multiple keys). When replay protection or threshold checks are missing, an attacker can reuse old approvals or forge new ones to drain funds. The Poly Network lost $611M through exactly this class of signature bypass. Do not hold significant value on bridges where this weakness exists.",
             "developer": "Hash payloads with domain-separated replay IDs, enforce minimum signature thresholds, and reject already-processed message hashes before executing withdrawals."
           }
         }
