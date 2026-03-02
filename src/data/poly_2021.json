@@ -126,7 +126,7 @@
       }
     ],
     "ScanDate": "2021-08-10",
-    "ScanDuration": 0.051
+    "ScanDuration": 0.075
   },
   "exploit_meta": {
     "name": "Poly Network",
@@ -183,5 +183,28 @@
     "should_gate_expensive_rules": false
   },
   "primitive_count": 12,
-  "narrative": null
+  "narrative": {
+    "sections": [
+      {
+        "title": "The Biggest Heist in DeFi History",
+        "text": "August 10, 2021: An attacker drains $611M from Poly Network across Ethereum, BSC, and Polygon in a single coordinated strike — the largest DeFi exploit ever. The attack doesn’t rely on flash loans, oracle manipulation, or reentrancy. Instead, the attacker finds a far more elegant entry point: a cross-chain message that rewrites the bridge’s own access control list."
+      },
+      {
+        "title": "The Keeper Swap",
+        "text": "Poly Network’s cross-chain relay contract had a function — verifyHeaderAndExecuteTx — that could execute arbitrary cross-chain messages. The attacker crafted a message that called the EthCrossChainData contract’s putCurEpochConPkBytes function, replacing the list of authorised keepers with a single public key the attacker controlled. With that one transaction, they had signing authority over the bridge on all three chains. Every subsequent withdrawal was legitimate — from the contract’s perspective, the attacker was the bridge."
+      },
+      {
+        "title": "The $611M Return",
+        "text": "What happened next was unprecedented. Over the following days, the attacker began returning the funds — all $611M — through on-chain messages and a surreal public dialogue with the Poly Network team. The attacker claimed they did it ‘for fun’ and to expose the vulnerability before someone worse found it. Whether white hat or scared hacker, the full return remains the largest fund recovery in crypto history."
+      },
+      {
+        "title": "Access Control Is Everything",
+        "text": "The Poly Network exploit is the definitive case study in access control failure. The bridge’s cross-chain messaging system could call privileged functions on its own contracts without restriction. No function whitelisting, no target contract filtering, no separation between message relay and admin operations. Our engine flags every layer of this failure: signature verification bypass, immutable validator sets, and the architectural patterns that made the attack possible."
+      }
+    ],
+    "breakdown": {
+      "vulnerability": "Cross-chain relay executes arbitrary calls — attacker replaces keeper list to seize bridge authority",
+      "steps": "1) Identify that verifyHeaderAndExecuteTx can execute arbitrary cross-chain messages against any target contract. 2) Craft a cross-chain message targeting EthCrossChainData.putCurEpochConPkBytes — the function that sets authorised keepers. 3) Submit the message via the relay. The contract verifies the header and executes the payload — replacing the keeper list with the attacker’s key. 4) With signing authority over the bridge, call unlock() to withdraw assets on Ethereum, BSC, and Polygon. 5) Drain $611M across three chains in coordinated transactions."
+    }
+  }
 }

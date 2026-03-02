@@ -115,7 +115,7 @@
       }
     ],
     "ScanDate": "2022-02-02",
-    "ScanDuration": 0.095
+    "ScanDuration": 0.08
   },
   "exploit_meta": {
     "name": "Wormhole Bridge (SVM)",
@@ -190,7 +190,7 @@
       }
     ],
     "breakdown": {
-      "vulnerability": "verify_signatures uses deprecated load_instruction_at which doesn't validate the Instructions sysvar account",
+      "vulnerability": "Deprecated sysvar function allows forged guardian signatures to mint $320M",
       "steps": "1) Create a fake SignatureSet account with forged guardian signatures. 2) Pass a spoofed sysvar account to verify_signatures that returns \"valid\" for any input. 3) Call post_vaa with the forged SignatureSet — it passes guardian quorum check. 4) Use the valid VAA to call complete_transfer on the Token Bridge. 5) Mint 120,000 wETH on Solana. 6) Bridge 93,750 ETH back to Ethereum."
     }
   }
