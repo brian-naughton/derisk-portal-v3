@@ -144,7 +144,7 @@
       }
     ],
     "ScanDate": "2023-03-13",
-    "ScanDuration": 0.179
+    "ScanDuration": 0.185
   },
   "exploit_meta": {
     "name": "Euler Finance",
@@ -227,7 +227,7 @@
       }
     ],
     "breakdown": {
-      "vulnerability": "donateToReserves lacked a health-factor check — attacker destroyed own collateral, then self-liquidated for profit",
+      "vulnerability": "Missing health check in donateToReserves — self-liquidation for profit",
       "steps": "1) Flash-borrow 30M DAI from Aave. 2) Deposit 20M DAI into Euler, mint ~19.6M eDAI. 3) Recursively borrow and re-deposit to build ~195M eDAI / ~200M dDAI (10x leverage). 4) Repay partial debt with remaining 10M DAI to create headroom, then lever up again. 5) Call donateToReserves to transfer ~100M eDAI to protocol reserves — no health check fires. 6) Account is now deeply insolvent. Liquidator contracts self-liquidate the position, claiming collateral plus bonus worth more than the debt repaid. 7) Redeem eTokens for underlying assets, repay flash loan. 8) Repeat across DAI, USDC, WBTC, stETH, and WETH pools. Total loss: $197M."
     }
   }

@@ -94,7 +94,7 @@
       }
     ],
     "ScanDate": "2022-03-23",
-    "ScanDuration": 0.042
+    "ScanDuration": 0.067
   },
   "exploit_meta": {
     "name": "Ronin Bridge",
@@ -172,7 +172,7 @@
       }
     ],
     "breakdown": {
-      "vulnerability": "Validator key compromise via social engineering + lingering allowlist gave attackers 5-of-9 signing authority",
+      "vulnerability": "Stolen validator keys via social engineering — 5-of-9 threshold breached",
       "steps": "1) Lazarus Group compromises four Sky Mavis validator keys via spear-phishing and internal system infiltration. 2) A residual allowlist from late 2021 lets Sky Mavis sign on behalf of Axie DAO — attackers now control 5 of 9 keys. 3) Sign two fraudulent withdrawals: 173,600 ETH and 25.5M USDC ($625M total). 4) Bridge contract validates 5 signatures, threshold met — funds released. 5) Exploit goes undetected for 6 days until a user’s 5,000 ETH withdrawal fails. 6) Funds laundered via Tornado Cash and cross-chain bridges; ~$30M later recovered by law enforcement."
     }
   }
