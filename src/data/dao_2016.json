@@ -87,7 +87,7 @@
       }
     ],
     "ScanDate": "2016-06-17",
-    "ScanDuration": 0.224
+    "ScanDuration": 0.223
   },
   "exploit_meta": {
     "name": "The DAO",
@@ -142,21 +142,25 @@
   "narrative": {
     "sections": [
       {
-        "title": "The Revolutionary Experiment",
-        "text": "May 2016: The DAO launches as crypto's first autonomous organization, raising $150M (11% of all ETH) in 28 days. Vitalik Buterin calls it \"a new form of human organization.\" The world is watching this grand experiment in decentralized governance."
+        "title": "The Grand Experiment",
+        "text": "Spring 2016: Ethereum is barely a year old when The DAO launches as crypto’s first autonomous investment fund — governance, treasury, and rules encoded entirely in smart contracts, with no legal wrapper and no human board. It raises $150M in 28 days (roughly 14% of all ETH in existence), the largest crowdfunding in history. ‘Code is law’ is not a slogan — it is the design premise. The contract is the ultimate authority on what is allowed."
       },
       {
-        "title": "The Slow-Motion Catastrophe",
-        "text": "June 17, 7:45 AM UTC: An attacker begins methodically draining The DAO through a reentrancy bug. The crypto world watches in horror as 3.6M ETH disappears over 3 hours. Ethereum's price crashes 50%. The community faces an impossible choice: let the hacker keep the funds, or break immutability forever."
+        "title": "17 June, 7:45 AM UTC",
+        "text": "An attacker begins draining The DAO through its splitDAO withdrawal function. The bug is a checks-effects-interactions violation: the contract sends ETH to the caller before updating their internal balance. The attacker’s contract receives the ETH in its fallback function and immediately re-calls splitDAO — which still sees the original balance. The loop repeats hundreds of times per transaction, each cycle withdrawing the attacker’s full stake again. Over three hours, 3.6 million ETH ($60M) drains into a child DAO controlled by the attacker."
       },
       {
-        "title": "The Great Schism",
-        "text": "The hard fork on July 20 saves the funds but splits Ethereum into two chains. Ethereum Classic preserves the \"code is law\" philosophy while Ethereum chooses pragmatic intervention. This moment defines crypto's philosophical divide that persists today."
+        "title": "Twenty-Eight Days",
+        "text": "The child DAO’s built-in holding period gives the community a narrow window to respond. A whitehat group races to exploit the same reentrancy bug to rescue the remaining funds into safe child DAOs. A soft fork is proposed to censor the attacker’s withdrawals, but abandoned when the proposal itself introduces a denial-of-service vulnerability. The community fractures over the nuclear option: a hard fork that would surgically rewrite Ethereum’s state to move the stolen funds to a recovery contract. The question is no longer technical. It is existential."
+      },
+      {
+        "title": "Block 1,920,000",
+        "text": "On July 20, the hard fork executes. The majority of miners, exchanges, and applications follow the new chain, which keeps the Ethereum name. A minority refuses to rewrite history and continues mining the original ledger — Ethereum Classic is born. The schism crystallises the defining philosophical divide in crypto: is a blockchain more like a constitution, amendable in extremis, or more like physics, unchangeable by design? Every reentrancy guard, every checks-effects-interactions pattern, every security audit norm in smart contract development traces its lineage to this moment."
       }
     ],
     "breakdown": {
-      "vulnerability": "Reentrancy in the splitDAO function — external call before balance update",
-      "steps": "1) Attacker calls splitDAO to create child DAO with 3.6M ETH. 2) During external call, attacker recursively calls splitDAO again before balance is updated. 3) Process repeats hundreds of times, draining ETH while ledger shows single withdrawal. 4) Attack completes when gas limit reached."
+      "vulnerability": "Reentrancy in splitDAO — external call before balance update",
+      "steps": "1) Attacker deposits ETH into The DAO, receiving DAO tokens. 2) Calls splitDAO to withdraw their share into a child DAO. 3) The contract sends ETH before updating the caller’s balance. 4) Attacker’s fallback function re-enters splitDAO, which still sees the original balance. 5) Loop repeats hundreds of times per transaction, draining 3.6M ETH ($60M). 6) Funds locked in child DAO’s 28-day holding period. 7) Community hard forks at block 1,920,000 to recover funds; dissenters continue mining the original chain as Ethereum Classic."
     }
   }
 }
