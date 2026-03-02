@@ -48,15 +48,6 @@ body {
   height: 100vh;
   flex-direction: column;
   background: var(--db-bg);
-  position: relative;
-  overflow: hidden;
-}
-
-.prescan-threads {
-  position: absolute;
-  inset: 0;
-  opacity: 0.35;
-  pointer-events: none;
 }
 
 .prescan-card {
@@ -69,7 +60,6 @@ body {
   text-align: center;
   position: relative;
   overflow: hidden;
-  z-index: 1;
 }
 
 /* Subtle top-edge glow */
