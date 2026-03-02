@@ -1679,7 +1679,7 @@ body.scrollable {
 
 .end-card-threads {
   position: absolute;
-  inset: 0;
+  inset: -60px 0 0 0;
   z-index: 0;
   opacity: 0.35;
 }
