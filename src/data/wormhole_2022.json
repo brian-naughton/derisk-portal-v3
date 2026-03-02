@@ -71,7 +71,7 @@
       }
     ],
     "ScanDate": "2022-02-02",
-    "ScanDuration": 0.05
+    "ScanDuration": 0.024
   },
   "exploit_meta": {
     "name": "Wormhole Bridge",

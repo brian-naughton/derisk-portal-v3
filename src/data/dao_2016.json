@@ -87,7 +87,7 @@
       }
     ],
     "ScanDate": "2016-06-17",
-    "ScanDuration": 0.231
+    "ScanDuration": 0.224
   },
   "exploit_meta": {
     "name": "The DAO",
@@ -156,7 +156,7 @@
     ],
     "breakdown": {
       "vulnerability": "Reentrancy in the splitDAO function — external call before balance update",
-      "steps": "1) Attacker calls splitDAO to create child DAO with 3.6M ETH. 2) During external call, attacker recursively calls splitDAO again before balance is updated. 3) Process repeats 376 times, draining ETH while ledger shows single withdrawal. 4) Attack completes when gas limit reached."
+      "steps": "1) Attacker calls splitDAO to create child DAO with 3.6M ETH. 2) During external call, attacker recursively calls splitDAO again before balance is updated. 3) Process repeats hundreds of times, draining ETH while ledger shows single withdrawal. 4) Attack completes when gas limit reached."
     }
   }
 }

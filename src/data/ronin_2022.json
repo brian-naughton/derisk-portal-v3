@@ -155,21 +155,25 @@
   "narrative": {
     "sections": [
       {
-        "title": "The $625M Gaming Heist",
-        "text": "March 23, 2022: Ronin Network, the blockchain powering Axie Infinity's play-to-earn economy, loses $625M when attackers compromise 5 of its 9 validator keys. The breach goes undetected for 6 days, allowing the hackers to methodically drain the bridge."
+        "title": "Not a Bug — a Key Heist",
+        "text": "March 23, 2022: North Korea’s Lazarus Group executes the largest bridge exploit in crypto history — not by finding a smart contract bug, but by stealing validator keys. Ronin’s Ethereum bridge ran Proof-of-Authority consensus requiring 5 of 9 validator signatures to authorise withdrawals. Sky Mavis operated four validators; Axie DAO held one; four others were distributed to external parties. The attackers compromised all four Sky Mavis keys through social engineering — spear-phishing and malware targeting internal systems — then reached the fifth through a lingering operational shortcut."
       },
       {
-        "title": "The Validator Vulnerability",
-        "text": "The attack exposes the risks of validator concentration in gaming blockchains. Ronin's small validator set, designed for fast gameplay, becomes its fatal weakness. The incident forces a reckoning about security trade-offs in gaming infrastructure."
+        "title": "The Forgotten Allowlist",
+        "text": "In late 2021, Axie DAO had temporarily allowed Sky Mavis to sign transactions on its behalf to handle a period of high network load. The allowlist was never fully revoked. This meant that whoever controlled Sky Mavis’s infrastructure effectively controlled five of nine validators — the exact threshold needed to authorise bridge withdrawals. The attackers used these five compromised keys to sign two withdrawal transactions: 173,600 ETH and 25.5 million USDC, totalling approximately $625M. From the bridge contract’s perspective, these were perfectly valid — five legitimate signatures, threshold met."
       },
       {
-        "title": "The Gaming Economy Collapse",
-        "text": "Axie Infinity's economy, supporting millions of players in the Philippines and beyond, craters overnight. The hack proves that blockchain games aren't just toys — they're critical infrastructure for digital economies affecting real livelihoods."
+        "title": "Six Days in the Dark",
+        "text": "The bridge had no real-time anomaly detection, no withdrawal rate limiting, and no alerts for large outflows. The exploit went undetected for six days. It was only discovered on March 29 when a user tried to withdraw 5,000 ETH and the transaction failed — the bridge was insolvent. Six days of silence on a $625M theft. The stolen funds were laundered through Tornado Cash, cross-chain bridges, and eventually centralised exchanges — a pattern consistent with prior Lazarus Group operations. Law enforcement and Chainalysis later recovered approximately $30M."
+      },
+      {
+        "title": "The Single-Org Failure Domain",
+        "text": "The FBI and U.S. Treasury formally attributed the attack to North Korea’s Lazarus Group. Sky Mavis raised $150M (led by Binance) to reimburse users, expanded the validator set, raised the signature threshold, and removed the legacy allowlist. But the core lesson is architectural: a 5-of-9 multisig where one organisation controls four keys and has a backdoor path to a fifth is a single-organisation failure domain. Our engine flags exactly this — small validator sets, low thresholds relative to signer count, and immutable validator configurations."
       }
     ],
     "breakdown": {
-      "vulnerability": "Centralised validator key management with insufficient security",
-      "steps": "1) Attackers compromise 4 Sky Mavis validator keys through spear-phishing. 2) Compromise 1 Axie DAO validator key (was delegated to Sky Mavis). 3) Control 5 of 9 validators (threshold met). 4) Use compromised keys to authorise fake withdrawal transactions. 5) Drain bridge reserves over 6 days undetected. 6) Extract $625M total."
+      "vulnerability": "Validator key compromise via social engineering + lingering allowlist gave attackers 5-of-9 signing authority",
+      "steps": "1) Lazarus Group compromises four Sky Mavis validator keys via spear-phishing and internal system infiltration. 2) A residual allowlist from late 2021 lets Sky Mavis sign on behalf of Axie DAO — attackers now control 5 of 9 keys. 3) Sign two fraudulent withdrawals: 173,600 ETH and 25.5M USDC ($625M total). 4) Bridge contract validates 5 signatures, threshold met — funds released. 5) Exploit goes undetected for 6 days until a user’s 5,000 ETH withdrawal fails. 6) Funds laundered via Tornado Cash and cross-chain bridges; ~$30M later recovered by law enforcement."
     }
   }
 }

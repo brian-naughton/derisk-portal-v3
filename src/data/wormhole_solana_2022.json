@@ -115,7 +115,7 @@
       }
     ],
     "ScanDate": "2022-02-02",
-    "ScanDuration": 0.08
+    "ScanDuration": 0.081
   },
   "exploit_meta": {
     "name": "Wormhole Bridge (SVM)",

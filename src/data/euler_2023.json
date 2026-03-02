@@ -1,7 +1,7 @@
 {
   "exploit_id": "euler_2023",
   "scan_result": {
-    "Name": "Euler Finance ($196M Hack, 2023)",
+    "Name": "Euler Finance ($197M Hack, 2023)",
     "ContractAddress": "0x27182842E098f60e3D576794A5bFFb0777E025d3",
     "RiskScore": 100,
     "RiskCategory": "high",
@@ -149,7 +149,7 @@
   "exploit_meta": {
     "name": "Euler Finance",
     "date": "2023-03-13",
-    "loss_amount_usd": 196000000,
+    "loss_amount_usd": 197000000,
     "attack_vector": "donation_attack",
     "description": "Donation attack exploiting health calculation in lending protocol",
     "chain": "ethereum"
@@ -210,21 +210,25 @@
   "narrative": {
     "sections": [
       {
-        "title": "The Sophisticated Strike",
-        "text": "March 13, 2023: Euler Finance, known for its complex lending mathematics, falls victim to an elegant exploit. The attacker uses the protocol's own \"donation\" feature to manipulate health calculations, allowing them to borrow far more than their collateral should permit."
+        "title": "The Missing Health Check",
+        "text": "March 13, 2023: Euler Finance loses $197M to a flash-loan-powered self-liquidation attack. The root cause is a single missing check: the donateToReserves function — which lets users transfer their eTokens (interest-bearing collateral) into protocol reserves — never verified that the donor’s account remained solvent afterward. Every other function that reduced collateral enforced a health-factor check. This one didn’t. The bug had been live for eight months."
       },
       {
-        "title": "The $196M Question",
-        "text": "The attack drains nearly $200M in under 20 minutes through a series of precisely crafted transactions. The hacker exploits a subtle interaction between Euler's donation mechanism and liquidation logic — a vulnerability hidden in the protocol's sophisticated design."
+        "title": "The Suicide Liquidation",
+        "text": "The attacker flash-borrowed 30M DAI from Aave, deposited 20M into Euler to mint ~19.6M eDAI, then used Euler’s mint/borrow flow to recursively leverage the position — compounding both eDAI collateral and dDAI debt in a loop until reaching roughly 195M eDAI and 200M dDAI, a 10x leveraged position. Then the kill shot: donateToReserves transferred ~100M eDAI into Euler’s reserves, destroying the account’s collateral while leaving its debt untouched. The position was now deep underwater — and eligible for liquidation."
       },
       {
-        "title": "When Complexity Kills",
-        "text": "Euler's downfall illustrates DeFi's double-edged sword: complex protocols can offer superior capital efficiency, but complexity also creates attack surfaces. The incident reshapes lending protocol design, favouring simplicity over sophistication."
+        "title": "Profit Through Insolvency",
+        "text": "The attacker had deployed separate liquidator contracts that immediately liquidated their own insolvent position. In Euler’s liquidation model, the liquidator repays part of the victim’s debt and receives collateral plus a bonus. Because of the distorted state created by the massive donation, the liquidation bonus paid out more eTokens than the total economic loss — the protocol was effectively minting value. After liquidation, the contracts redeemed eTokens for underlying assets, repaid the flash loans, and kept the surplus. The pattern was replicated across five pools: DAI, USDC, WBTC, stETH, and WETH."
+      },
+      {
+        "title": "The Return and the Lesson",
+        "text": "Over the following weeks, internal pressure and on-chain negotiations led the attacker to return the vast majority of the stolen funds. But the exploit reshaped how the industry thinks about lending protocol design. The lesson: every function that can change an account’s collateral-to-debt ratio — including exotic operations like donations — must enforce health-factor checks. Liquidation incentives must be stress-tested against adversarial sequences, not just normal defaults."
       }
     ],
     "breakdown": {
-      "vulnerability": "Donation attack via donateToReserves function bypassing health checks",
-      "steps": "1) Attacker borrows large amounts against minimal collateral. 2) Uses donateToReserves to artificially inflate collateral value. 3) Health check calculations incorrectly account for donated reserves. 4) Borrows exceed actual collateral value. 5) Liquidation system fails due to manipulated health ratios. 6) Drains $196M across 4 transactions in 20 minutes."
+      "vulnerability": "donateToReserves lacked a health-factor check — attacker destroyed own collateral, then self-liquidated for profit",
+      "steps": "1) Flash-borrow 30M DAI from Aave. 2) Deposit 20M DAI into Euler, mint ~19.6M eDAI. 3) Recursively borrow and re-deposit to build ~195M eDAI / ~200M dDAI (10x leverage). 4) Repay partial debt with remaining 10M DAI to create headroom, then lever up again. 5) Call donateToReserves to transfer ~100M eDAI to protocol reserves — no health check fires. 6) Account is now deeply insolvent. Liquidator contracts self-liquidate the position, claiming collateral plus bonus worth more than the debt repaid. 7) Redeem eTokens for underlying assets, repay flash loan. 8) Repeat across DAI, USDC, WBTC, stETH, and WETH pools. Total loss: $197M."
     }
   }
 }
