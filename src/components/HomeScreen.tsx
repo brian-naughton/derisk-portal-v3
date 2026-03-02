@@ -3,6 +3,7 @@ import type { ExploitData } from '../types/exploit.ts';
 import { exploitsList, exploitsMap } from '../data/index.ts';
 import { formatYear } from '../utils/formatting.ts';
 import { InfoModal } from './InfoModal.tsx';
+import { Threads } from './Threads.tsx';
 
 interface HomeScreenProps {
   onSelect: (id: string) => void;
@@ -20,6 +21,9 @@ export function HomeScreen({ onSelect }: HomeScreenProps) {
 
   return (
     <div className="prescan">
+      <div className="prescan-threads">
+        <Threads color={[0.31, 0.56, 0.9]} amplitude={0.8} distance={0} enableMouseInteraction={true} />
+      </div>
       <div className="prescan-card">
         {/* Info icon */}
         <button
