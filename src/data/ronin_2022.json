@@ -94,7 +94,7 @@
       }
     ],
     "ScanDate": "2022-03-23",
-    "ScanDuration": 0.067
+    "ScanDuration": 0.044
   },
   "exploit_meta": {
     "name": "Ronin Bridge",
@@ -168,7 +168,7 @@
       },
       {
         "title": "The Single-Org Failure Domain",
-        "text": "The FBI and U.S. Treasury formally attributed the attack to North Korea’s Lazarus Group. Sky Mavis raised $150M (led by Binance) to reimburse users, expanded the validator set, raised the signature threshold, and removed the legacy allowlist. But the core lesson is architectural: a 5-of-9 multisig where one organisation controls four keys and has a backdoor path to a fifth is a single-organisation failure domain. Our engine flags exactly this — small validator sets, low thresholds relative to signer count, and immutable validator configurations."
+        "text": "The FBI and U.S. Treasury formally attributed the attack to North Korea’s Lazarus Group. Sky Mavis raised $150M (led by Binance) to reimburse users, expanded the validator set, raised the signature threshold, and removed the legacy allowlist. But the core lesson is architectural: a 5-of-9 multisig where one organisation controls four keys and has a backdoor path to a fifth is a single-organisation failure domain. Notably, our engine flagged vulnerabilities in this contract that the attackers never even needed to exploit — missing replay protection in the signature verification path, and structural weaknesses in the bridge’s message validation. Lazarus took a simpler door, but the code had others."
       }
     ],
     "breakdown": {
