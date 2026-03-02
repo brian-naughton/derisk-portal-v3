@@ -8,41 +8,15 @@
     "RiskDescription": "High Risk",
     "RiskFactors": [
       {
-        "score": 5,
-        "description": "Flash loan with post-execution invariant enforcement",
-        "key": null,
-        "full_evidence": "Flash loan with post-execution invariant enforcement",
-        "cir_explanation": {
-          "title": "Flash loan functionality",
-          "summary": "Flash loan helpers (e.g., ERC-3156 or bespoke pool hooks) let users borrow the entire pool within one transaction; ensure invariants and reentrancy guards cover the borrow path.",
-          "guidance": {
-            "investor": "Protocols with flash loans are powerful but can be abused—prefer pools that publish invariant checks, fee schedules, and post-incident reviews.",
-            "developer": "Validate `amount <= reserves`, ensure the callback cannot re-enter unsafe code, and integrate ERC-3156 style `onFlashLoan` checks with revert-on-failure semantics."
-          }
-        }
-      },
-      {
-        "score": 20,
-        "description": "Financial operations depend on block_number - MEV risk",
-        "key": null,
-        "full_evidence": "Financial operations depend on block_number - MEV risk",
-        "cir_explanation": {
-          "title": "Time-dependent financial operations",
-          "summary": "Functions use `block.timestamp` for interest accrual, vesting schedules, or auction mechanics. Validators can adjust timestamps by up to ~15 seconds, which may be enough to skew time-sensitive calculations in their favour.",
-          "guidance": {
-            "investor": "Time-dependent logic is a moderate risk in most protocols. It becomes material when calculations are sensitive to small time differences (high-frequency interest accrual, auction deadlines, or MEV-sensitive operations).",
-            "developer": "Use `block.number` for ordering-sensitive logic. For time-based calculations, add 15-second tolerance margins and ensure interest rates are not manipulable within the validator's timestamp adjustment window."
-          }
-        }
-      },
-      {
         "score": 40,
         "description": "Precision loss exploitable via repeated operations",
         "key": null,
         "full_evidence": "Precision loss exploitable via repeated operations",
+        "explanation_investors": "This contract performs financial calculations that lose small amounts of precision with each operation. While individual rounding errors seem negligible, attackers can execute thousands of transactions in a single block to accumulate these errors into significant losses. This was the exact vulnerability exploited in the Balancer V2 hack ($128M, November 2025). Exercise extreme caution with protocols showing this pattern.",
+        "explanation_developers": "Use fixed-point arithmetic libraries (like PRBMath or ABDK) that maintain precision across operations. Implement rate limiting to prevent rapid repeated transactions. Add invariant checks that verify pool balances before and after operations match expected values. Consider using 'virtual' balances that are immune to rounding manipulation.",
         "cir_explanation": {
           "title": "Rounding and precision manipulation",
-          "summary": "Functions use integer division without rounding safeguards, so `amount * rate / PRECISION` can be manipulated to consistently truncate in one direction. Balancer lost $128M in 2025 when rounding in the Composable Stable Pool invariant math let an attacker drain reserves across hundreds of batch swaps.",
+          "summary": "Functions use integer division without rounding safeguards, so `amount * rate / PRECISION` can be manipulated to consistently truncate in one direction. Balancer lost $128M in 2023 when rounding in the StablePool join/exit math let an attacker drain reserves across many transactions.",
           "guidance": {
             "investor": "Protocols handling large volumes with complex fee math are at elevated risk. Ask whether the team has formal verification or fuzzing covering their arithmetic invariants. If the protocol has a composable pool or multi-asset vault, treat rounding as a primary concern.",
             "developer": "Adopt OpenZeppelin's Math.mulDiv with rounding direction, enforce minimum transaction sizes, and write Foundry invariant tests that verify no sequence of joins/exits can extract value beyond fees."
@@ -56,6 +30,38 @@
         "full_evidence": "Lending perfect storm (3 vectors): 1.4x multiplier",
         "explanation_investors": "This lending protocol has 3 distinct vulnerability classes creating a critical compounding risk. When oracle price manipulation exposure, flash-loan invariant risks, and arithmetic precision/rounding vulnerabilities are all present in the same protocol, it is exposed to the full spectrum of lending attacks — from oracle manipulation through flash-loan exploitation to reserve drainage. Lending protocols are prime targets for large-scale attacks with proven losses exceeding $500M across historical incidents. The 1.4x multiplier reflects the reality that each additional vulnerability vector makes every other weakness more exploitable.",
         "explanation_developers": "CRITICAL: 3 distinct lending vectors compound catastrophically. Vectors: oracle price manipulation exposure, flash-loan invariant risks, and arithmetic precision/rounding vulnerabilities. Comprehensive lending security audit required — partial remediation is insufficient when attack paths chain across oracle feeds, reserve accounting, mint/burn operations, and collateral calculations. Commission an independent security audit before deploying or continuing to operate."
+      },
+      {
+        "score": 20,
+        "description": "Block-Dependent Financial Operations",
+        "key": null,
+        "full_evidence": "Financial operations depend on block_number - MEV risk",
+        "explanation_investors": "This contract uses block numbers in financial calculations, which creates opportunities for miners/validators and MEV searchers to manipulate outcomes. Block-dependent logic can be exploited through transaction ordering attacks, where sophisticated actors profit at the expense of regular users. This can result in worse prices, failed transactions, or unexpected losses.",
+        "explanation_developers": "Avoid using block.number or block.timestamp for financial calculations where precision matters. If time-based logic is necessary, use commit-reveal schemes or oracle-based timestamps. Implement MEV-resistant patterns like batched auctions, time-weighted average pricing, or private mempools (Flashbots Protect). Consider the difference between 'good' MEV (arbitrage that improves prices) and 'bad' MEV (sandwich attacks).",
+        "cir_explanation": {
+          "title": "Time-dependent financial operations",
+          "summary": "Functions use `block.timestamp` for interest accrual, vesting schedules, or auction mechanics. Validators can adjust timestamps by up to ~15 seconds, which may be enough to skew time-sensitive calculations in their favour.",
+          "guidance": {
+            "investor": "Time-dependent logic is a moderate risk in most protocols. It becomes material when calculations are sensitive to small time differences (high-frequency interest accrual, auction deadlines, or MEV-sensitive operations).",
+            "developer": "Use `block.number` for ordering-sensitive logic. For time-based calculations, add 15-second tolerance margins and ensure interest rates are not manipulable within the validator's timestamp adjustment window."
+          }
+        }
+      },
+      {
+        "score": 5,
+        "description": "Flash loan with post-execution invariant enforcement",
+        "key": null,
+        "full_evidence": "Flash loan with post-execution invariant enforcement",
+        "explanation_investors": "This factor shows that flash loan with post-execution invariant enforcement. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that flash loan with post-execution invariant enforcement is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Flash loan functionality",
+          "summary": "Flash loan helpers (e.g., ERC-3156 or bespoke pool hooks) let users borrow the entire pool within one transaction; ensure invariants and reentrancy guards cover the borrow path.",
+          "guidance": {
+            "investor": "Protocols with flash loans are powerful but can be abused—prefer pools that publish invariant checks, fee schedules, and post-incident reviews.",
+            "developer": "Validate `amount <= reserves`, ensure the callback cannot re-enter unsafe code, and integrate ERC-3156 style `onFlashLoan` checks with revert-on-failure semantics."
+          }
+        }
       }
     ],
     "MitigationsAndSignals": [
@@ -111,7 +117,7 @@
       }
     ],
     "ScanDate": "2025-11-03",
-    "ScanDuration": 0.633
+    "ScanDuration": 0.626
   },
   "exploit_meta": {
     "name": "Balancer V2",
@@ -151,7 +157,7 @@
     "mitigation_credit": 10,
     "multiplier_details": [
       {
-        "cluster": "Lending Cluster 1.4x",
+        "cluster": "Lending perfect storm 1.4x",
         "added_points": 26
       }
     ]
@@ -170,28 +176,5 @@
     "should_gate_expensive_rules": false
   },
   "primitive_count": 145,
-  "narrative": {
-    "sections": [
-      {
-        "title": "Death by a Thousand Rounding Errors",
-        "text": "November 3, 2025: Balancer V2's Composable Stable Pools are drained of $128M across Ethereum and multiple L2s in under an hour. The vulnerability isn't a single catastrophic bug — it's a rounding-direction error in the stable invariant math that an attacker amplifies through hundreds of batch swaps into a full-scale liquidity drain."
-      },
-      {
-        "title": "The Mathematics of Manipulation",
-        "text": "Composable Stable Pools maintain a stable-swap invariant D that governs pricing between closely pegged assets like stablecoins and LSTs. In the vulnerable implementation, integer division in the invariant calculation systematically rounded in the attacker's favour when pool balances were pushed to specific edge ranges. Each micro-swap via Balancer's batchSwap created a tiny discrepancy — receiving slightly more tokens than the math should have allowed. Individually negligible. Compounded across hundreds of operations within a single flash-loan-funded transaction, the cumulative drift was catastrophic."
-      },
-      {
-        "title": "Complexity as Attack Surface",
-        "text": "Balancer V2 is one of the most sophisticated AMM designs ever deployed — multi-asset weighted pools, boosted pools, composable stable pools, and a unified Vault with internal balance accounting. That sophistication creates a vast surface area for economic-logic attacks. The attacker used the Vault's internal balances to chain operations without repeated ERC-20 transfers, accumulating stolen value inside the Vault before withdrawing. Once proven on Ethereum, the same exploit was replayed across Base, Polygon, Arbitrum, Avalanche, Gnosis, and Berachain — draining identical pool deployments in minutes."
-      },
-      {
-        "title": "When DeFi's Flagship Math Fails",
-        "text": "Balancer V2 had been audited multiple times by leading firms including Certora and Trail of Bits. The precision vulnerability survived every review because it requires adversarial reasoning about the cumulative effect of individually-safe operations — a class of bug that traditional audits, focused on reentrancy and access control, consistently miss. The CIR engine's precision rule flags exactly this: the structural conditions — integer division without rounding safeguards, batch operation loops, and scaling transformations — that make rounding exploitable at scale."
-      }
-    ],
-    "breakdown": {
-      "vulnerability": "Cumulative rounding errors exploited via flash-loan-funded batch operations",
-      "steps": "1) Flash-borrow large token positions and deposit into Balancer V2 Vault as internal balances. 2) Execute carefully sized swaps to push pool balances into edge ranges where integer division rounds in the attacker's favour. 3) Chain hundreds of micro-swaps via batchSwap, each extracting a tiny surplus — the invariant checks pass under the flawed math. 4) As the invariant D drifts, BPT (pool tokens) become mispriced — mint BPT cheaply, redeem for more underlying than deposited. 5) Accumulate stolen value as internal Vault balances, then withdraw to external addresses. 6) Replay identical exploit across 6+ chains. Repay flash loans, pocket $128M."
-    }
-  }
+  "narrative": null
 }

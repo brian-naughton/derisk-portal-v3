@@ -1,7 +1,7 @@
 {
   "exploit_id": "wormhole_solana_2022",
   "scan_result": {
-    "Name": "Wormhole Bridge (SVM) ($320M Hack, 2022)",
+    "Name": "Wormhole Bridge (Solana) ($320M Hack, 2022)",
     "ContractAddress": "worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth",
     "RiskScore": 100,
     "RiskCategory": "high",
@@ -115,10 +115,10 @@
       }
     ],
     "ScanDate": "2022-02-02",
-    "ScanDuration": 0.081
+    "ScanDuration": 0.08
   },
   "exploit_meta": {
-    "name": "Wormhole Bridge (SVM)",
+    "name": "Wormhole Bridge (Solana)",
     "date": "2022-02-02",
     "loss_amount_usd": 320000000,
     "attack_vector": "signature_verification_bypass",
@@ -151,7 +151,7 @@
     "multiplier": 1.243
   },
   "composition": {
-    "raw_risk_score": 87,
+    "raw_risk_score": 70,
     "mitigation_credit": 3,
     "multiplier_details": [
       {
@@ -182,19 +182,15 @@
       },
       {
         "title": "Both Sides of the Bridge",
-        "text": "This is the Solana side of the Wormhole exploit — the origin point. While the Ethereum bridge contract had its own structural vulnerabilities, the exploit's entry point was here: the verify_signatures instruction used a deprecated function that didn't validate the sysvar account. The attacker simply passed a fake one."
+        "text": "This is the Solana side of the Wormhole exploit. The Ethereum side validated guardian signatures correctly. But on Solana, the verify_signatures instruction used a deprecated function that didn't validate the sysvar account — the attacker simply passed a fake one."
       },
       {
         "title": "The Fix Was One Line",
         "text": "Solana had introduced the checked version months earlier. Wormhole's Solana program hadn't migrated. After the exploit, the fix was literally swapping one function call. This is why our scanner checks for deprecated instruction loading patterns — the smoking gun is in the function name itself."
-      },
-      {
-        "title": "Two Sides, One Perfect Storm",
-        "text": "The Time Machine scans of both sides of the bridge — Solana and Ethereum — add up to a forensic assessment of all of the interlocking exploit vectors that amount to the perfect storm. Each side of the bridge carried distinct vulnerabilities, and our engine detects the full cross-chain attack surface that made the $320M exploit possible."
       }
     ],
     "breakdown": {
-      "vulnerability": "Forged sysvar account bypasses signature verification",
+      "vulnerability": "verify_signatures uses deprecated load_instruction_at which doesn't validate the Instructions sysvar account",
       "steps": "1) Create a fake SignatureSet account with forged guardian signatures. 2) Pass a spoofed sysvar account to verify_signatures that returns \"valid\" for any input. 3) Call post_vaa with the forged SignatureSet — it passes guardian quorum check. 4) Use the valid VAA to call complete_transfer on the Token Bridge. 5) Mint 120,000 wETH on Solana. 6) Bridge 93,750 ETH back to Ethereum."
     }
   }

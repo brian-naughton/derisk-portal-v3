@@ -20,11 +20,11 @@
         "description": "Bridge Signature Verification Bypass",
         "key": null,
         "full_evidence": "Signature verification bypass — critical bridge vulnerability",
-        "explanation_investors": "The bridge's signature verification — the process that confirms withdrawals are legitimate — can be bypassed. Bridges require multiple signers to approve transactions (like a safe needing multiple keys). When replay protection or threshold checks are missing, an attacker can reuse old approvals or forge new ones to drain funds. The Ronin Bridge lost $625M through a similar signature bypass. Do not hold significant value on bridges where this weakness exists.",
-        "explanation_developers": "Hash payloads with domain-separated replay IDs, enforce minimum signature thresholds, and reject already-processed message hashes before executing withdrawals.",
+        "explanation_investors": "This factor shows that signature verification bypass — critical bridge vulnerability. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that signature verification bypass — critical bridge vulnerability is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
         "cir_explanation": {
           "title": "Bridge Signature Verification Bypass",
-          "summary": "Signature aggregation logic skips nonce or replay checks, letting forged payloads mint or withdraw across chains. Ensure bridge handlers verify unique nonces and enforce signature thresholds before calling mint or withdraw functions.",
+          "summary": "Ensure bridge handlers verify unique nonces and enforce signature thresholds before calling mint or withdraw functions.",
           "guidance": {
             "investor": "The bridge's signature verification — the process that confirms withdrawals are legitimate — can be bypassed. Bridges require multiple signers to approve transactions (like a safe needing multiple keys). When replay protection or threshold checks are missing, an attacker can reuse old approvals or forge new ones to drain funds. The Ronin Bridge lost $625M through a similar signature bypass. Do not hold significant value on bridges where this weakness exists.",
             "developer": "Hash payloads with domain-separated replay IDs, enforce minimum signature thresholds, and reject already-processed message hashes before executing withdrawals."
@@ -36,46 +36,46 @@
         "description": "Guardian Signature Bypass",
         "key": null,
         "full_evidence": "Guardian signature bypass detected - critical validation weakness",
-        "explanation_investors": "The bridge uses 'guardians' — a trusted group whose signatures prove that a cross-chain message is real. This contract has a flaw where the guardian check can be tricked with empty or fake signatures. This is one of the most dangerous bridge vulnerabilities. Avoid holding value on bridges with this weakness.",
-        "explanation_developers": "Reject empty or zero-length signature arrays before processing. Validate that the guardian set version matches on-chain state and that each signature maps to an active guardian.",
+        "explanation_investors": "The bridge validation logic contains a critical flaw where signature verification can be bypassed. This is the exact vulnerability that enabled the $320M Wormhole exploit. Funds can be drained through unauthorized cross-chain message validation.",
+        "explanation_developers": "Fix signature verification to require proper guardian quorum validation. Ensure guardianSetIndex validation prevents index manipulation. Implement proper threshold checking before accepting any VAA messages.",
         "cir_explanation": {
           "title": "Guardian Signature Bypass",
-          "summary": "Guardian signature verification accepts empty inputs or fails to validate the guardian set, enabling forged cross-chain operations.",
+          "summary": "Guardian signature verification accepts empty inputs or fails to validate the guardian set, enabling forged VAAs.",
           "guidance": {
-            "investor": "The bridge uses 'guardians' — a trusted group whose signatures prove that a cross-chain message is real. This contract has a flaw where the guardian check can be tricked with empty or fake signatures. This is one of the most dangerous bridge vulnerabilities. Avoid holding value on bridges with this weakness.",
-            "developer": "Check guardianSet.keys.length > 0 and verify each recovered signer against the current on-chain guardian set before honouring cross-chain messages."
+            "investor": "The bridge uses 'guardians' — a trusted group whose signatures prove that a cross-chain message is real. This contract has a flaw where the guardian check can be tricked with empty or fake signatures. This is exactly how the Wormhole Bridge lost $320M: the attacker submitted an empty guardian set that the contract accepted as valid, then minted tokens without any real approval. This is one of the most dangerous bridge vulnerabilities. Avoid holding value on bridges with this weakness.",
+            "developer": "Check `guardianSet.keys.length > 0` and verify each recovered signer against the current on-chain guardian set before honoring VAAs."
           }
         }
       },
       {
         "score": 30,
-        "description": "Cross-Chain Signature Verification Bypass",
+        "description": "Dual-Path Signature Verification Bypass",
         "key": null,
         "full_evidence": "Two branches in verifyHeaderAndExecuteTx reach ECCUtils.verifySig with different quorum constants, letting attackers satisfy the weaker path",
-        "explanation_investors": "Signature bypass vulnerabilities are among the most severe bridge risks. The Poly Network and Ronin Bridge exploits both involved subverting signer verification. Limit bridge exposure until all verification paths are audited.",
-        "explanation_developers": "Centralise signature verification into a single function with one quorum constant. Never duplicate verification logic. Audit all execution paths to ensure they converge on the same check.",
+        "explanation_investors": "This bridge has inconsistent signature verification that attackers could exploit by triggering the weaker verification path. This could allow forged cross-chain messages and asset theft. The security model is fundamentally flawed.",
+        "explanation_developers": "Unify signature verification logic to use consistent quorum thresholds across all execution paths. Ensure all verification branches require the same minimum number of valid signatures from the validator set.",
         "cir_explanation": {
           "title": "Cross-chain signature verification bypass",
-          "summary": "Two or more code paths verify guardian or validator signatures with different quorum requirements. The Poly Network exploit ($611M, Aug 2021) used a path where verifyHeaderAndExecuteTx reached ECCUtils.verifySig with a weaker quorum constant than the primary path.",
+          "summary": "Two or more code paths verify guardian or validator signatures with different quorum requirements. The Poly Network exploit ($611M, Aug 2021) used a path where `verifyHeaderAndExecuteTx` reached `ECCUtils.verifySig` with a weaker quorum constant than the primary path.",
           "guidance": {
             "investor": "Signature bypass vulnerabilities are among the most severe bridge risks. The Poly Network and Ronin Bridge exploits both involved subverting signer verification. Limit bridge exposure until all verification paths are audited.",
-            "developer": "Centralise signature verification into a single function with one quorum constant. Never duplicate verification logic. Use a single verifySignatures(bytes32 messageHash, bytes[] sigs) function called by every path."
+            "developer": "Use a single `verifySignatures(bytes32 messageHash, bytes[] sigs)` function called by every path. Store the quorum threshold in a single state variable and emit events on any change."
           }
         }
       },
       {
         "score": 30,
-        "description": "Immutable Validator Set — No Key Rotation",
+        "description": "Validator admin control is IMMUTABLE (rotation: NONE)",
         "key": null,
         "full_evidence": "Validator admin control is IMMUTABLE (rotation: NONE)",
-        "explanation_investors": "Small validator sets with low thresholds are the highest-risk bridge configuration. The Ronin exploit demonstrated that even well-known validators can be compromised. Prefer bridges with large, diverse validator sets and high thresholds.",
-        "explanation_developers": "Increase the validator set size, raise thresholds to >=67%, enforce signer diversity (different operators, geographies, key management), and implement slashing for provably fraudulent signatures.",
+        "explanation_investors": "This factor shows that validator admin control is immutable (rotation: none). Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that validator admin control is immutable (rotation: none) is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
         "cir_explanation": {
           "title": "Validator set compromise exposure",
-          "summary": "The validator or guardian set is small enough that compromising a minority of signers grants control over the bridge. Combined with weak key management, this creates a realistic attack vector.",
+          "summary": "The Ronin Bridge lost $625M in March 2022 when 5 of 9 validators were compromised. The attacker needed only a majority of a small set. This pattern applies to any bridge or multisig where the total signer count is low relative to the threshold.",
           "guidance": {
             "investor": "Small validator sets with low thresholds are the highest-risk bridge configuration. The Ronin exploit demonstrated that even well-known validators can be compromised. Prefer bridges with large, diverse validator sets and high thresholds.",
-            "developer": "Increase the validator set size, raise thresholds to >=67%, enforce signer diversity, and implement slashing for provably fraudulent signatures. Require validators to use hardware security modules."
+            "developer": "Require validators to use hardware security modules, enforce geographic distribution, and implement on-chain monitoring for unusual signing patterns."
           }
         }
       },
@@ -84,14 +84,14 @@
         "description": "Bridge Architecture Vulnerability",
         "key": null,
         "full_evidence": "Bridge architecture contains known vulnerability patterns",
-        "explanation_investors": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses (Ronin $625M, Wormhole $320M, Nomad $190M). Limit exposure and monitor bridge security announcements closely.",
-        "explanation_developers": "Conduct a thorough security review comparing your architecture against known bridge exploits. Key areas: validator key management, message verification logic, replay protection, and upgrade mechanisms. Implement defense-in-depth: rate limiting, pause mechanisms, and monitoring.",
+        "explanation_investors": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses (Ronin $625M, Wormhole $320M, Poly Network $611M). The complexity of coordinating security across multiple chains creates attack surfaces that don't exist in single-chain protocols. Limit exposure and monitor bridge security announcements closely.",
+        "explanation_developers": "Conduct a thorough security review comparing your architecture against known bridge exploits. Key areas to audit: validator key management, message verification logic, replay protection, and upgrade mechanisms. Consider implementing defense-in-depth: rate limiting, pause mechanisms, and monitoring systems that can detect anomalies before full exploitation.",
         "cir_explanation": {
           "title": "Bridge architecture vulnerabilities",
-          "summary": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses.",
+          "summary": "The bridge's overall design — its validator management, upgrade mechanisms, and security layering — contains structural patterns that have been exploited in previous bridge hacks.",
           "guidance": {
-            "investor": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses (Ronin $625M, Wormhole $320M, Nomad $190M). Limit exposure and monitor bridge security announcements closely.",
-            "developer": "Conduct a thorough security review comparing your architecture against known bridge exploits. Implement layered validation: gateway check, source whitelist, payload hash verification, nonce tracking, and rate limiting."
+            "investor": "This bridge's architecture shares characteristics with bridges that have been exploited in the past. Cross-chain bridges are among the highest-risk components in DeFi, responsible for billions in losses (Ronin $625M, Wormhole $326M, Nomad $190M). The complexity of coordinating security across multiple chains creates attack surfaces that do not exist in single-chain protocols. Limit exposure and monitor bridge security announcements closely.",
+            "developer": "Implement layered validation: gateway check, source whitelist, payload hash verification, nonce tracking, and rate limiting. Log every processed message for monitoring."
           }
         }
       }
@@ -126,14 +126,14 @@
       }
     ],
     "ScanDate": "2021-08-10",
-    "ScanDuration": 0.079
+    "ScanDuration": 0.051
   },
   "exploit_meta": {
     "name": "Poly Network",
     "date": "2021-08-10",
     "loss_amount_usd": 611000000,
-    "attack_vector": "access_control_bypass",
-    "description": "Cross-chain relay exploit — attacker replaced keeper list to grant themselves withdrawal authority across three chains",
+    "attack_vector": "signature_bypass",
+    "description": "Cross-chain keeper modification via signature bypass",
     "chain": "ethereum"
   },
   "chain_display_name": "Ethereum",
@@ -183,28 +183,5 @@
     "should_gate_expensive_rules": false
   },
   "primitive_count": 12,
-  "narrative": {
-    "sections": [
-      {
-        "title": "The $611M Access Control Exploit",
-        "text": "August 10, 2021: An attacker drains $611M from Poly Network across Ethereum, BSC, and Polygon in a single coordinated strike — at the time, the largest DeFi exploit ever. The attack doesn't rely on flash loans, oracle manipulation, or reentrancy. Instead, the attacker finds a far more elegant entry point: a cross-chain message that rewrites the bridge's own access control list."
-      },
-      {
-        "title": "The Keeper Swap",
-        "text": "Poly Network's cross-chain relay contract had a function — verifyHeaderAndExecuteTx — that could execute arbitrary cross-chain messages. The attacker crafted a message that called the EthCrossChainData contract's putCurEpochConPkBytes function, replacing the list of authorised keepers with a single public key the attacker controlled. With that one transaction, they had signing authority over the bridge on all three chains. Every subsequent withdrawal was legitimate — from the contract's perspective, the attacker was the bridge."
-      },
-      {
-        "title": "The $611M Return",
-        "text": "What happened next was unprecedented. Over the following days, the attacker began returning the funds — all $611M — through on-chain messages and a surreal public dialogue with the Poly Network team. The attacker claimed they did it 'for fun' and to expose the vulnerability before someone worse found it. Whether white hat or scared hacker, the full return remains the largest fund recovery in crypto history."
-      },
-      {
-        "title": "Access Control Is Everything",
-        "text": "The Poly Network exploit is the definitive case study in access control failure. The bridge's cross-chain messaging system could call privileged functions on its own contracts without restriction. No function whitelisting, no target contract filtering, no separation between message relay and admin operations. Our engine flags every layer of this failure: signature verification bypass, immutable validator sets, and the architectural patterns that made the attack possible."
-      }
-    ],
-    "breakdown": {
-      "vulnerability": "Cross-chain relay executes arbitrary calls — attacker replaces keeper list to seize bridge authority",
-      "steps": "1) Identify that verifyHeaderAndExecuteTx can execute arbitrary cross-chain messages against any target contract. 2) Craft a cross-chain message targeting EthCrossChainData.putCurEpochConPkBytes — the function that sets authorised keepers. 3) Submit the message via the relay. The contract verifies the header and executes the payload — replacing the keeper list with the attacker's key. 4) With signing authority over the bridge, call unlock() to withdraw assets on Ethereum, BSC, and Polygon. 5) Drain $611M across three chains in coordinated transactions."
-    }
-  }
+  "narrative": null
 }

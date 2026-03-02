@@ -1,7 +1,7 @@
 {
   "exploit_id": "wormhole_2022",
   "scan_result": {
-    "Name": "Wormhole Bridge (EVM) ($320M Hack, 2022)",
+    "Name": "Wormhole Bridge ($320M Hack, 2022)",
     "ContractAddress": "0x3ee18B2214AFF97000D974cf647E7C347E8fa585",
     "RiskScore": 94,
     "RiskCategory": "high",
@@ -71,10 +71,10 @@
       }
     ],
     "ScanDate": "2022-02-02",
-    "ScanDuration": 0.028
+    "ScanDuration": 0.025
   },
   "exploit_meta": {
-    "name": "Wormhole Bridge (EVM)",
+    "name": "Wormhole Bridge",
     "date": "2022-02-02",
     "loss_amount_usd": 320000000,
     "attack_vector": "signature_verification",
@@ -133,11 +133,11 @@
     "sections": [
       {
         "title": "Cross-Chain Catastrophe",
-        "text": "February 2, 2022: Wormhole, Solana's premier bridge to Ethereum, suffers a devastating attack. The hacker exploits an outdated guardian verification system on the Solana side to forge a valid message, minting 120,000 wETH on Solana without depositing the corresponding ETH — then bridges 93,750 ETH back to Ethereum, extracting $320M from the bridge's reserves."
+        "text": "February 2, 2022: Wormhole, Solana's premier bridge to Ethereum, suffers a devastating attack. The hacker exploits an outdated guardian system to mint 120,000 wETH on Ethereum without depositing the corresponding ETH — effectively creating $320M from thin air."
       },
       {
         "title": "The Trust Machine Breaks",
-        "text": "The attack exposes the fundamental challenge of cross-chain bridges: they require trusted validators to attest to events on other chains. When that verification fails — even on just one side — the entire bridge becomes a liability. The Ethereum side of the bridge honoured the forged message because it had no way to know the Solana-side verification had been bypassed."
+        "text": "The attack exposes the fundamental challenge of cross-chain bridges: they require trusted validators to attest to events on other chains. When those validators fail, the entire bridge becomes a liability. Wormhole's guardians become its weakest link."
       },
       {
         "title": "Jump Crypto's $320M Bailout",
@@ -145,8 +145,8 @@
       }
     ],
     "breakdown": {
-      "vulnerability": "Guardian set validation bypass on cross-chain bridge",
-      "steps": "1) Attacker exploits deprecated verify_signatures function on Solana side of the bridge. 2) Creates fake sysvar account that returns 'valid' for any guardian signature check. 3) Forges a VAA (Verified Action Approval) to mint 120,000 wETH on Solana. 4) Bridges 93,750 ETH from Solana back to Ethereum, draining the bridge's reserves. 5) Extracts $320M without ever depositing backing assets."
+      "vulnerability": "Outdated guardian set validation on Solana side of bridge",
+      "steps": "1) Attacker exploits outdated guardian verification system. 2) Creates fake Solana sysvar account containing fake guardian signatures. 3) Uses fake signatures to authorise mint of 120,000 wETH on Ethereum. 4) Bridges fake wETH back to Solana for real tokens. 5) Drains $320M without depositing backing assets."
     }
   }
 }

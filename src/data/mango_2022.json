@@ -115,7 +115,7 @@
       }
     ],
     "ScanDate": "2022-10-11",
-    "ScanDuration": 1.214
+    "ScanDuration": 1.221
   },
   "exploit_meta": {
     "name": "Mango Markets",
@@ -151,7 +151,7 @@
     "multiplier": 1.256
   },
   "composition": {
-    "raw_risk_score": 113,
+    "raw_risk_score": 90,
     "mitigation_credit": 3,
     "multiplier_details": [
       {
@@ -180,7 +180,7 @@
     "sections": [
       {
         "title": "The $114M Solana Heist",
-        "text": "October 11, 2022: Avraham Eisenberg executes the most brazen DeFi exploit in history. Using two accounts and $10M in USDC, he manipulates the MNGO-PERP oracle price from $0.038 to $0.91 — a 24x spike — then borrows $114M against the inflated collateral. Hours later, he openly takes credit on Twitter, calling it a 'highly profitable trading strategy.'"
+        "text": "October 11, 2022: Avraham Eisenberg publicly executes the most brazen DeFi exploit in history. Using two accounts and $10M in USDC, he manipulates the MNGO-PERP oracle price from $0.038 to $0.91 — a 24x spike — then borrows $114M against the inflated collateral. He livestreams it."
       },
       {
         "title": "The Oracle Problem, Distilled",
@@ -192,7 +192,7 @@
       }
     ],
     "breakdown": {
-      "vulnerability": "Unprotected oracle on illiquid market enables price manipulation",
+      "vulnerability": "Single oracle source for illiquid MNGO-PERP market, no price deviation or TWAP protection",
       "steps": "1) Fund two accounts with $5M USDC each. 2) Take opposing MNGO-PERP positions: Account A goes long, Account B goes short. 3) Buy MNGO spot on thin order books across DEXes, spiking price 24x. 4) Oracle updates reflect manipulated spot price. 5) Account A's long position now shows $423M unrealised profit. 6) Borrow $114M against inflated collateral across all Mango lending markets. 7) Withdraw borrowed funds. Account B's losses are socialised."
     }
   }
