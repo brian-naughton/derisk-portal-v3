@@ -2605,6 +2605,7 @@ body.scrollable {
   align-items: stretch;
 }
 .pv-actuarial-signal .pv-signal-icon { color: rgba(79,143,230,0.8); }
+.pv-actuarial-maxed { flex-direction: row; align-items: center; }
 .pv-refined-value { color: #ffe600; }
 .pv-actuarial-inner { display: flex; flex-direction: column; width: 100%; }
 .pv-actuarial-top { display: flex; align-items: center; gap: 8px; }
