@@ -2218,6 +2218,65 @@ body.scrollable {
    Detail View (Portrait Readout)
    ============================== */
 
+/* --- Overlay (modal mode) --- */
+.pv-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pvFadeIn 0.2s ease-out;
+}
+@keyframes pvFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.pv-overlay-frame {
+  position: relative;
+  width: 90vw;
+  max-width: 1100px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  animation: pvSlideUp 0.25s ease-out;
+}
+@keyframes pvSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.pv-overlay-frame .detail-view {
+  min-height: auto;
+  border-radius: 12px;
+}
+.pv-overlay-close {
+  position: sticky;
+  top: 12px;
+  float: right;
+  margin: 12px 16px 0 0;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0, 8, 49, 0.8);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.pv-overlay-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffe600;
+  color: #ffe600;
+}
+
 /* --- Portrait View — ported from production style.css --- */
 
 .detail-view {

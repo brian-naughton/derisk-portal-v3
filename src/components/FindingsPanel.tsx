@@ -23,9 +23,10 @@ function cleanMitigationName(description: string): string {
 interface FindingsPanelProps {
   data: ExploitData;
   selectedId: string;
+  onOpenDetail: () => void;
 }
 
-export function FindingsPanel({ data, selectedId }: FindingsPanelProps) {
+export function FindingsPanel({ data, selectedId, onOpenDetail }: FindingsPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const allFindings = data.scan_result.RiskFactors;
   const regular = allFindings.filter(f => !isMultiplierFinding(f.description)).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
@@ -59,7 +60,7 @@ export function FindingsPanel({ data, selectedId }: FindingsPanelProps) {
         </div>
         <button
           className="cmd-detail-btn legend-detail-btn"
-          onClick={() => window.open('?detail=' + selectedId, '_blank')}
+          onClick={onOpenDetail}
           title="Open portrait readout"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
