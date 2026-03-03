@@ -7,8 +7,13 @@ import { IntroSplash } from './components/IntroSplash.tsx';
 import { Dashboard } from './components/Dashboard.tsx';
 import { HomeScreen } from './components/HomeScreen.tsx';
 import { PostDemoHero } from './components/PostDemoHero.tsx';
+import { DetailView } from './components/DetailView.tsx';
 
-export default function App() {
+// Check for ?detail= param (portrait view in new tab)
+const detailParam = new URLSearchParams(window.location.search).get('detail');
+const detailData = detailParam ? exploitsMap[detailParam] as ExploitData | undefined : undefined;
+
+function MainApp() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hasSeenIntro, setHasSeenIntro] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
@@ -16,14 +21,12 @@ export default function App() {
   const handleSelect = (id: string) => setSelectedId(id);
   const handleHome = () => setSelectedId(null);
 
-  // Track viewport width for mobile detection
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Toggle body scrollability when past the intro (hero section below)
   useEffect(() => {
     if (hasSeenIntro) {
       document.body.classList.add('scrollable');
@@ -85,4 +88,9 @@ export default function App() {
       )}
     </>
   );
+}
+
+export default function App() {
+  if (detailData) return <DetailView data={detailData} />;
+  return <MainApp />;
 }
