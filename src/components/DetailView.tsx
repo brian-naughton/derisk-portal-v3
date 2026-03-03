@@ -186,32 +186,43 @@ export function DetailView({ data }: DetailViewProps) {
             )}
 
             {/* Actuarial signal card */}
-            <div className="pv-signal-card pv-actuarial-signal">
-              <div className="pv-actuarial-inner">
-                <div className="pv-actuarial-top">
-                  <div className="pv-signal-icon">&#x25CF;</div>
-                  <p className="pv-signal-description">
-                    <span className="pv-signal-text">
-                      <strong>Actuarial analysis: Base {actuarial.base} | Refined <span className="pv-refined-value">{actuarial.base + delta}</span> | {weight}% uplift weighting</strong>
-                    </span>
-                  </p>
-                </div>
-                <div className="pv-slider-row">
-                  <div className="pv-slider-track">
-                    <input
-                      type="range"
-                      min={0} max={100} step={10}
-                      value={weight}
-                      onChange={e => setWeight(Number(e.target.value))}
-                    />
-                    <div className="pv-tick-marks">
-                      {Array.from({ length: 11 }).map((_, i) => <span key={i} />)}
-                    </div>
+            {actuarial.show_max_risk_message ? (
+              <div className="pv-signal-card pv-actuarial-signal pv-actuarial-maxed">
+                <div className="pv-signal-icon">&#x25CF;</div>
+                <p className="pv-signal-description">
+                  <span className="pv-signal-text">
+                    <strong>Maximum risk score reached (100).</strong> Actuarial amplification not applied.
+                  </span>
+                </p>
+              </div>
+            ) : (
+              <div className="pv-signal-card pv-actuarial-signal">
+                <div className="pv-actuarial-inner">
+                  <div className="pv-actuarial-top">
+                    <div className="pv-signal-icon">&#x25CF;</div>
+                    <p className="pv-signal-description">
+                      <span className="pv-signal-text">
+                        <strong>Actuarial analysis: Base {actuarial.base} | Refined <span className="pv-refined-value">{actuarial.base + delta}</span> | {weight}% uplift weighting</strong>
+                      </span>
+                    </p>
                   </div>
-                  <span className="pv-slider-readout">{weight}%</span>
+                  <div className="pv-slider-row">
+                    <div className="pv-slider-track">
+                      <input
+                        type="range"
+                        min={0} max={100} step={10}
+                        value={weight}
+                        onChange={e => setWeight(Number(e.target.value))}
+                      />
+                      <div className="pv-tick-marks">
+                        {Array.from({ length: 11 }).map((_, i) => <span key={i} />)}
+                      </div>
+                    </div>
+                    <span className="pv-slider-readout">{weight}%</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
