@@ -560,6 +560,17 @@ body {
   padding: 10px 0 14px;
   margin-bottom: 12px;
   border-bottom: 1px solid var(--db-border);
+  position: relative;
+}
+
+.legend-detail-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  margin-left: 0;
 }
 
 .risk-legend-item {

@@ -29,7 +29,7 @@ export function Dashboard({ data, selectedId, onSelectExploit, onHome }: Dashboa
         onHome={onHome}
       />
       <ScorePanel data={data} currentScore={currentScore} delta={delta} />
-      <FindingsPanel data={data} />
+      <FindingsPanel data={data} selectedId={selectedId} />
       <IntelPanel
         data={data}
         currentScore={currentScore}

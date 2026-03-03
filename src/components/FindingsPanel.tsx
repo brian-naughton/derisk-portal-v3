@@ -22,9 +22,10 @@ function cleanMitigationName(description: string): string {
 
 interface FindingsPanelProps {
   data: ExploitData;
+  selectedId: string;
 }
 
-export function FindingsPanel({ data }: FindingsPanelProps) {
+export function FindingsPanel({ data, selectedId }: FindingsPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const allFindings = data.scan_result.RiskFactors;
   const regular = allFindings.filter(f => !isMultiplierFinding(f.description)).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
@@ -56,6 +57,16 @@ export function FindingsPanel({ data }: FindingsPanelProps) {
           <span className="risk-legend-range">66–100</span>
           <span className="risk-legend-label">High Risk</span>
         </div>
+        <button
+          className="cmd-detail-btn legend-detail-btn"
+          onClick={() => window.open('?detail=' + selectedId, '_blank')}
+          title="Open portrait readout"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M7 17L17 7" />
+            <path d="M7 7h10v10" />
+          </svg>
+        </button>
       </div>
 
       <div className="section-heading prominent">Risk Findings</div>

@@ -12,6 +12,7 @@ import { DetailView } from './components/DetailView.tsx';
 // Check for ?detail= param (portrait view in new tab)
 const detailParam = new URLSearchParams(window.location.search).get('detail');
 const detailData = detailParam ? exploitsMap[detailParam] as ExploitData | undefined : undefined;
+if (detailData) document.body.classList.add('scrollable');
 
 function MainApp() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
