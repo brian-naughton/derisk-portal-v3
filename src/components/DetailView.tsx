@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import type { ExploitData, MitigationSignal } from '../types/exploit.ts';
-import { getRiskClass, getRiskLabel, formatLoss, formatVector, formatDate } from '../utils/formatting.ts';
-import { FindingCard } from './FindingCard.tsx';
-import { ActuarialSlider } from './ActuarialSlider.tsx';
+import { getRiskClass, formatDate } from '../utils/formatting.ts';
 
 function isMultiplierFinding(description: string): boolean {
   return /multiplier/i.test(description);
@@ -12,14 +10,17 @@ function cleanMitigationName(description: string): string {
   return description.replace(/\s*\(-?\d+\s*pts?\)/i, '');
 }
 
-const MITIGATION_EXPLANATIONS: Record<string, string> = {
-  'Reentrancy Protection': 'The contract implements reentrancy guards (e.g. OpenZeppelin ReentrancyGuard) that prevent recursive external calls from draining funds mid-execution.',
-  'Chainlink Oracles': 'Price feeds are sourced from Chainlink decentralised oracles, reducing exposure to single-source price manipulation attacks.',
-  'Governance Authority Control': 'Administrative functions are gated behind access control modifiers, limiting who can execute privileged operations.',
-  'Battle Tested Patterns': 'The codebase uses established, widely-audited contract patterns that have survived extensive real-world usage.',
-  'Timelock Governance': 'Governance actions are subject to a time delay, giving stakeholders a window to review and react before changes take effect.',
-  'Oz Standards': 'The contract inherits from OpenZeppelin\'s audited standard library, benefiting from battle-hardened implementations of common patterns.',
-};
+function riskCategory(score: number): string {
+  if (score >= 66) return 'high';
+  if (score >= 26) return 'medium';
+  return 'low';
+}
+
+function riskDescription(score: number): string {
+  if (score >= 66) return 'High Risk';
+  if (score >= 26) return 'Moderate Risk';
+  return 'Low Risk';
+}
 
 interface DetailViewProps {
   data: ExploitData;
@@ -32,8 +33,7 @@ export function DetailView({ data }: DetailViewProps) {
   const delta = actuarial.slider_deltas[step] ?? 0;
   const currentScore = Math.max(5, Math.min(100, actuarial.pre_actuarial_score + delta));
 
-  const riskClass = getRiskClass(currentScore);
-  const riskLabel = getRiskLabel(currentScore, data.exploit_id);
+  const cat = riskCategory(currentScore);
 
   const allFindings = data.scan_result.RiskFactors;
   const regular = allFindings.filter(f => !isMultiplierFinding(f.description)).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
@@ -43,107 +43,182 @@ export function DetailView({ data }: DetailViewProps) {
     .filter((s: MitigationSignal) => s.type === 'positive_signal')
     .sort((a: MitigationSignal, b: MitigationSignal) => (b.points_saved ?? 0) - (a.points_saved ?? 0));
 
+  const totalMitigationPts = mitigations.reduce((sum, m) => sum + (m.points_saved ?? 0), 0);
+
   return (
     <div className="detail-view">
-      {/* Header card */}
-      <div className="detail-header">
-        <div className="detail-header-main">
-          <div className="detail-header-left">
-            <h1 className={`detail-title risk-${riskClass}`}>{data.scan_result.Name}</h1>
-            <div className="detail-meta">
-              <span className="detail-meta-label">Contract Address:</span> {data.scan_result.ContractAddress}
-            </div>
-            <div className="detail-meta">
-              <span className="detail-meta-label">Chain:</span> {data.chain_display_name}
-            </div>
-            <div className="detail-meta">
-              <span className="detail-meta-label">Analysis Engine:</span> CIR Universal Engine | Time Machine Module
-            </div>
-            <div className="detail-meta detail-meta-accent">
-              <span className="detail-meta-label">Scan Time:</span> {formatDate(data.scan_result.ScanDate)} | {data.scan_result.ScanDuration.toFixed(3)} seconds <span className="detail-meta-muted">(from pre-cached, pre-exploit source code)</span>
-            </div>
+
+      {/* Header */}
+      <header className="pv-header">
+        <div className="pv-header-info">
+          <h2 className={`pv-protocol-name risk-category-${cat}`}>{data.scan_result.Name}</h2>
+          <p><span className="pv-info-label">Contract Address:</span> {data.scan_result.ContractAddress}</p>
+          <p><span className="pv-info-label">Chain:</span> {data.chain_display_name}</p>
+          <p><span className="pv-info-label">Analysis Engine:</span> <strong>CIR Universal Engine</strong> <span className="pv-info-label">|</span> <strong>Time Machine Module</strong></p>
+          <p><span className="pv-info-label">Scan Time:</span> {formatDate(data.scan_result.ScanDate)} <span className="pv-info-label">|</span> {data.scan_result.ScanDuration.toFixed(3)} seconds <span className="pv-meta-muted">(from pre-cached, pre-exploit source code)</span></p>
+        </div>
+        <div className="pv-score-wrapper">
+          <span className={`pv-score-value risk-category-${cat}`}>{currentScore}</span>
+          <span className="pv-score-label">{riskDescription(currentScore)}</span>
+        </div>
+      </header>
+
+      {/* Scoring guide */}
+      <section className="pv-scoring-guide">
+        <div className="pv-score-ranges">
+          <div className="pv-range pv-range-safe">
+            <span className="pv-range-number">0-25</span>
+            <span className="pv-range-label">Safe</span>
+            <span className="pv-range-desc">Low risk protocols</span>
           </div>
-          <div className="detail-header-score">
-            <span className={`detail-score-number risk-${riskClass}`}>{currentScore}</span>
-            <span className={`detail-score-label risk-${riskClass}`}>{getRiskClass(currentScore) === 'high' ? 'High Risk' : getRiskClass(currentScore) === 'med' ? 'Caution' : 'Safe'}</span>
+          <div className="pv-range pv-range-caution">
+            <span className="pv-range-number">26-65</span>
+            <span className="pv-range-label">Caution</span>
+            <span className="pv-range-desc">Moderate risk factors present</span>
+          </div>
+          <div className="pv-range pv-range-high">
+            <span className="pv-range-number">66-100</span>
+            <span className="pv-range-label">High Risk</span>
+            <span className="pv-range-desc">Significant concerns identified</span>
           </div>
         </div>
+      </section>
+
+      {/* Risk findings */}
+      <div className="pv-findings-list">
+        <h3>Risk Profile</h3>
+        {regular.map((f, i) => {
+          const fCat = riskCategory(f.score);
+          return (
+            <details key={i} className={`pv-finding-item pv-risk-border-${fCat}`}>
+              <summary className="pv-finding-header">
+                <span className="pv-finding-title">{f.description}</span>
+                <div className="pv-finding-summary">
+                  <span className={`pv-risk-tag pv-tag-${fCat}`}>{f.score} pts</span>
+                  <svg className="pv-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+                </div>
+              </summary>
+              <div className="pv-finding-body">
+                <div className="pv-explanation">
+                  {f.cir_explanation ? (
+                    <>
+                      <h5>For Investors / Risk Analysts:</h5>
+                      <p>{f.cir_explanation.guidance.investor}</p>
+                      <h5>For Developers / Protocol Teams:</h5>
+                      <p>{f.cir_explanation.guidance.developer}</p>
+                    </>
+                  ) : f.explanation_investors ? (
+                    <>
+                      <h5>For Investors / Risk Analysts:</h5>
+                      <p>{f.explanation_investors}</p>
+                      <h5>For Developers / Protocol Teams:</h5>
+                      <p>{f.explanation_developers}</p>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            </details>
+          );
+        })}
+
+        {/* Multipliers */}
+        {multipliers.map((f, i) => {
+          const fCat = riskCategory(f.score);
+          return (
+            <details key={`m-${i}`} className={`pv-finding-item pv-risk-border-${fCat} pv-risk-multiplier`}>
+              <summary className="pv-finding-header">
+                <span className="pv-finding-title">{f.description}</span>
+                <div className="pv-finding-summary">
+                  <span className={`pv-risk-tag pv-tag-${fCat}`}>{f.score} pts</span>
+                  <svg className="pv-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+                </div>
+              </summary>
+              <div className="pv-finding-body">
+                <div className="pv-explanation">
+                  {f.cir_explanation ? (
+                    <>
+                      <h5>For Investors / Risk Analysts:</h5>
+                      <p>{f.cir_explanation.guidance.investor}</p>
+                      <h5>For Developers / Protocol Teams:</h5>
+                      <p>{f.cir_explanation.guidance.developer}</p>
+                    </>
+                  ) : f.explanation_investors ? (
+                    <>
+                      <h5>For Investors / Risk Analysts:</h5>
+                      <p>{f.explanation_investors}</p>
+                      <h5>For Developers / Protocol Teams:</h5>
+                      <p>{f.explanation_developers}</p>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            </details>
+          );
+        })}
       </div>
 
-      {/* RAG legend */}
-      <div className="detail-legend">
-        <div className="detail-legend-tier detail-legend-low">
-          <span className="detail-legend-range">0-25</span>
-          <span className="detail-legend-label">Safe</span>
-          <span className="detail-legend-desc">Low risk protocols</span>
-        </div>
-        <div className="detail-legend-tier detail-legend-med">
-          <span className="detail-legend-range">26-65</span>
-          <span className="detail-legend-label">Caution</span>
-          <span className="detail-legend-desc">Moderate risk factors present</span>
-        </div>
-        <div className="detail-legend-tier detail-legend-high">
-          <span className="detail-legend-range">66-100</span>
-          <span className="detail-legend-label">High Risk</span>
-          <span className="detail-legend-desc">Significant concerns identified</span>
-        </div>
-      </div>
-
-      {/* Risk Findings */}
-      <h2 className="detail-section-heading">Risk Profile</h2>
-      {regular.map((f, i) => <FindingCard key={i} finding={f} />)}
-
-      {/* Cluster Multipliers */}
-      {multipliers.length > 0 && (
-        <>
-          <h2 className="detail-section-heading">Cluster Multipliers</h2>
-          {multipliers.map((f, i) => <FindingCard key={`m-${i}`} finding={f} isMultiplier />)}
-        </>
-      )}
-
-      {/* Mitigations */}
+      {/* Signals & Intelligence */}
       {mitigations.length > 0 && (
-        <>
-          <h2 className="detail-section-heading">Signals &amp; Intelligence</h2>
-          {mitigations.map((m: MitigationSignal, i: number) => {
-            const name = cleanMitigationName(m.description ?? '');
-            const explanation = MITIGATION_EXPLANATIONS[name];
-            return (
-              <details key={`mit-${i}`} className="finding-card border-mitigation">
-                <summary className="finding-summary">
-                  <span className="sev-pip mitigation" />
-                  <span className="finding-title">{name}</span>
-                  <span className="finding-pts-badge mitigation-pts">-{m.points_saved ?? 0}</span>
-                  <svg className="finding-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </summary>
-                {explanation && (
-                  <div className="finding-body">
-                    <p>{explanation}</p>
-                  </div>
-                )}
-              </details>
-            );
-          })}
-        </>
-      )}
+        <div className="pv-signals">
+          <h3>Signals &amp; Intelligence</h3>
+          <div className="pv-signals-list">
+            {mitigations.map((m: MitigationSignal, i: number) => {
+              const name = cleanMitigationName(m.description ?? '');
+              return (
+                <div key={`mit-${i}`} className="pv-signal-card pv-positive-signal">
+                  <div className="pv-signal-icon">&#x2713;</div>
+                  <p className="pv-signal-description">
+                    <span className="pv-signal-text"><strong>{name}</strong></span>
+                    {m.points_saved ? <span className="pv-miti-badge">[-{m.points_saved}]</span> : null}
+                  </p>
+                </div>
+              );
+            })}
 
-      {/* Actuarial */}
-      <div className="detail-actuarial">
-        <ActuarialSlider
-          actuarial={actuarial}
-          weight={weight}
-          onWeightChange={setWeight}
-          currentScore={currentScore}
-          delta={delta}
-        />
-      </div>
+            {totalMitigationPts > 0 && (
+              <div className="pv-signal-card pv-positive-signal">
+                <div className="pv-signal-icon">&#x2713;</div>
+                <p className="pv-signal-description">
+                  <span className="pv-signal-text"><strong>Mitigations Summary: &minus;{totalMitigationPts}</strong></span>
+                </p>
+              </div>
+            )}
+
+            {/* Actuarial signal card */}
+            <div className="pv-signal-card pv-actuarial-signal">
+              <div className="pv-actuarial-inner">
+                <div className="pv-actuarial-top">
+                  <div className="pv-signal-icon">&#x25CF;</div>
+                  <p className="pv-signal-description">
+                    <span className="pv-signal-text">
+                      <strong>Actuarial analysis: Base {actuarial.actuarial_base} | Refined {actuarial.actuarial_base + delta} | {weight}% uplift weighting</strong>
+                    </span>
+                  </p>
+                </div>
+                <div className="pv-slider-row">
+                  <div className="pv-slider-track">
+                    <input
+                      type="range"
+                      min={0} max={100} step={10}
+                      value={weight}
+                      onChange={e => setWeight(Number(e.target.value))}
+                    />
+                    <div className="pv-tick-marks">
+                      {Array.from({ length: 11 }).map((_, i) => <span key={i} />)}
+                    </div>
+                  </div>
+                  <span className="pv-slider-readout">{weight}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
-      <div className="detail-footer">
-        DeRisk — Universal cross-chain risk intelligence across EVM, Solana, and beyond.
-      </div>
+      <footer className="pv-footer">
+        <p>DeRisk Systems<br />DeFi Risk Intelligence Platform<br />Time Machine Module &bull; v3.1</p>
+      </footer>
     </div>
   );
 }
