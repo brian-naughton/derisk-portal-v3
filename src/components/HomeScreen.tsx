@@ -65,6 +65,13 @@ export function HomeScreen({ onSelect }: HomeScreenProps) {
         </form>
       </div>
 
+      {/* Scroll hint */}
+      <div className="scroll-hint">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffe600" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </div>
+
       <InfoModal isOpen={showInfo} onClose={() => setShowInfo(false)} />
     </div>
   );

@@ -94,6 +94,19 @@ body {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
 }
 
+/* Scroll hint chevron */
+.scroll-hint {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  animation: scrollBounce 2s ease-in-out infinite;
+  opacity: 0.8;
+}
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
 /* Time Machine Demo label */
 .prescan-demo-label {
   font-family: var(--db-font-heading);
