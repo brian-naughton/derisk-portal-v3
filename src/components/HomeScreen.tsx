@@ -61,7 +61,7 @@ export function HomeScreen({ onSelect }: HomeScreenProps) {
               );
             })}
           </select>
-          <button type="submit">Analyze Exploit</button>
+          <button type="submit">Scan Contract</button>
         </form>
       </div>
 
