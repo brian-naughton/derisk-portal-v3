@@ -2660,6 +2660,32 @@ body.scrollable {
   text-align: right;
 }
 
+/* ---- Download PDF ---- */
+.pv-actions {
+  text-align: center;
+  margin-top: 32px;
+}
+.pv-download-btn {
+  display: inline-block;
+  padding: 12px 40px;
+  background: none;
+  color: var(--pv-action);
+  border: 1px solid var(--pv-action);
+  border-radius: 8px;
+  font-family: var(--pv-font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: var(--pv-transition);
+}
+.pv-download-btn:hover {
+  background: var(--pv-action);
+  color: var(--pv-text);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
 /* ---- Footer ---- */
 .pv-footer {
   width: 100%;

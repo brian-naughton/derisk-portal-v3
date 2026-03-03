@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ExploitData, MitigationSignal } from '../types/exploit.ts';
 import { getRiskClass, formatDate } from '../utils/formatting.ts';
+import { generateReport } from '../utils/generateReport.ts';
 
 function isMultiplierFinding(description: string): boolean {
   return /multiplier/i.test(description);
@@ -214,6 +215,16 @@ export function DetailView({ data }: DetailViewProps) {
           </div>
         </div>
       )}
+
+      {/* Download PDF */}
+      <div className="pv-actions">
+        <button
+          className="pv-download-btn"
+          onClick={() => generateReport({ data, currentScore, delta, weight })}
+        >
+          DOWNLOAD PDF
+        </button>
+      </div>
 
       {/* Footer */}
       <footer className="pv-footer">
