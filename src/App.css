@@ -2446,7 +2446,7 @@ body.scrollable {
 .pv-risk-border-low    { border-left-color: var(--pv-risk-low); }
 
 /* Multiplier accent */
-.pv-risk-multiplier { border-left-color: #a6e6db; }
+.pv-risk-multiplier { border-left-color: #ffe600; }
 .pv-risk-multiplier:first-of-type { margin-top: 2rem; position: relative; }
 .pv-risk-multiplier:first-of-type::before {
   content: '';
@@ -2454,12 +2454,16 @@ body.scrollable {
   top: -1rem;
   left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #a6e6db 20%, #a6e6db 80%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, #ffe600 20%, #ffe600 80%, transparent 100%);
   opacity: 0.4;
 }
 .pv-risk-multiplier .pv-risk-tag {
-  background-color: rgba(166,230,219,0.15) !important;
-  color: #a6e6db !important;
+  background-color: rgba(255,230,0,0.15) !important;
+  color: #ffe600 !important;
+}
+.pv-risk-multiplier .pv-finding-title {
+  color: var(--pv-text);
+  font-weight: 600;
 }
 
 .pv-finding-header {
