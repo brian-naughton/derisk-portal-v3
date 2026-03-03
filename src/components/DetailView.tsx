@@ -55,7 +55,7 @@ export function DetailView({ data }: DetailViewProps) {
           <p><span className="pv-info-label">Contract Address:</span> {data.scan_result.ContractAddress}</p>
           <p><span className="pv-info-label">Chain:</span> {data.chain_display_name}</p>
           <p><span className="pv-info-label">Analysis Engine:</span> <strong>CIR Universal Engine</strong> <span className="pv-info-label">|</span> <strong>Time Machine Module</strong></p>
-          <p><span className="pv-info-label">Scan Time:</span> {formatDate(data.scan_result.ScanDate)} <span className="pv-info-label">|</span> {data.scan_result.ScanDuration.toFixed(3)} seconds <span className="pv-meta-muted">(from pre-cached, pre-exploit source code)</span></p>
+          <p><span className="pv-info-label">Scan Time:</span> {formatDate(data.scan_result.ScanDate)} <span className="pv-info-label">|</span> {data.scan_result.ScanDuration.toFixed(3)} seconds <span className="pv-meta-muted">(pre-cached, pre-exploit code)</span></p>
         </div>
         <div className="pv-score-wrapper">
           <span className={`pv-score-value risk-category-${cat}`}>{currentScore}</span>
