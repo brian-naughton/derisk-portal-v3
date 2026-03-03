@@ -191,7 +191,7 @@ export function DetailView({ data }: DetailViewProps) {
                   <div className="pv-signal-icon">&#x25CF;</div>
                   <p className="pv-signal-description">
                     <span className="pv-signal-text">
-                      <strong>Actuarial analysis: Base {actuarial.actuarial_base} | Refined {actuarial.actuarial_base + delta} | {weight}% uplift weighting</strong>
+                      <strong>Actuarial analysis: Base {actuarial.actuarial_base} | Refined <span className="pv-refined-value">{actuarial.actuarial_base + delta}</span> | {weight}% uplift weighting</strong>
                     </span>
                   </p>
                 </div>
