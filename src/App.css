@@ -2280,7 +2280,7 @@ body.scrollable {
 /* --- Portrait View — ported from production style.css --- */
 
 .detail-view {
-  --pv-bg: #000831;
+  --pv-bg: #0a1628;
   --pv-panel: #0d2b52;
   --pv-action: #4f8fe6;
   --pv-text: #f0f4f8;
