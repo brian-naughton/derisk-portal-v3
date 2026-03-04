@@ -197,7 +197,7 @@ export function PostDemoHero() {
             className={`punchline-block${enterprise.visible ? ' visible' : ''}`}
           >
             <h2 className="punchline-headline">
-              But DeRisk's Universal Risk Intelligence architecture wasn't created as developer tooling.
+              But DeRisk's <span style={{ color: '#ffe600' }}>Universal Risk Intelligence</span> architecture wasn't created as developer tooling.
             </h2>
             <h2 className="punchline-headline punchline-headline--accent">
               It was designed as a platform foundation for enterprise-grade risk management.
