@@ -275,7 +275,7 @@ export function PostDemoHero() {
       {/* Section 6a: Origin Story */}
       <section className="hero-section hero-dissolve">
         <div className="hero-content" style={{ textAlign: 'center' }}>
-          <h2 className="hero-headline">The Origin Story</h2>
+          <h2 className="hero-headline" style={{ color: '#ffe600' }}>The Origin Story</h2>
 
           <div className="hero-divider" />
 
