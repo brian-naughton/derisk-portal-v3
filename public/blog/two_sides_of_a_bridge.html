@@ -250,7 +250,7 @@
 
   <p>In practice: the DeRisk engine takes source code from any blockchain, translates it into CIR primitives through VM-specific emitters, then analyses it with a single universal rule set. Solidity on Ethereum and Rust on Solana go through different emitters but get evaluated by the same 67 vulnerability rules, the same actuarial model trained on 1,400+ historical exploits, the same scoring framework.</p>
 
-  <p>Part of the development process was training and calibrating the engine against DeFi's most devastating exploits. To do that properly, we needed to be certain we were analysing the smart contract code that was actually live in the lead-up to each attack — not patched versions deployed after the fact. That requirement led us to build what we now call the Time Machine: a module that lets us travel back to the moments before an exploit, retrieve the vulnerable source code, and run our scanner against exactly what the attacker saw.</p>
+  <p>Part of the development process was training and calibrating the engine against DeFi's most devastating exploits. To do that properly, we needed to be certain we were analysing the smart contract code that was actually live in the lead-up to each attack — not patched versions deployed after the fact. That requirement led us to build what we now call the <strong>Time Machine</strong>: a module that lets us travel back to the moments before an exploit, retrieve the vulnerable source code, and run our scanner against exactly what the attacker saw.</p>
 
   <hr>
 
