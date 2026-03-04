@@ -233,11 +233,11 @@
       },
       {
         "title": "How We Got Here",
-        "text": "When we ran the Makina contract through our CIR engine, every vulnerability the attacker used was already flagged — with no new rules added. The engine’s existing rule set, calibrated through months of Time Machine training against the exploits in this collection, caught it all. Had we been scanning the waterfront at scale, we’d have flagged it before the hack."
+        "text": "When we ran the Makina contract through our CIR engine, the core attack path was already flagged — unprotected oracle dependency, permissionless execution of privileged functions, flash loans without invariant enforcement — with no new rules added. The engine’s existing rule set, calibrated through months of Time Machine training against the exploits in this collection, caught it cold. Had we been scanning the waterfront at scale, we’d have flagged it before the hack."
       },
       {
         "title": "What the Engine Saw",
-        "text": "The engine flagged unprotected oracle dependency, flash loan functionality without invariant enforcement, and flash-loanable governance tokens without snapshot protection. Two cluster multipliers fired: governance (1.3x) and lending (1.3x). Final score: 100/100. Every finding mapped directly to the attack path the exploiter would later use."
+        "text": "The engine flagged unprotected oracle dependency, permissionless execution of privileged functions, and flash loan functionality without invariant enforcement. Two cluster multipliers fired: governance (1.3x) and lending (1.3x). Final score: 100/100."
       },
       {
         "title": "Ready for the Wild",
