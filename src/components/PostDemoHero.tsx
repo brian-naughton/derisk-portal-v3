@@ -272,7 +272,33 @@ export function PostDemoHero() {
         </div>
       </section>
 
-      {/* Section 6: Guiding Principles */}
+      {/* Section 6a: Origin Story */}
+      <section className="hero-section hero-dissolve">
+        <div className="hero-content" style={{ textAlign: 'center' }}>
+          <h2 className="hero-headline">The Origin Story</h2>
+
+          <div className="hero-divider" />
+
+          <p className="punchline-text">
+            How we built the engine, what it sees, and why it matters.
+          </p>
+
+          <a
+            className="origin-story-link"
+            href="/blog/two_sides_of_a_bridge.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="origin-story-label">Two Sides of a Bridge</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      {/* Section 6b: Guiding Principles */}
       <section className="hero-section hero-snap">
         <div className="hero-content">
           <h2 className="hero-headline">Guiding Principles</h2>
@@ -310,32 +336,6 @@ export function PostDemoHero() {
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Section 6b: Origin Story */}
-      <section className="hero-section hero-dissolve">
-        <div className="hero-content" style={{ textAlign: 'center' }}>
-          <h2 className="hero-headline">The Origin Story</h2>
-
-          <div className="hero-divider" />
-
-          <p className="punchline-text">
-            How we built the engine, what it sees, and why it matters.
-          </p>
-
-          <a
-            className="origin-story-link"
-            href="/blog/two_sides_of_a_bridge.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span className="origin-story-label">Two Sides of a Bridge</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="7" y1="17" x2="17" y2="7" />
-              <polyline points="7 7 17 7 17 17" />
-            </svg>
-          </a>
         </div>
       </section>
 
