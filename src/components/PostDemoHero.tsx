@@ -81,7 +81,7 @@ export function PostDemoHero() {
             <div className="hero-pillar">
               <div className="hero-pillar-label">Patent-Pending Technology</div>
               <h3 className="hero-pillar-title">Canonical Intermediate Representation (CIR)</h3>
-              <p className="hero-pillar-subtitle">The Rosetta Stone</p>
+              <p className="hero-pillar-subtitle" style={{ color: '#6ea900' }}>The Rosetta Stone</p>
               <p className="hero-pillar-text">
                 A single, authoritative model of on-chain logic that enables universal
                 cross-chain threat detection. One analysis engine, every blockchain architecture.
@@ -252,7 +252,7 @@ export function PostDemoHero() {
             className={`punchline-block${scale.visible ? ' visible' : ''}`}
           >
             <h2 className="punchline-headline">
-              A Rosetta Stone that learns to fill in the blanks.
+              A <span style={{ color: '#6ea900' }}>Rosetta Stone</span> that learns to fill in the blanks.
             </h2>
             <h2 className="punchline-headline punchline-headline--accent">
               Every exploit teaches it<br />new syntax.
