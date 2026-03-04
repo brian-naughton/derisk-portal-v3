@@ -349,7 +349,7 @@ export function PostDemoHero() {
           <div className="end-card-wordmark">
             <svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
               <defs>
-                <style>{`.end-wm { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; font-size: 32px; letter-spacing: 0.08em; fill: #ffffff; }`}</style>
+                <style>{`.end-wm { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; font-size: 32px; letter-spacing: 0.08em; fill: #ffe600; }`}</style>
               </defs>
               <text className="end-wm" x="100" y="32" textAnchor="middle">DeRisk</text>
             </svg>
