@@ -81,7 +81,7 @@ export function PostDemoHero() {
             <div className="hero-pillar">
               <div className="hero-pillar-label">Patent-Pending Technology</div>
               <h3 className="hero-pillar-title">Canonical Intermediate Representation (CIR)</h3>
-              <p className="hero-pillar-subtitle" style={{ color: '#6ea900' }}>The Rosetta Stone</p>
+              <p className="hero-pillar-subtitle">The Rosetta Stone</p>
               <p className="hero-pillar-text">
                 A single, authoritative model of on-chain logic that enables universal
                 cross-chain threat detection. One analysis engine, every blockchain architecture.
