@@ -171,7 +171,7 @@ export function PostDemoHero() {
             className={`punchline-block${punchline.visible ? ' visible' : ''}`}
           >
             <h2 className="punchline-headline">
-              The Time Machine Demo above is not a<br />proof-of-concept.
+              The <span style={{ color: '#e85454' }}>Time Machine</span> Demo above is not a<br />proof-of-concept.
             </h2>
             <h2 className="punchline-headline punchline-headline--accent">
               It's a <em>proof of capability.</em>
