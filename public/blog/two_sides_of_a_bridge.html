@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two Sides of a Bridge — DeRisk</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&f[]=space-grotesk@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a1628;
+    --surface: #111d32;
+    --border: rgba(79, 143, 230, 0.15);
+    --accent: #4f8fe6;
+    --text: #c8d6e5;
+    --text-bright: #e8eef5;
+    --text-muted: #7a8ba3;
+    --red: #e85454;
+    --font-heading: 'Space Grotesk', sans-serif;
+    --font-body: 'Satoshi', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px 32px 80px;
+  }
+
+  .hero-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .hero-wordmark {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 3.6rem;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    margin-bottom: 32px;
+  }
+  .hero-header h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+  .hero-subtitle {
+    font-size: 1.05rem;
+    color: var(--accent);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .article-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .article-header h1 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .article-header .subtitle {
+    font-size: 1.1rem;
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  h2 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 56px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  p { margin-bottom: 18px; }
+  strong { color: var(--text-bright); font-weight: 600; }
+  em { color: var(--text-bright); font-style: italic; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 18px;
+  }
+  ul li {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(79, 143, 230, 0.1);
+  }
+  ul li:last-child { border-bottom: none; }
+  ul li strong { color: #fff; }
+
+  a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  a:hover { color: #ffe600; }
+
+  .pull-quote {
+    border-left: 3px solid var(--accent);
+    padding: 16px 24px;
+    margin: 28px 0;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.6;
+    background: rgba(79, 143, 230, 0.04);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .pivot {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-top: 24px;
+    line-height: 1.7;
+  }
+
+  .cta-link {
+    display: inline-block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 8px;
+    letter-spacing: 0.01em;
+  }
+  .cta-link:hover { color: #ffe600; }
+
+  .article-footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  figure {
+    margin: 32px 0;
+  }
+  figure img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: zoom-in;
+    transition: opacity 0.2s;
+  }
+  figure img:hover { opacity: 0.85; }
+
+  .lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.92);
+    cursor: zoom-out;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+  }
+  .lightbox-overlay.active { display: flex; }
+  .lightbox-overlay img {
+    width: auto;
+    max-width: 95vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    object-fit: contain;
+  }
+  figcaption {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+  }
+
+  .side-by-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 32px 0;
+  }
+  .side-by-side figure {
+    margin: 0;
+  }
+
+  @media (max-width: 700px) {
+    .article { padding: 32px 18px 48px; }
+    .article-header h1 { font-size: 2rem; }
+    .hero-overlay h1 { font-size: 1.8rem; }
+    .hero-overlay { padding: 0 18px 24px; }
+    h2 { font-size: 1.35rem; }
+    .side-by-side { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="article">
+
+  <div class="hero-header">
+    <div class="hero-wordmark">DeRisk</div>
+    <h1>Two Sides of a Bridge</h1>
+    <div class="hero-subtitle">Nine months of building. Ten historical exploits.<br>One engine that sees what no one else could.</div>
+  </div>
+
+  <p>Cross-chain bridges have lost more money than any other category in DeFi. Ronin: $625M. Poly Network: $611M. Wormhole: $320M. Nomad: $190M. Harmony: $100M. That's $1.85 billion from five incidents alone — and in every case, the attacker exploited the gap between two chains that nobody's tooling could see across.</p>
+
+  <p>We spent the last nine months building a system that can.</p>
+
+  <hr>
+
+  <h2>The Rosetta Stone</h2>
+
+  <p>Every blockchain runs on a different virtual machine — Ethereum has the EVM, Solana has the SVM — each with its own programming language, its own execution model, and its own class of vulnerabilities. Security tooling has historically been locked to one VM at a time.</p>
+
+  <p>We developed a canonical way of representing the archetypes of smart contract vulnerabilities such that they can be translated between any virtual machine environment. We call this patent-pending architecture <strong>Canonical Intermediate Representation (CIR)</strong> — or, colloquially, the "Rosetta Stone." It provides a form of universality across chains that has never existed before.</p>
+
+  <figure>
+    <img src="CIR Image.png" alt="Canonical Intermediate Representation — N emitters, one universal analysis stack">
+    <figcaption>CIR architecture: N VM-specific emitters, one universal rule set.</figcaption>
+  </figure>
+
+  <p>In practice: the DeRisk engine takes source code from any blockchain, translates it into CIR primitives through VM-specific emitters, then analyses it with a single universal rule set. Solidity on Ethereum and Rust on Solana go through different emitters but get evaluated by the same 67 vulnerability rules, the same actuarial model trained on 1,400+ historical exploits, the same scoring framework.</p>
+
+  <p>Part of the development process was training and calibrating the engine against DeFi's most devastating exploits. To do that properly, we needed to be certain we were analysing the smart contract code that was actually live in the lead-up to each attack — not patched versions deployed after the fact. That requirement led us to build what we now call the Time Machine: a module that lets us travel back to the moments before an exploit, retrieve the vulnerable source code, and run our scanner against exactly what the attacker saw.</p>
+
+  <hr>
+
+  <h2>Seeing Both Sides at Once</h2>
+
+  <p>On February 2, 2022, an attacker minted 120,000 wETH on Solana and redeemed it for real ETH on Ethereum. Total loss: $320 million. The Wormhole Bridge — connecting the two largest smart contract ecosystems — was drained in a single transaction.</p>
+
+  <p>We pointed our engine at both sides. The Solana contract in Rust. The Ethereum contract in Solidity. Two languages, two VMs, one scan. The findings told the same story from opposite ends:</p>
+
+  <ul>
+    <li><strong>Solana (entry point, score: 100/100)</strong> — Guardian validation is bypassable. Validator quorum sits at the minimum threshold. Message processing is vulnerable to manipulation. Four distinct findings, plus a bridge cluster multiplier confirming they compound.</li>
+  </ul>
+
+  <figure>
+    <img src="Screenshot 2026-03-03 at 23.33.02.png" alt="Wormhole Bridge SVM — DeRisk Time Machine scan, score 100/100">
+    <figcaption>Wormhole Solana — score: 100/100. Four findings plus a bridge cluster multiplier.</figcaption>
+  </figure>
+
+  <ul>
+    <li><strong>Ethereum (exit point, score: 94/100)</strong> — Signature verification will accept forged guardian approvals. The contract will honour the fraudulent message and release real assets.</li>
+  </ul>
+
+  <figure>
+    <img src="Screenshot 2026-03-04 at 00.16.06.png" alt="Wormhole Bridge EVM — DeRisk Time Machine scan, score 94/100">
+    <figcaption>Wormhole Ethereum — score: 94/100. The bridge honours the forged message.</figcaption>
+  </figure>
+
+  <div class="pull-quote">Forge on Solana. Redeem on Ethereum. That's the $320M exploit — and the engine flags both ends.</div>
+
+  <hr>
+
+  <h2>The Time Machine</h2>
+
+  <p>Today we're presenting an <a href="https://derisk.systems">interactive demo of our Time Machine module</a> — a curated set of ten exploits from our growing portfolio of high-risk scan results, with full readouts you can explore yourself.</p>
+
+  <p>Ten of the most devastating exploits in DeFi — from The DAO in 2016 to Balancer in 2025 — each analysed using the protocol's pre-exploit source code. The engine reads the code that was live when the vulnerability existed and scores it. Every one of the ten scores 85 or above. Eight score 100/100.</p>
+
+  <p>Each exploit includes a post-mortem narrative — how the attack unfolded, what the engine detected, and why it mattered. The demo is designed to be read as much as explored.</p>
+
+  <figure>
+    <img src="Screenshot 2026-03-03 at 23.28.20.png" alt="Balancer V2 — DeRisk Time Machine scan, score 85/100">
+    <figcaption>Balancer V2 (November 2025) — precision loss exploitable via repeated operations. Score: 85/100.</figcaption>
+  </figure>
+
+  <p>But training against history only proves you can see the past. The real question is whether the rules generalise.</p>
+
+  <h2>The Smoking Gun</h2>
+
+  <p>In January 2026, Makina Finance was exploited for $4.2M through a flash-loan-powered oracle manipulation attack. When we ran the Makina contract through our engine, the core attack path was already flagged — unprotected oracle dependency, permissionless execution of privileged functions, flash loans without invariant enforcement. No new rules added. Score: 100/100. Two cluster multipliers fired. The engine's rule set, sharpened through months of calibration against the exploits in the Time Machine, caught it cold.</p>
+
+  <figure>
+    <img src="Screenshot 2026-03-03 at 23.30.11.png" alt="Makina Finance — DeRisk Time Machine scan, score 100/100">
+    <figcaption>Makina Finance (January 2026) — the attack path, flagged before it happened. Score: 100/100.</figcaption>
+  </figure>
+
+  <p>This was the moment the engine went from retrospective to predictive. Not by design — by emergence. The same rules trained against years of DeFi exploitation history — and refined by benchmarking against peer-reviewed academic taxonomies (Zhou et al., 2022) — had generalised to detect a threat nobody else caught.</p>
+
+  <hr>
+
+  <h2>See for Yourself</h2>
+
+  <p>The <a href="https://derisk.systems">DeRisk Time Machine</a> is live. Ten historical exploits. Full forensic analysis. Interactive dashboard with risk scoring, vulnerability breakdowns, and post-mortem narratives — whether you're a security researcher tracing attack vectors or a risk analyst deciding where capital should sit.</p>
+
+  <p>The journey starts with The DAO in 2016 — where Ethereum's story began — and ends with Makina in 2026, when our engine started to see in the dark.</p>
+
+  <p><a class="cta-link" href="https://derisk.systems">derisk.systems</a></p>
+
+  <div class="article-footer">
+    DeRisk — Universal cross-chain risk intelligence across EVM, Solana, and beyond.
+  </div>
+
+</div>
+
+<div class="lightbox-overlay" id="lightbox">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+  const overlay = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  document.querySelectorAll('figure img').forEach(img => {
+    img.addEventListener('click', () => {
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      overlay.classList.add('active');
+    });
+  });
+  overlay.addEventListener('click', () => overlay.classList.remove('active'));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') overlay.classList.remove('active');
+  });
+</script>
+</body>
+</html>

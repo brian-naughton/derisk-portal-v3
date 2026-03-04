@@ -1711,6 +1711,36 @@ body.scrollable {
   border-color: var(--db-accent);
 }
 
+/* ========== ORIGIN STORY LINK ========== */
+
+.origin-story-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 14px 28px;
+  border: 2px solid var(--db-accent);
+  border-radius: 8px;
+  background: rgba(79, 143, 230, 0.08);
+  color: var(--db-accent);
+  text-decoration: none;
+  font-family: var(--db-font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+}
+
+.origin-story-link:hover {
+  background: rgba(79, 143, 230, 0.18);
+  box-shadow: 0 0 20px rgba(79, 143, 230, 0.25);
+  color: #fff;
+}
+
+.origin-story-label {
+  font-style: italic;
+}
+
 /* ========== END CARD (V2 STYLE) ========== */
 
 .end-card {
