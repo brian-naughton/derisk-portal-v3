@@ -301,7 +301,7 @@ export function PostDemoHero() {
       {/* Section 6b: Guiding Principles */}
       <section className="hero-section hero-snap">
         <div className="hero-content">
-          <h2 className="hero-headline">Guiding Principles</h2>
+          <h2 className="hero-headline" style={{ color: '#ff8c00' }}>Guiding Principles</h2>
 
           <div className="hero-divider" />
 
