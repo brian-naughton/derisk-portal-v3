@@ -31,11 +31,11 @@
         "explanation_investors": "This factor shows that timelock present but execute() function lacks access control - allows permissionless execution after delay. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
         "explanation_developers": "Harden the contracts so that timelock present but execute() function lacks access control - allows permissionless execution after delay is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
         "cir_explanation": {
-          "title": "Governance execution without delay or guard",
-          "summary": "The Governor or DAO executor calls target contracts directly without queuing through a TimelockController. Sonne Finance's May 2024 exploit involved governance executing a market activation without delay, enabling a first-deposit attack in the same block.",
+          "title": "Permissionless execution of privileged operations",
+          "summary": "Functions like execute(), updateOracle(), or setParameters() lack onlyOwner/onlyAdmin modifiers, allowing any address to call them. Sonne Finance ($20M, 2024) was exploited via a permissionless timelock execute() that an attacker front-ran. Makina Finance ($4.2M, 2026) had a permissionless AUM update function that could be called after oracle manipulation.",
           "guidance": {
-            "investor": "Protocols without execution delays give you no exit window if a malicious proposal passes. Monitor governance proposals actively and set up alerts for unusual voting patterns. Prefer protocols with 24-48 hour timelocks.",
-            "developer": "Route all governance execution through a TimelockController with a minimum delay of 24 hours. Add a Guardian role that can veto proposals during the delay period."
+            "investor": "Permissionless execution of privileged functions means anyone can trigger state changes the protocol intended to restrict. This can enable front-running attacks, oracle manipulation, or parameter hijacking. Prefer protocols where all state-changing functions have explicit access controls.",
+            "developer": "Apply onlyOwner or role-based access control to execute() and any function that modifies oracle state, collateral parameters, or protocol configuration. Route governance execution through a TimelockController with restricted executors. Add a Guardian role that can veto during the delay period."
           }
         }
       },
