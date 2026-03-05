@@ -3,6 +3,7 @@ import './App.css';
 import { exploitsMap } from './data/index.ts';
 import type { ExploitData } from './types/exploit.ts';
 import Aurora from './components/Aurora.tsx';
+import { Analytics } from '@vercel/analytics/react';
 import { IntroSplash } from './components/IntroSplash.tsx';
 import { Dashboard } from './components/Dashboard.tsx';
 import { HomeScreen } from './components/HomeScreen.tsx';
@@ -92,6 +93,10 @@ function MainApp() {
 }
 
 export default function App() {
-  if (detailData) return <DetailView data={detailData} />;
-  return <MainApp />;
+  return (
+    <>
+      {detailData ? <DetailView data={detailData} /> : <MainApp />}
+      <Analytics />
+    </>
+  );
 }
