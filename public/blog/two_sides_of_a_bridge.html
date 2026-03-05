@@ -249,6 +249,8 @@
 
   <div class="pull-quote">This is that solution.</div>
 
+  <p>The immediate users of this infrastructure are the actors responsible for safeguarding capital onchain: exchanges deciding whether to list new assets, custodians evaluating protocol exposure, asset managers allocating across DeFi, and protocol treasuries managing billions in pooled liquidity. Each of these decisions requires a continuous, machine-readable assessment of smart contract risk — something point-in-time audits were never designed to provide.</p>
+
   <hr>
 
   <h2>The Rosetta Stone</h2>
@@ -262,9 +264,9 @@
     <figcaption>CIR architecture: N VM-specific emitters, one universal rule set.</figcaption>
   </figure>
 
-  <p>In practice: the DeRisk engine takes source code from any blockchain, translates it into CIR primitives through VM-specific emitters, then analyses it with a single universal rule set. Solidity on Ethereum and Rust on Solana go through different emitters but get evaluated by the same 67 vulnerability rules, the same actuarial model trained on 1,400+ historical exploits, the same scoring framework.</p>
+  <p>In practice: the DeRisk engine takes source code from any blockchain, translates it into CIR primitives through VM-specific emitters, then analyses it with a single universal rule set. Solidity on Ethereum and Rust on Solana go through different emitters but get evaluated by the same 67 vulnerability rules, the same actuarial model trained on 1,400+ historical exploits, the same scoring framework. The result is a single comparable risk score across chains, protocols, and execution environments — the kind of signal required for institutional capital to price smart contract risk rather than simply avoid it.</p>
 
-  <p>Part of the development process was training and calibrating the engine against DeFi's most devastating exploits. To do that properly, we needed to be certain we were analysing the smart contract code that was actually live in the lead-up to each attack — not patched versions deployed after the fact. That requirement led us to build what we now call the <strong>Time Machine</strong>: a module that lets us travel back to the moments before an exploit, retrieve the vulnerable source code, and run our scanner against exactly what the attacker saw.</p>
+  <p>Part of the development process was training and calibrating the engine against DeFi's most devastating exploits. To do that properly, we needed to be certain we were analysing the smart contract code that was actually live in the lead-up to each attack — not patched versions deployed after the fact. That requirement led us to build what we now call the <strong>Time Machine</strong>: a module that lets us travel back to the moments before an exploit, retrieve the vulnerable source code, and run our scanner against exactly what the attacker saw. In traditional financial risk modelling, historical stress testing is foundational — the Time Machine performs the same role for DeFi.</p>
 
   <hr>
 
@@ -328,7 +330,9 @@
 
   <p>The <a href="https://derisk.systems">DeRisk Time Machine</a> is live. Ten historical exploits. Full forensic analysis. Interactive dashboard with risk scoring, vulnerability breakdowns, and post-mortem narratives — whether you're a security researcher tracing attack vectors or a risk analyst deciding where capital should sit.</p>
 
-  <p>The journey starts with The DAO in 2016 — where Ethereum's story began — and ends with Makina in 2026, when our engine started to see in the dark.</p>
+  <p>The journey starts with The DAO in 2016 — where Ethereum's story began — and ends with Makina in 2026, when the engine began detecting exploit paths before they were discovered publicly.</p>
+
+  <p>If digital assets are to become a foundation of global finance, infrastructure capable of measuring and pricing smart contract risk must emerge alongside them. DeRisk is that layer.</p>
 
   <p><a class="cta-link" href="https://derisk.systems">derisk.systems</a></p>
 
