@@ -69,7 +69,7 @@ export function PostDemoHero() {
         <div className="hero-content">
           <h2 className="hero-headline">
             DeRisk is building <span style={{ color: '#ffe600' }}>Universal Risk Intelligence</span> — a cross-chain layer
-            for risk and threat detection <span style={{ whiteSpace: 'nowrap' }}>across digital assets</span>
+            for risk and threat detection <span style={{ whiteSpace: 'nowrap' }}>across digital assets.</span>
           </h2>
 
           <div className="hero-divider" />
