@@ -110,7 +110,7 @@ body {
 /* Time Machine Demo label */
 .prescan-demo-label {
   font-family: var(--db-font-heading);
-  font-size: 1.1rem;
+  font-size: 1.32rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.14em;
