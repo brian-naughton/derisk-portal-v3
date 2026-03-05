@@ -19,10 +19,10 @@ export function IntroSplash({ onComplete }: IntroSplashProps) {
 
   useEffect(() => {
     if (stepIndex < INIT_STEPS.length - 1) {
-      const timer = setTimeout(() => setStepIndex(s => s + 1), 1200);
+      const timer = setTimeout(() => setStepIndex(s => s + 1), 1020);
       return () => clearTimeout(timer);
     } else {
-      const timer = setTimeout(() => setFading(true), 800);
+      const timer = setTimeout(() => setFading(true), 680);
       return () => clearTimeout(timer);
     }
   }, [stepIndex]);
