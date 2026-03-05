@@ -27,7 +27,7 @@ export function ScorePanel({ data, currentScore, delta }: ScorePanelProps) {
   return (
     <div className="panel-score">
       {/* Module label */}
-      <div className="section-heading"><span style={{ color: 'var(--db-accent)' }}>Module:</span> <span style={{ color: '#fff' }}>Time Machine</span></div>
+      <div className="section-heading">Module: Time Machine</div>
 
       {/* Exploit badge cluster */}
       <div className="tm-exploit-badge-cluster">
