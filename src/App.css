@@ -1411,7 +1411,7 @@ body.scrollable {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--db-text-muted);
+  color: var(--db-accent);
   margin-bottom: 16px;
 }
 
