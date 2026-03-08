@@ -1405,6 +1405,16 @@ body.scrollable {
   text-align: center;
 }
 
+.hero-stealth-label {
+  font-family: var(--db-font-heading);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--db-text-muted);
+  margin-bottom: 16px;
+}
+
 .hero-headline {
   font-family: var(--db-font-heading);
   font-size: 2.2rem;
