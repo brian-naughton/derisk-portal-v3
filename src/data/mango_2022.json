@@ -18,7 +18,7 @@
           "title": "Advanced oracle manipulation pathways",
           "summary": "Programs consume raw oracle slots or Pyth feeds without confidence gating, allowing short-lived spoofed prices to pass risk checks.",
           "guidance": {
-            "investor": "The protocol relies on a price feed (an 'oracle') to know how much assets are worth, but it does not verify whether the price data is fresh, accurate, or being manipulated. An attacker can use a flash loan to temporarily distort the price and trick the protocol into making bad trades or unfair liquidations. This is how bZx lost $8M and Makina Finance lost $4.2M. Avoid protocols with unprotected price feeds.",
+            "investor": "The protocol relies on a price feed (an 'oracle') to know how much assets are worth, but it does not verify whether the price data is fresh, accurate, or being manipulated. An attacker can use a flash loan to temporarily distort the price and trick the protocol into making bad trades or unfair liquidations. This is how bZx lost $8M. Avoid protocols with unprotected price feeds.",
             "developer": "Add deviation limits, TWAP windows, circuit breakers, and fallback sources; log oracle usage so anomalies trigger incident response."
           }
         }
@@ -115,7 +115,7 @@
       }
     ],
     "ScanDate": "2022-10-11",
-    "ScanDuration": 1.218
+    "ScanDuration": 1.291
   },
   "exploit_meta": {
     "name": "Mango Markets",
@@ -193,7 +193,16 @@
     ],
     "breakdown": {
       "vulnerability": "Single oracle source for illiquid MNGO-PERP market, no price deviation or TWAP protection",
-      "steps": "1) Fund two accounts with $5M USDC each. 2) Take opposing MNGO-PERP positions: Account A goes long, Account B goes short. 3) Buy MNGO spot on thin order books across DEXes, spiking price 24x. 4) Oracle updates reflect manipulated spot price. 5) Account A's long position now shows $423M unrealised profit. 6) Borrow $114M against inflated collateral across all Mango lending markets. 7) Withdraw borrowed funds. Account B's losses are socialised."
+      "steps": "1) Fund two accounts with $5M USDC each. 2) Take opposing MNGO-PERP positions: Account A goes long, Account B goes short. 3) Buy MNGO spot on thin order books across DEXes, spiking price 24x. 4) Oracle updates reflect manipulated spot price. 5) Account A's long position now shows $423M unrealised profit. 6) Borrow $114M against inflated collateral across all Mango lending markets. 7) Withdraw borrowed funds. Account B's losses are socialised.",
+      "steps_list": [
+        "Fund two accounts with $5M USDC each",
+        "Take opposing MNGO-PERP positions: Account A goes long, Account B goes short",
+        "Buy MNGO spot on thin order books across DEXes, spiking price 24x",
+        "Oracle updates reflect manipulated spot price",
+        "Account A's long position now shows $423M unrealised profit",
+        "Borrow $114M against inflated collateral across all Mango lending markets",
+        "Withdraw borrowed funds. Account B's losses are socialised"
+      ]
     }
   }
 }

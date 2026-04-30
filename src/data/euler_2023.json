@@ -42,7 +42,7 @@
           "title": "Advanced oracle manipulation pathways",
           "summary": "The contract trusts direct `latestAnswer` calls or AMM spot quotes without TWAPs or caps, recreating bZx-style price swings.",
           "guidance": {
-            "investor": "The protocol relies on a price feed (an 'oracle') to know how much assets are worth, but it does not verify whether the price data is fresh, accurate, or being manipulated. An attacker can use a flash loan to temporarily distort the price and trick the protocol into making bad trades or unfair liquidations. This is how bZx lost $8M and Makina Finance lost $4.2M. Avoid protocols with unprotected price feeds.",
+            "investor": "The protocol relies on a price feed (an 'oracle') to know how much assets are worth, but it does not verify whether the price data is fresh, accurate, or being manipulated. An attacker can use a flash loan to temporarily distort the price and trick the protocol into making bad trades or unfair liquidations. This is how bZx lost $8M. Avoid protocols with unprotected price feeds.",
             "developer": "Add deviation limits, TWAP windows, circuit breakers, and fallback sources; log oracle usage so anomalies trigger incident response."
           }
         }
@@ -144,7 +144,7 @@
       }
     ],
     "ScanDate": "2023-03-13",
-    "ScanDuration": 0.185
+    "ScanDuration": 0.202
   },
   "exploit_meta": {
     "name": "Euler Finance",
@@ -206,7 +206,7 @@
     ],
     "should_gate_expensive_rules": false
   },
-  "primitive_count": 81,
+  "primitive_count": 82,
   "narrative": {
     "sections": [
       {
@@ -228,7 +228,17 @@
     ],
     "breakdown": {
       "vulnerability": "Missing health check in donateToReserves — self-liquidation for profit",
-      "steps": "1) Flash-borrow 30M DAI from Aave. 2) Deposit 20M DAI into Euler, mint ~19.6M eDAI. 3) Recursively borrow and re-deposit to build ~195M eDAI / ~200M dDAI (10x leverage). 4) Repay partial debt with remaining 10M DAI to create headroom, then lever up again. 5) Call donateToReserves to transfer ~100M eDAI to protocol reserves — no health check fires. 6) Account is now deeply insolvent. Liquidator contracts self-liquidate the position, claiming collateral plus bonus worth more than the debt repaid. 7) Redeem eTokens for underlying assets, repay flash loan. 8) Repeat across DAI, USDC, WBTC, stETH, and WETH pools. Total loss: $197M."
+      "steps": "1) Flash-borrow 30M DAI from Aave. 2) Deposit 20M DAI into Euler, mint ~19.6M eDAI. 3) Recursively borrow and re-deposit to build ~195M eDAI / ~200M dDAI (10x leverage). 4) Repay partial debt with remaining 10M DAI to create headroom, then lever up again. 5) Call donateToReserves to transfer ~100M eDAI to protocol reserves — no health check fires. 6) Account is now deeply insolvent. Liquidator contracts self-liquidate the position, claiming collateral plus bonus worth more than the debt repaid. 7) Redeem eTokens for underlying assets, repay flash loan. 8) Repeat across DAI, USDC, WBTC, stETH, and WETH pools. Total loss: $197M.",
+      "steps_list": [
+        "Flash-borrow 30M DAI from Aave",
+        "Deposit 20M DAI into Euler, mint ~19.6M eDAI",
+        "Recursively borrow and re-deposit to build ~195M eDAI / ~200M dDAI (10x leverage)",
+        "Repay partial debt with remaining 10M DAI to create headroom, then lever up again",
+        "Call donateToReserves to transfer ~100M eDAI to protocol reserves — no health check fires",
+        "Account is now deeply insolvent. Liquidator contracts self-liquidate the position, claiming collateral plus bonus worth more than the debt repaid",
+        "Redeem eTokens for underlying assets, repay flash loan",
+        "Repeat across DAI, USDC, WBTC, stETH, and WETH pools. Total loss: $197M"
+      ]
     }
   }
 }

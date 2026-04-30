@@ -24,14 +24,6 @@
         }
       },
       {
-        "score": 41,
-        "description": "Bridge cluster (2 vectors): 1.3x multiplier",
-        "key": null,
-        "full_evidence": "Bridge cluster (2 vectors): 1.3x multiplier",
-        "explanation_investors": "This bridge has multiple vulnerability classes that compound each other's risk. Cross-chain bridges custody enormous value and are prime targets for large-scale attacks — the Ronin Bridge ($625M), Poly Network ($611M), and Wormhole ($320M) hacks all exploited overlapping weaknesses. When a protocol exhibits signature verification weaknesses and cross-chain message validation gaps, an attacker can chain these in a single transaction to bypass defences that would individually hold. The 1.3x multiplier reflects this compounding: each additional attack surface doesn't just add risk, it multiplies it.",
-        "explanation_developers": "Address both vulnerability vectors simultaneously — fixing one in isolation leaves the other exploitable, and attackers will chain them. Vectors identified: signature verification weaknesses and cross-chain message validation gaps. Implement defence-in-depth across signature validation, message verification, validator key management, and execution controls. If any of these vectors are unclear, commission an independent security audit before deploying."
-      },
-      {
         "score": 35,
         "description": "Guardian Signature Bypass",
         "key": null,
@@ -48,20 +40,12 @@
         }
       },
       {
-        "score": 25,
-        "description": "No domain separation found - missing chainId/emitter binding",
+        "score": 33,
+        "description": "Bridge cluster (2 vectors): 1.3x multiplier",
         "key": null,
-        "full_evidence": "No domain separation found - missing chainId/emitter binding",
-        "explanation_investors": "This factor shows that no domain separation found - missing chainid/emitter binding. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
-        "explanation_developers": "Harden the contracts so that no domain separation found - missing chainid/emitter binding is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
-        "cir_explanation": {
-          "title": "Missing or incomplete domain separation",
-          "summary": "Signed payloads omit `block.chainid` or `address(this)` from the EIP-712 domain separator, so a message signed for Ethereum mainnet can be replayed on Arbitrum or a fork.",
-          "guidance": {
-            "investor": "Missing domain separation means signatures are portable between chains and contracts. This is a critical bridge vulnerability that expands the attack surface to every deployment of the same code.",
-            "developer": "Use EIP-712 structured signatures with `DOMAIN_SEPARATOR = keccak256(name, version, chainId, verifyingContract)`. Recompute on chain ID change (hard fork protection)."
-          }
-        }
+        "full_evidence": "Bridge cluster (2 vectors): 1.3x multiplier",
+        "explanation_investors": "This bridge has multiple vulnerability classes that compound each other's risk. Cross-chain bridges custody enormous value and are prime targets for large-scale attacks — the Ronin Bridge ($625M), Poly Network ($611M), and Wormhole ($320M) hacks all exploited overlapping weaknesses. When a protocol exhibits signature verification weaknesses and cross-chain message validation gaps, an attacker can chain these in a single transaction to bypass defences that would individually hold. The 1.3x multiplier reflects this compounding: each additional attack surface doesn't just add risk, it multiplies it.",
+        "explanation_developers": "Address both vulnerability vectors simultaneously — fixing one in isolation leaves the other exploitable, and attackers will chain them. Vectors identified: signature verification weaknesses and cross-chain message validation gaps. Implement defence-in-depth across signature validation, message verification, validator key management, and execution controls. If any of these vectors are unclear, commission an independent security audit before deploying."
       },
       {
         "score": 25,
@@ -112,11 +96,11 @@
         "type": "actuarial_intelligence",
         "key": "actuarial_analysis",
         "name": "Actuarial analysis",
-        "value": "Base 172 | Refined 100"
+        "value": "Base 139 | Refined 100"
       }
     ],
     "ScanDate": "2022-02-02",
-    "ScanDuration": 0.024
+    "ScanDuration": 0.023
   },
   "exploit_meta": {
     "name": "Wormhole Bridge",
@@ -128,36 +112,36 @@
   },
   "chain_display_name": "Ethereum",
   "actuarial": {
-    "pre_actuarial_score": 172,
+    "pre_actuarial_score": 139,
     "slider_deltas": [
       0,
-      -72,
-      -72,
-      -72,
-      -72,
-      -72,
-      -72,
-      -72,
-      -72,
-      -72,
-      -72
+      -39,
+      -39,
+      -39,
+      -39,
+      -39,
+      -39,
+      -39,
+      -39,
+      -39,
+      -39
     ],
     "show_max_risk_message": true,
-    "base": 172,
+    "base": 139,
     "refined": 100,
-    "delta": -72,
-    "full_delta": -72,
+    "delta": -39,
+    "full_delta": -39,
     "weight": 0.3,
-    "uplift_pct": -72,
-    "multiplier": 1.304
+    "uplift_pct": -39,
+    "multiplier": 1.3
   },
   "composition": {
-    "raw_risk_score": 135,
+    "raw_risk_score": 110,
     "mitigation_credit": 4,
     "multiplier_details": [
       {
         "cluster": "Bridge cluster",
-        "added_points": 41
+        "added_points": 33
       }
     ]
   },

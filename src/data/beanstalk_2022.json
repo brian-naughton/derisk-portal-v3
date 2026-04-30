@@ -131,7 +131,7 @@
       }
     ],
     "ScanDate": "2022-04-17",
-    "ScanDuration": 0.067
+    "ScanDuration": 0.07
   },
   "exploit_meta": {
     "name": "Beanstalk Farms",
@@ -205,7 +205,15 @@
     ],
     "breakdown": {
       "vulnerability": "Flash loan-enabled governance takeover with no time delays",
-      "steps": "1) Flash borrow $1B across Aave, Uniswap, and Curve. 2) Swap borrowed assets for BEAN tokens (67% supply). 3) Use voting power to pass emergency proposal sending all funds to attacker. 4) Execute proposal immediately. 5) Repay flash loans with stolen treasury funds. 6) Profit $182M."
+      "steps": "1) Flash borrow $1B across Aave, Uniswap, and Curve. 2) Swap borrowed assets for BEAN tokens (67% supply). 3) Use voting power to pass emergency proposal sending all funds to attacker. 4) Execute proposal immediately. 5) Repay flash loans with stolen treasury funds. 6) Profit $182M.",
+      "steps_list": [
+        "Flash borrow $1B across Aave, Uniswap, and Curve",
+        "Swap borrowed assets for BEAN tokens (67% supply)",
+        "Use voting power to pass emergency proposal sending all funds to attacker",
+        "Execute proposal immediately",
+        "Repay flash loans with stolen treasury funds",
+        "Profit $182M"
+      ]
     }
   }
 }

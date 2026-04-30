@@ -8,6 +8,14 @@
     "RiskDescription": "High Risk",
     "RiskFactors": [
       {
+        "score": 34,
+        "description": "Bridge perfect storm (3 vectors): 1.4x multiplier",
+        "key": null,
+        "full_evidence": "Bridge perfect storm (3 vectors): 1.4x multiplier",
+        "explanation_investors": "This bridge has 3 distinct vulnerability classes creating a critical compounding risk. Bridges with this profile have historically suffered catastrophic losses — the attack surface is multiplicative, not additive. When validator/guardian key management risks, cross-chain message validation gaps, and execution control vulnerabilities are all present in the same protocol, the protocol's security depends on every layer holding simultaneously. The 1.4x multiplier reflects the reality that a single breach in any layer can cascade across the others.",
+        "explanation_developers": "CRITICAL: 3 distinct vulnerability vectors compound catastrophically. Vectors: validator/guardian key management risks, cross-chain message validation gaps, and execution control vulnerabilities. A comprehensive bridge security audit addressing all vectors simultaneously is required — partial remediation is insufficient when attack paths can chain across layers. Commission an independent security audit before deploying or continuing to operate."
+      },
+      {
         "score": 25,
         "description": "Insufficient Validator Quorum",
         "key": null,
@@ -40,12 +48,20 @@
         }
       },
       {
-        "score": 17,
-        "description": "Bridge cluster (2 vectors): 1.3x multiplier",
+        "score": 16,
+        "description": "External calls in bridge execution without target...",
         "key": null,
-        "full_evidence": "Bridge cluster (2 vectors): 1.3x multiplier",
-        "explanation_investors": "This bridge has multiple vulnerability classes that compound each other's risk. Cross-chain bridges custody enormous value and are prime targets for large-scale attacks — the Ronin Bridge ($625M), Poly Network ($611M), and Wormhole ($320M) hacks all exploited overlapping weaknesses. When a protocol exhibits validator/guardian key management risks and cross-chain message validation gaps, an attacker can chain these in a single transaction to bypass defences that would individually hold. The 1.3x multiplier reflects this compounding: each additional attack surface doesn't just add risk, it multiplies it.",
-        "explanation_developers": "Address both vulnerability vectors simultaneously — fixing one in isolation leaves the other exploitable, and attackers will chain them. Vectors identified: validator/guardian key management risks and cross-chain message validation gaps. Implement defence-in-depth across signature validation, message verification, validator key management, and execution controls. If any of these vectors are unclear, commission an independent security audit before deploying."
+        "full_evidence": "External calls in bridge execution without target allowlist or selector gating",
+        "explanation_investors": "This factor shows that external calls in bridge execution without target allowlist or selector gating. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that external calls in bridge execution without target allowlist or selector gating is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Unbounded external call loop",
+          "summary": "A loop iterates over an unbounded array making external calls on each iteration, enabling denial-of-service through gas exhaustion or griefing via reverting callbacks.",
+          "guidance": {
+            "investor": "Unbounded external calls can freeze protocol operations if any recipient reverts or consumes excessive gas. This can block withdrawals, distributions, or liquidations.",
+            "developer": "Use pull-based patterns instead of push-based distributions. If iteration is necessary, implement pagination, gas guards per call, and failure tolerance (continue on individual call failure)."
+          }
+        }
       },
       {
         "score": 15,
@@ -60,6 +76,22 @@
           "guidance": {
             "investor": "Reentrancy is one of the most dangerous smart contract flaws. It lets an attacker call the 'withdraw' function over and over before the contract updates the balance — draining funds in a loop. This is exactly how The DAO lost $60M in 2016, the first major DeFi exploit. If a protocol has this vulnerability, your deposited funds are at immediate risk.",
             "developer": "Commit withdrawals to state using atomic flags before CPI and gate re-entry with a rent-exempt record or PDA write."
+          }
+        }
+      },
+      {
+        "score": 15,
+        "description": "Incomplete domain separation",
+        "key": null,
+        "full_evidence": "Incomplete domain separation - only 67% of components present",
+        "explanation_investors": "This factor shows that incomplete domain separation - only 67% of components present. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that incomplete domain separation - only 67% of components present is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Missing or incomplete domain separation",
+          "summary": "Message signatures do not include the program ID or cluster identifier, enabling cross-program or cross-cluster replay.",
+          "guidance": {
+            "investor": "Missing domain separation means signatures are portable between chains and contracts. This is a critical bridge vulnerability that expands the attack surface to every deployment of the same code.",
+            "developer": "Include the program ID, cluster, and a version nonce in all signed message schemas."
           }
         }
       },
@@ -111,11 +143,11 @@
         "type": "actuarial_intelligence",
         "key": "actuarial_analysis",
         "name": "Actuarial analysis",
-        "value": "Base 84 | Refined 100"
+        "value": "Base 132 | Refined 100"
       }
     ],
     "ScanDate": "2022-02-02",
-    "ScanDuration": 0.081
+    "ScanDuration": 0.075
   },
   "exploit_meta": {
     "name": "Wormhole Bridge (SVM)",
@@ -127,36 +159,36 @@
   },
   "chain_display_name": "Solana",
   "actuarial": {
-    "pre_actuarial_score": 84,
+    "pre_actuarial_score": 132,
     "slider_deltas": [
       0,
-      5,
-      10,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
+      -32,
+      -32,
+      -32,
+      -32,
+      -32,
+      -32,
+      -32,
+      -32,
+      -32,
+      -32
     ],
-    "show_max_risk_message": false,
-    "base": 84,
+    "show_max_risk_message": true,
+    "base": 132,
     "refined": 100,
-    "delta": 16,
-    "full_delta": 16,
+    "delta": -32,
+    "full_delta": -32,
     "weight": 0.3,
-    "uplift_pct": 16,
-    "multiplier": 1.243
+    "uplift_pct": -32,
+    "multiplier": 1.337
   },
   "composition": {
-    "raw_risk_score": 70,
+    "raw_risk_score": 101,
     "mitigation_credit": 3,
     "multiplier_details": [
       {
-        "cluster": "Bridge cluster",
-        "added_points": 17
+        "cluster": "Bridge perfect storm 1.4x",
+        "added_points": 34
       }
     ]
   },
@@ -191,7 +223,15 @@
     ],
     "breakdown": {
       "vulnerability": "Deprecated sysvar function allows forged guardian signatures to mint $320M",
-      "steps": "1) Create a fake SignatureSet account with forged guardian signatures. 2) Pass a spoofed sysvar account to verify_signatures that returns \"valid\" for any input. 3) Call post_vaa with the forged SignatureSet — it passes guardian quorum check. 4) Use the valid VAA to call complete_transfer on the Token Bridge. 5) Mint 120,000 wETH on Solana. 6) Bridge 93,750 ETH back to Ethereum."
+      "steps": "1) Create a fake SignatureSet account with forged guardian signatures. 2) Pass a spoofed sysvar account to verify_signatures that returns \"valid\" for any input. 3) Call post_vaa with the forged SignatureSet — it passes guardian quorum check. 4) Use the valid VAA to call complete_transfer on the Token Bridge. 5) Mint 120,000 wETH on Solana. 6) Bridge 93,750 ETH back to Ethereum.",
+      "steps_list": [
+        "Create a fake SignatureSet account with forged guardian signatures",
+        "Pass a spoofed sysvar account to verify_signatures that returns \"valid\" for any input",
+        "Call post_vaa with the forged SignatureSet — it passes guardian quorum check",
+        "Use the valid VAA to call complete_transfer on the Token Bridge",
+        "Mint 120,000 wETH on Solana",
+        "Bridge 93,750 ETH back to Ethereum"
+      ]
     }
   }
 }

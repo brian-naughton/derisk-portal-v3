@@ -8,22 +8,6 @@
     "RiskDescription": "High Risk",
     "RiskFactors": [
       {
-        "score": 30,
-        "description": "Flash-Loanable Governance Tokens",
-        "key": null,
-        "full_evidence": "Voting power derived from flash-loanable ERC20 balance without snapshot protection",
-        "explanation_investors": "Voting power in this system is determined by current token holdings with no snapshot mechanism. This means token balances can be manipulated within the same transaction as a vote. Flash loan attacks can temporarily inflate an attacker's voting power to pass any proposal. This is a well-known critical vulnerability pattern that has resulted in major exploits.",
-        "explanation_developers": "Upgrade to ERC20Votes or implement a custom checkpoint system. Each transfer should record the balance change with a block number. When counting votes, use the balance as of a specific historical block (the proposal creation block or earlier). This breaks the atomicity that flash loan attacks depend on.",
-        "cir_explanation": {
-          "title": "Voting power vulnerable to flash loans",
-          "summary": "Governance reads live balanceOf() for voting weight without checkpointing. An attacker can flash-borrow tokens, vote, execute, and repay in one block.",
-          "guidance": {
-            "investor": "Voting power in this protocol comes directly from how many tokens you hold right now — with no snapshot or lock-up. That means an attacker can borrow millions of tokens through a flash loan (a zero-collateral loan that lasts one transaction), use them to outvote everyone, pass a malicious proposal, execute it, and return the tokens — all in a single transaction. This is how Beanstalk was drained of $182M. It is one of the most proven governance attack patterns. Avoid governance participation or staking until snapshot voting is implemented.",
-            "developer": "Use ERC20Votes or ERC20Snapshot so voting power is locked at proposal creation time. Add TimelockController to enforce execution delay."
-          }
-        }
-      },
-      {
         "score": 25,
         "description": "Permissionless Timelock Execution",
         "key": null,
@@ -41,19 +25,35 @@
       },
       {
         "score": 25,
-        "description": "Governance cluster (2 vectors): 1.3x multiplier",
+        "description": "No domain separation found - missing chainId/emitter binding",
         "key": null,
-        "full_evidence": "Governance cluster (2 vectors): 1.3x multiplier",
-        "explanation_investors": "This protocol has multiple governance vulnerabilities that amplify each other's risk. When a protocol exhibits flash-loan governance manipulation and timelock bypass vulnerabilities, an attacker can manipulate protocol governance in ways that individual safeguards cannot prevent. The $180M Beanstalk exploit demonstrated how flash-loan voting combined with instant execution enabled complete protocol takeover in a single transaction. The 1.3x multiplier reflects that governance attack vectors compound — each additional weakness doesn't just widen the attack surface, it makes every other weakness more exploitable.",
-        "explanation_developers": "Address both governance vectors simultaneously — attackers will chain them. Vectors identified: flash-loan governance manipulation and timelock bypass vulnerabilities. Implement coordinated fixes: voting power snapshots, mandatory timelock delays, separation of proposal and execution phases, and multisig oversight for critical operations. If any of these vectors are unclear, commission an independent security audit before deploying."
+        "full_evidence": "No domain separation found - missing chainId/emitter binding",
+        "explanation_investors": "This factor shows that no domain separation found - missing chainid/emitter binding. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that no domain separation found - missing chainid/emitter binding is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Missing or incomplete domain separation",
+          "summary": "Signed payloads omit `block.chainid` or `address(this)` from the EIP-712 domain separator, so a message signed for Ethereum mainnet can be replayed on Arbitrum or a fork.",
+          "guidance": {
+            "investor": "Missing domain separation means signatures are portable between chains and contracts. This is a critical bridge vulnerability that expands the attack surface to every deployment of the same code.",
+            "developer": "Use EIP-712 structured signatures with `DOMAIN_SEPARATOR = keccak256(name, version, chainId, verifyingContract)`. Recompute on chain ID change (hard fork protection)."
+          }
+        }
       },
       {
-        "score": 23,
-        "description": "Lending cluster (2 vectors): 1.3x multiplier",
+        "score": 25,
+        "description": "No replay protection found - messages can be replayed",
         "key": null,
-        "full_evidence": "Lending cluster (2 vectors): 1.3x multiplier",
-        "explanation_investors": "This lending protocol has multiple vulnerability classes that compound each other's risk. When a protocol exhibits oracle price manipulation exposure and flash-loan invariant risks, an attacker can chain these weaknesses to drain reserves in ways that individual safeguards cannot prevent. The Euler Finance ($196M) and Mango Markets ($114M) exploits both leveraged overlapping lending vulnerabilities — oracle manipulation combined with inadequate solvency checks enabled complete fund extraction. The 1.3x multiplier reflects this compounding: lending protocols with multiple exposed surfaces face multiplicative, not additive, risk.",
-        "explanation_developers": "Address both lending vulnerability vectors simultaneously — attackers will chain them. Vectors identified: oracle price manipulation exposure and flash-loan invariant risks. Implement coordinated fixes across oracle protection (TWAP, staleness checks, deviation bounds), reserve solvency verification, mint/burn access controls, and collateral health calculations. If any of these vectors are unclear, commission an independent security audit before deploying."
+        "full_evidence": "No replay protection found - messages can be replayed",
+        "explanation_investors": "This factor shows that no replay protection found - messages can be replayed. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that no replay protection found - messages can be replayed is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "No replay protection on bridge messages",
+          "summary": "No `consumed` mapping or nonce tracking exists on the message execution path. Any valid signed payload can be resubmitted indefinitely.",
+          "guidance": {
+            "investor": "This is a critical vulnerability. Without replay protection, a single valid withdrawal proof can be used to drain the entire bridge treasury. Do not use this bridge.",
+            "developer": "Add `mapping(bytes32 => bool) public processedMessages` and check/set before execution. Include the message hash in event logs for monitoring."
+          }
+        }
       },
       {
         "score": 20,
@@ -88,6 +88,54 @@
         }
       },
       {
+        "score": 20,
+        "description": "Block-Dependent Financial Operations",
+        "key": null,
+        "full_evidence": "Financial operations depend on block_number - MEV risk",
+        "explanation_investors": "This contract uses block numbers in financial calculations, which creates opportunities for miners/validators and MEV searchers to manipulate outcomes. Block-dependent logic can be exploited through transaction ordering attacks, where sophisticated actors profit at the expense of regular users. This can result in worse prices, failed transactions, or unexpected losses.",
+        "explanation_developers": "Avoid using block.number or block.timestamp for financial calculations where precision matters. If time-based logic is necessary, use commit-reveal schemes or oracle-based timestamps. Implement MEV-resistant patterns like batched auctions, time-weighted average pricing, or private mempools (Flashbots Protect). Consider the difference between 'good' MEV (arbitrage that improves prices) and 'bad' MEV (sandwich attacks).",
+        "cir_explanation": {
+          "title": "Time-dependent financial operations",
+          "summary": "Functions use `block.timestamp` for interest accrual, vesting schedules, or auction mechanics. Validators can adjust timestamps by up to ~15 seconds, which may be enough to skew time-sensitive calculations in their favour.",
+          "guidance": {
+            "investor": "Time-dependent logic is a moderate risk in most protocols. It becomes material when calculations are sensitive to small time differences (high-frequency interest accrual, auction deadlines, or MEV-sensitive operations).",
+            "developer": "Use `block.number` for ordering-sensitive logic. For time-based calculations, add 15-second tolerance margins and ensure interest rates are not manipulable within the validator's timestamp adjustment window."
+          }
+        }
+      },
+      {
+        "score": 20,
+        "description": "Bridge cluster (2 vectors): 1.3x multiplier",
+        "key": null,
+        "full_evidence": "Bridge cluster (2 vectors): 1.3x multiplier",
+        "explanation_investors": "This bridge has multiple vulnerability classes that compound each other's risk. Cross-chain bridges custody enormous value and are prime targets for large-scale attacks — the Ronin Bridge ($625M), Poly Network ($611M), and Wormhole ($320M) hacks all exploited overlapping weaknesses. When a protocol exhibits cross-chain message validation gaps and execution control vulnerabilities, an attacker can chain these in a single transaction to bypass defences that would individually hold. The 1.3x multiplier reflects this compounding: each additional attack surface doesn't just add risk, it multiplies it.",
+        "explanation_developers": "Address both vulnerability vectors simultaneously — fixing one in isolation leaves the other exploitable, and attackers will chain them. Vectors identified: cross-chain message validation gaps and execution control vulnerabilities. Implement defence-in-depth across signature validation, message verification, validator key management, and execution controls. If any of these vectors are unclear, commission an independent security audit before deploying."
+      },
+      {
+        "score": 20,
+        "description": "Lending cluster (2 vectors): 1.3x multiplier",
+        "key": null,
+        "full_evidence": "Lending cluster (2 vectors): 1.3x multiplier",
+        "explanation_investors": "This lending protocol has multiple vulnerability classes that compound each other's risk. When a protocol exhibits oracle price manipulation exposure and flash-loan invariant risks, an attacker can chain these weaknesses to drain reserves in ways that individual safeguards cannot prevent. The Euler Finance ($196M) and Mango Markets ($114M) exploits both leveraged overlapping lending vulnerabilities — oracle manipulation combined with inadequate solvency checks enabled complete fund extraction. The 1.3x multiplier reflects this compounding: lending protocols with multiple exposed surfaces face multiplicative, not additive, risk.",
+        "explanation_developers": "Address both lending vulnerability vectors simultaneously — attackers will chain them. Vectors identified: oracle price manipulation exposure and flash-loan invariant risks. Implement coordinated fixes across oracle protection (TWAP, staleness checks, deviation bounds), reserve solvency verification, mint/burn access controls, and collateral health calculations. If any of these vectors are unclear, commission an independent security audit before deploying."
+      },
+      {
+        "score": 16,
+        "description": "External calls in bridge execution without target...",
+        "key": null,
+        "full_evidence": "External calls in bridge execution without target allowlist or selector gating",
+        "explanation_investors": "This factor shows that external calls in bridge execution without target allowlist or selector gating. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that external calls in bridge execution without target allowlist or selector gating is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Unbounded external call loop",
+          "summary": "Functions iterate over recipient arrays (e.g., `for (uint i; i < recipients.length; i++) recipients[i].call(...)`) where a malicious recipient can cause the entire batch to revert or consume all block gas.",
+          "guidance": {
+            "investor": "Unbounded external calls can freeze protocol operations if any recipient reverts or consumes excessive gas. This can block withdrawals, distributions, or liquidations.",
+            "developer": "Replace `for` loops with push/pull patterns (allow users to claim instead of batch-sending). If looping is required, use `gasleft()` checks and `try/catch` around each external call."
+          }
+        }
+      },
+      {
         "score": 8,
         "description": "Flash Loan + Governance Intersection",
         "key": null,
@@ -113,6 +161,11 @@
       {
         "type": "actuarial_detail",
         "key": "actuarial_detail",
+        "description": "Refined bridge: +71% (270 incidents, $37M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
         "description": "Refined flashloan: +4% (87 incidents, $17M avg)"
       },
       {
@@ -124,6 +177,16 @@
         "type": "actuarial_detail",
         "key": "actuarial_detail",
         "description": "Refined governance: +4% (66 incidents, $60M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined logic_error: +5% (65 incidents, $18M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined mev_manipulation: +5% (35 incidents, $8M avg)"
       },
       {
         "type": "actuarial_detail",
@@ -158,11 +221,11 @@
         "type": "actuarial_intelligence",
         "key": "actuarial_analysis",
         "name": "Actuarial analysis",
-        "value": "Base 141 | Refined 100"
+        "value": "Base 189 | Refined 100"
       }
     ],
     "ScanDate": "2026-01-19",
-    "ScanDuration": 0.611
+    "ScanDuration": 0.6
   },
   "exploit_meta": {
     "name": "Makina Finance",
@@ -174,48 +237,49 @@
   },
   "chain_display_name": "Ethereum",
   "actuarial": {
-    "pre_actuarial_score": 141,
+    "pre_actuarial_score": 189,
     "slider_deltas": [
       0,
-      -41,
-      -41,
-      -41,
-      -41,
-      -41,
-      -41,
-      -41,
-      -41,
-      -41,
-      -41
+      -89,
+      -89,
+      -89,
+      -89,
+      -89,
+      -89,
+      -89,
+      -89,
+      -89,
+      -89
     ],
     "show_max_risk_message": true,
-    "base": 141,
+    "base": 189,
     "refined": 100,
-    "delta": -41,
-    "full_delta": -41,
+    "delta": -89,
+    "full_delta": -89,
     "weight": 0.3,
-    "uplift_pct": -41,
-    "multiplier": 1.466
+    "uplift_pct": -89,
+    "multiplier": 1.252
   },
   "composition": {
-    "raw_risk_score": 103,
+    "raw_risk_score": 159,
     "mitigation_credit": 10,
     "multiplier_details": [
       {
-        "cluster": "Governance cluster",
-        "added_points": 25
+        "cluster": "Bridge cluster",
+        "added_points": 20
       },
       {
         "cluster": "Lending cluster",
-        "added_points": 23
+        "added_points": 20
       }
     ]
   },
   "context_data": {
-    "archetype": "DelegatedVotingToken",
-    "confidence": 0.8,
+    "archetype": "CustodialBridge",
+    "confidence": 0.9,
     "evidence": [
       "capability:Admin.Authority.SingleKey",
+      "capability:Bridge.ValidatorThreshold",
       "capability:FT.Allowance",
       "capability:FT.Transfer",
       "capability:Financial.FlashLoan",
@@ -224,7 +288,7 @@
     ],
     "should_gate_expensive_rules": false
   },
-  "primitive_count": 63,
+  "primitive_count": 57,
   "narrative": {
     "sections": [
       {
@@ -246,7 +310,15 @@
     ],
     "breakdown": {
       "vulnerability": "Flash loan oracle manipulation — unprotected price feed drained the vault",
-      "steps": "1) Flash-borrow large position from external lending protocol. 2) Deposit into Curve pool to manipulate spot price. 3) Call permissionless updateTotalAum() on the Caliber contract — it reads the inflated Curve spot price as ground truth. 4) The inflated AUM valuation allows the attacker to withdraw more than their fair share from the vault. 5) Remove liquidity from Curve to restore the price. 6) Repay flash loan and pocket the $4.2M difference."
+      "steps": "1) Flash-borrow large position from external lending protocol. 2) Deposit into Curve pool to manipulate spot price. 3) Call permissionless updateTotalAum() on the Caliber contract — it reads the inflated Curve spot price as ground truth. 4) The inflated AUM valuation allows the attacker to withdraw more than their fair share from the vault. 5) Remove liquidity from Curve to restore the price. 6) Repay flash loan and pocket the $4.2M difference.",
+      "steps_list": [
+        "Flash-borrow large position from external lending protocol",
+        "Deposit into Curve pool to manipulate spot price",
+        "Call permissionless updateTotalAum() on the Caliber contract — it reads the inflated Curve spot price as ground truth",
+        "The inflated AUM valuation allows the attacker to withdraw more than their fair share from the vault",
+        "Remove liquidity from Curve to restore the price",
+        "Repay flash loan and pocket the $4.2M difference"
+      ]
     }
   }
 }

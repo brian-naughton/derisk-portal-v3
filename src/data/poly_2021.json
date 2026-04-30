@@ -8,7 +8,7 @@
     "RiskDescription": "High Risk",
     "RiskFactors": [
       {
-        "score": 66,
+        "score": 80,
         "description": "Bridge perfect storm (3 vectors): 1.4x multiplier",
         "key": null,
         "full_evidence": "Bridge perfect storm (3 vectors): 1.4x multiplier",
@@ -94,6 +94,38 @@
             "developer": "Implement layered validation: gateway check, source whitelist, payload hash verification, nonce tracking, and rate limiting. Log every processed message for monitoring."
           }
         }
+      },
+      {
+        "score": 20,
+        "description": "Dangerous write-then-delete replay guard pattern detected",
+        "key": null,
+        "full_evidence": "Dangerous write-then-delete replay guard pattern detected",
+        "explanation_investors": "This factor shows that dangerous write-then-delete replay guard pattern detected. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that dangerous write-then-delete replay guard pattern detected is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Flawed replay protection mechanism",
+          "summary": "The consumed-message mapping uses a hash that does not include `block.chainid`, or nonces are sequential and predictable, or a migration function can reset the tracking state.",
+          "guidance": {
+            "investor": "Flawed replay protection is worse than missing protection because it creates false confidence. Verify that the bridge's replay guard has been specifically tested in its audit.",
+            "developer": "Include chain ID, contract address, and a unique message identifier in the replay guard hash. Use permanent storage for consumed messages and never allow the tracking state to be reset or migrated without cryptographic continuity."
+          }
+        }
+      },
+      {
+        "score": 15,
+        "description": "Incomplete domain separation",
+        "key": null,
+        "full_evidence": "Incomplete domain separation - only 67% of components present",
+        "explanation_investors": "This factor shows that incomplete domain separation - only 67% of components present. Investors should treat the protocol as exploitable until the issue is publicly remediated.",
+        "explanation_developers": "Harden the contracts so that incomplete domain separation - only 67% of components present is no longer possible. Deploy targeted tests, guards, and emergency procedures before redeploying.",
+        "cir_explanation": {
+          "title": "Missing or incomplete domain separation",
+          "summary": "Signed payloads omit `block.chainid` or `address(this)` from the EIP-712 domain separator, so a message signed for Ethereum mainnet can be replayed on Arbitrum or a fork.",
+          "guidance": {
+            "investor": "Missing domain separation means signatures are portable between chains and contracts. This is a critical bridge vulnerability that expands the attack surface to every deployment of the same code.",
+            "developer": "Use EIP-712 structured signatures with `DOMAIN_SEPARATOR = keccak256(name, version, chainId, verifyingContract)`. Recompute on chain ID change (hard fork protection)."
+          }
+        }
       }
     ],
     "MitigationsAndSignals": [
@@ -101,6 +133,11 @@
         "type": "actuarial_detail",
         "key": "actuarial_detail",
         "description": "Refined bridge: +58% (270 incidents, $37M avg)"
+      },
+      {
+        "type": "actuarial_detail",
+        "key": "actuarial_detail",
+        "description": "Refined logic_error: +5% (65 incidents, $18M avg)"
       },
       {
         "type": "actuarial_detail",
@@ -122,11 +159,11 @@
         "type": "actuarial_intelligence",
         "key": "actuarial_analysis",
         "name": "Actuarial analysis",
-        "value": "Base 228 | Refined 100"
+        "value": "Base 277 | Refined 100"
       }
     ],
     "ScanDate": "2021-08-10",
-    "ScanDuration": 0.052
+    "ScanDuration": 0.049
   },
   "exploit_meta": {
     "name": "Poly Network",
@@ -138,36 +175,36 @@
   },
   "chain_display_name": "Ethereum",
   "actuarial": {
-    "pre_actuarial_score": 228,
+    "pre_actuarial_score": 277,
     "slider_deltas": [
       0,
-      -128,
-      -128,
-      -128,
-      -128,
-      -128,
-      -128,
-      -128,
-      -128,
-      -128,
-      -128
+      -177,
+      -177,
+      -177,
+      -177,
+      -177,
+      -177,
+      -177,
+      -177,
+      -177,
+      -177
     ],
     "show_max_risk_message": true,
-    "base": 228,
+    "base": 277,
     "refined": 100,
-    "delta": -128,
-    "full_delta": -128,
+    "delta": -177,
+    "full_delta": -177,
     "weight": 0.3,
-    "uplift_pct": -128,
+    "uplift_pct": -177,
     "multiplier": 1.4
   },
   "composition": {
-    "raw_risk_score": 165,
+    "raw_risk_score": 200,
     "mitigation_credit": 3,
     "multiplier_details": [
       {
         "cluster": "Bridge perfect storm 1.4x",
-        "added_points": 66
+        "added_points": 80
       }
     ]
   },
@@ -182,7 +219,7 @@
     ],
     "should_gate_expensive_rules": false
   },
-  "primitive_count": 12,
+  "primitive_count": 13,
   "narrative": {
     "sections": [
       {
@@ -204,7 +241,14 @@
     ],
     "breakdown": {
       "vulnerability": "Cross-chain relay executes arbitrary calls — attacker replaces keeper list to seize bridge authority",
-      "steps": "1) Identify that verifyHeaderAndExecuteTx can execute arbitrary cross-chain messages against any target contract. 2) Craft a cross-chain message targeting EthCrossChainData.putCurEpochConPkBytes — the function that sets authorised keepers. 3) Submit the message via the relay. The contract verifies the header and executes the payload — replacing the keeper list with the attacker’s key. 4) With signing authority over the bridge, call unlock() to withdraw assets on Ethereum, BSC, and Polygon. 5) Drain $611M across three chains in coordinated transactions."
+      "steps": "1) Identify that verifyHeaderAndExecuteTx can execute arbitrary cross-chain messages against any target contract. 2) Craft a cross-chain message targeting EthCrossChainData.putCurEpochConPkBytes — the function that sets authorised keepers. 3) Submit the message via the relay. The contract verifies the header and executes the payload — replacing the keeper list with the attacker’s key. 4) With signing authority over the bridge, call unlock() to withdraw assets on Ethereum, BSC, and Polygon. 5) Drain $611M across three chains in coordinated transactions.",
+      "steps_list": [
+        "Identify that verifyHeaderAndExecuteTx can execute arbitrary cross-chain messages against any target contract",
+        "Craft a cross-chain message targeting EthCrossChainData.putCurEpochConPkBytes — the function that sets authorised keepers",
+        "Submit the message via the relay. The contract verifies the header and executes the payload — replacing the keeper list with the attacker’s key",
+        "With signing authority over the bridge, call unlock() to withdraw assets on Ethereum, BSC, and Polygon",
+        "Drain $611M across three chains in coordinated transactions"
+      ]
     }
   }
 }

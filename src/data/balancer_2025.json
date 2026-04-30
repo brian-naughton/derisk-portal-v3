@@ -111,7 +111,7 @@
       }
     ],
     "ScanDate": "2025-11-03",
-    "ScanDuration": 0.613
+    "ScanDuration": 0.652
   },
   "exploit_meta": {
     "name": "Balancer V2",
@@ -167,7 +167,7 @@
     ],
     "should_gate_expensive_rules": false
   },
-  "primitive_count": 138,
+  "primitive_count": 139,
   "narrative": {
     "sections": [
       {
