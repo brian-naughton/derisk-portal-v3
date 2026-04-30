@@ -3,7 +3,7 @@
   "scan_result": {
     "Name": "Balancer V2 ($128M Hack, 2025)",
     "ContractAddress": "0xA13a9247ea42D743238089903570127DdA72fE44",
-    "RiskScore": 85,
+    "RiskScore": 87,
     "RiskCategory": "high",
     "RiskDescription": "High Risk",
     "RiskFactors": [
@@ -94,14 +94,8 @@
       {
         "type": "positive_signal",
         "key": "positive_signal",
-        "description": "Governance Authority Control (-3 pts)",
+        "description": "Battle Tested Patterns (-3 pts)",
         "points_saved": 3
-      },
-      {
-        "type": "positive_signal",
-        "key": "positive_signal",
-        "description": "Battle Tested Patterns (-2 pts)",
-        "points_saved": 2
       },
       {
         "type": "positive_signal",
@@ -113,7 +107,7 @@
         "type": "actuarial_intelligence",
         "key": "actuarial_analysis",
         "name": "Actuarial analysis",
-        "value": "Base 81 | Refined 85"
+        "value": "Base 83 | Refined 87"
       }
     ],
     "ScanDate": "2025-11-03",
@@ -129,7 +123,7 @@
   },
   "chain_display_name": "Ethereum",
   "actuarial": {
-    "pre_actuarial_score": 81,
+    "pre_actuarial_score": 83,
     "slider_deltas": [
       0,
       1,
@@ -137,15 +131,15 @@
       4,
       5,
       7,
-      8,
+      9,
       10,
       12,
-      13,
+      14,
       15
     ],
     "show_max_risk_message": false,
-    "base": 81,
-    "refined": 85,
+    "base": 83,
+    "refined": 87,
     "delta": 4,
     "full_delta": 15,
     "weight": 0.3,
@@ -154,7 +148,7 @@
   },
   "composition": {
     "raw_risk_score": 65,
-    "mitigation_credit": 10,
+    "mitigation_credit": 8,
     "multiplier_details": [
       {
         "cluster": "Lending perfect storm 1.4x",
@@ -169,13 +163,11 @@
       "capability:Bridge.ValidatorThreshold",
       "capability:FT.Allowance",
       "capability:FT.Transfer",
-      "capability:Financial.FlashLoan",
-      "capability:Gov.Quorum",
-      "capability:Gov.Vote"
+      "capability:Financial.FlashLoan"
     ],
     "should_gate_expensive_rules": false
   },
-  "primitive_count": 145,
+  "primitive_count": 138,
   "narrative": {
     "sections": [
       {
@@ -197,7 +189,15 @@
     ],
     "breakdown": {
       "vulnerability": "Cumulative rounding errors exploited via flash-loan-funded batch operations",
-      "steps": "1) Flash-borrow large token positions and deposit into Balancer V2 Vault as internal balances. 2) Execute carefully sized swaps to push pool balances into edge ranges where integer division rounds in the attacker’s favour. 3) Chain hundreds of micro-swaps via batchSwap, each extracting a tiny surplus — the invariant checks pass under the flawed math. 4) As the invariant D drifts, BPT (pool tokens) become mispriced — mint BPT cheaply, redeem for more underlying than deposited. 5) Accumulate stolen value as internal Vault balances, then withdraw to external addresses. 6) Replay identical exploit across 6+ chains. Repay flash loans, pocket $128M."
+      "steps": "1) Flash-borrow large token positions and deposit into Balancer V2 Vault as internal balances. 2) Execute carefully sized swaps to push pool balances into edge ranges where integer division rounds in the attacker’s favour. 3) Chain hundreds of micro-swaps via batchSwap, each extracting a tiny surplus — the invariant checks pass under the flawed math. 4) As the invariant D drifts, BPT (pool tokens) become mispriced — mint BPT cheaply, redeem for more underlying than deposited. 5) Accumulate stolen value as internal Vault balances, then withdraw to external addresses. 6) Replay identical exploit across 6+ chains. Repay flash loans, pocket $128M.",
+      "steps_list": [
+        "Flash-borrow large token positions and deposit into Balancer V2 Vault as internal balances",
+        "Execute carefully sized swaps to push pool balances into edge ranges where integer division rounds in the attacker’s favour",
+        "Chain hundreds of micro-swaps via batchSwap, each extracting a tiny surplus — the invariant checks pass under the flawed math",
+        "As the invariant D drifts, BPT (pool tokens) become mispriced — mint BPT cheaply, redeem for more underlying than deposited",
+        "Accumulate stolen value as internal Vault balances, then withdraw to external addresses",
+        "Replay identical exploit across 6+ chains. Repay flash loans, pocket $128M"
+      ]
     }
   }
 }
