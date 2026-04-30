@@ -286,15 +286,17 @@
   </figure>
 
   <ul>
-    <li><strong>Ethereum (exit point, score: 94/100)</strong> — Signature verification will accept forged guardian approvals. The contract will honour the fraudulent message and release real assets.</li>
+    <li><strong>Ethereum (exit point, score: 100/100)</strong> — Signature verification will accept forged guardian approvals. The contract will honour the fraudulent message and release real assets.</li>
   </ul>
 
   <figure>
-    <img src="Screenshot 2026-03-04 at 00.16.06.png" alt="Wormhole Bridge EVM — DeRisk Time Machine scan, score 94/100">
-    <figcaption>Wormhole Ethereum — score: 94/100. The bridge honours the forged message.</figcaption>
+    <img src="Screenshot 2026-04-30 at 01.10.10.png" alt="Wormhole Bridge EVM — DeRisk Time Machine scan, score 100/100">
+    <figcaption>Wormhole Ethereum — score: 100/100. The bridge honours the forged message.</figcaption>
   </figure>
 
   <div class="pull-quote">Forged on Solana. Redeemed on Ethereum. That's the $320M exploit — and the engine flags both ends.</div>
+
+  <p><em>The scan covers the contract surfaces the exploit actually traversed — the publish-side and guardian-verification primitives on Ethereum, the verify_signatures and post_vaa modules on Solana. The wider bridge stack sits in adjacent contracts beyond the scan's scope.</em></p>
 
   <hr>
 
@@ -307,8 +309,8 @@
   <p>Each exploit includes a post-mortem narrative — how the attack unfolded, what the engine detected, and why it mattered. The demo is designed to be read as much as explored.</p>
 
   <figure>
-    <img src="Screenshot 2026-03-03 at 23.28.20.png" alt="Balancer V2 — DeRisk Time Machine scan, score 85/100">
-    <figcaption>Balancer V2 (November 2025) — precision loss exploitable via repeated operations. Score: 85/100.</figcaption>
+    <img src="Screenshot 2026-04-30 at 01.10.47.png" alt="Balancer V2 — DeRisk Time Machine scan, score 87/100">
+    <figcaption>Balancer V2 (November 2025) — precision loss exploitable via repeated operations. Score: 87/100.</figcaption>
   </figure>
 
   <p>But training against history only proves you can see the past. The real question is whether the rules generalise.</p>
