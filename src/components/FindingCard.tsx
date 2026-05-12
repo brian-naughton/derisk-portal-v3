@@ -14,7 +14,7 @@ export function FindingCard({ finding, isMultiplier }: FindingCardProps) {
     <details className={`finding-card border-${riskClass}`}>
       <summary className="finding-summary">
         <span className={`sev-pip ${riskClass}`} />
-        <span className="finding-title">{finding.description}</span>
+        <span className="finding-title">{finding.cir_explanation?.title ?? finding.description}</span>
         <span className={`finding-pts-badge ${isMultiplier ? 'risk-multiplier' : `risk-${riskClass}`}`}>{finding.score}</span>
         <svg className="finding-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <polyline points="9 18 15 12 9 6" />
