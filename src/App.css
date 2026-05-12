@@ -642,6 +642,8 @@ body {
 .finding-card.border-mitigation { border-left-color: var(--db-risk-low); }
 
 .finding-card:hover { background: var(--db-panel-raised); }
+.finding-card.mitigation-pill:hover { background: transparent; }
+.finding-card.mitigation-pill .finding-summary { cursor: default; }
 
 .finding-summary {
   display: flex;

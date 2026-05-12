@@ -6,16 +6,6 @@ function isMultiplierFinding(description: string): boolean {
   return /multiplier/i.test(description);
 }
 
-/** Short explanations for each mitigation type */
-const MITIGATION_EXPLANATIONS: Record<string, string> = {
-  'Reentrancy Protection': 'The contract implements reentrancy guards (e.g. OpenZeppelin ReentrancyGuard) that prevent recursive external calls from draining funds mid-execution.',
-  'Chainlink Oracles': 'Price feeds are sourced from Chainlink decentralised oracles, reducing exposure to single-source price manipulation attacks.',
-  'Governance Authority Control': 'Administrative functions are gated behind access control modifiers, limiting who can execute privileged operations.',
-  'Battle Tested Patterns': 'The codebase uses established, widely-audited contract patterns that have survived extensive real-world usage.',
-  'Timelock Governance': 'Governance actions are subject to a time delay, giving stakeholders a window to review and react before changes take effect.',
-  'Oz Standards': 'The contract inherits from OpenZeppelin\'s audited standard library, benefiting from battle-hardened implementations of common patterns.',
-};
-
 function cleanMitigationName(description: string): string {
   return description.replace(/\s*\(-?\d+\s*pts?\)/i, '');
 }
@@ -92,23 +82,14 @@ export function FindingsPanel({ data, selectedId, onOpenDetail }: FindingsPanelP
           <div className="section-heading prominent">Mitigations</div>
           {mitigations.map((m: MitigationSignal, i: number) => {
             const name = cleanMitigationName(m.description ?? '');
-            const explanation = MITIGATION_EXPLANATIONS[name];
             return (
-              <details key={`mit-${i}`} className="finding-card border-mitigation">
-                <summary className="finding-summary">
+              <div key={`mit-${i}`} className="finding-card border-mitigation mitigation-pill">
+                <div className="finding-summary">
                   <span className="sev-pip mitigation" />
                   <span className="finding-title">{name}</span>
                   <span className="finding-pts-badge mitigation-pts">-{m.points_saved ?? 0}</span>
-                  <svg className="finding-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </summary>
-                {explanation && (
-                  <div className="finding-body">
-                    <p>{explanation}</p>
-                  </div>
-                )}
-              </details>
+                </div>
+              </div>
             );
           })}
         </>
