@@ -642,8 +642,20 @@ body {
 .finding-card.border-mitigation { border-left-color: var(--db-risk-low); }
 
 .finding-card:hover { background: var(--db-panel-raised); }
-.finding-card.mitigation-pill:hover { background: transparent; }
-.finding-card.mitigation-pill .finding-summary { cursor: default; }
+
+.finding-card.mitigation-pill {
+  border: 1px solid var(--db-risk-low-border);
+  border-radius: 999px;
+  background: var(--db-risk-low-bg);
+  margin-bottom: 6px;
+}
+.finding-card.mitigation-pill:hover { background: var(--db-risk-low-bg); }
+.finding-card.mitigation-pill .finding-summary {
+  cursor: default;
+  padding: 7px 16px;
+  gap: 10px;
+}
+.finding-card.mitigation-pill .sev-pip { display: none; }
 
 .finding-summary {
   display: flex;
