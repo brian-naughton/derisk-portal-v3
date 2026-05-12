@@ -645,7 +645,7 @@ body {
 
 .finding-card.mitigation-pill {
   border: 1px solid var(--db-risk-low-border);
-  border-radius: 999px;
+  border-radius: 10px;
   background: var(--db-risk-low-bg);
   margin-bottom: 6px;
 }
