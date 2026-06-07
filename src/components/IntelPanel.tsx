@@ -69,7 +69,7 @@ export function IntelPanel({ data, currentScore, delta, weight, onWeightChange }
       <details className="act-methodology">
         <summary className="act-methodology-toggle">Actuarial Methodology</summary>
         <div className="act-methodology-body">
-          The actuarial overlay applies <strong>Bayesian refinement</strong> calibrated against <strong>1,400+ historical exploit incidents</strong> across DeFi, bridges, lending, and governance protocols. Each finding is mapped to a statistical cohort with known frequency and severity data, producing a probabilistic risk adjustment grounded in real-world outcomes. Use the <strong>opacity slider</strong> above to specify the weighting of this actuarial overlay, adjustable in 10% increments from 0% (base score only) to 100% (full actuarial refinement).
+          The actuarial overlay applies a <strong>heavy-tail-aware</strong> refinement calibrated against a <strong>22-cohort canonical exposure panel</strong> (~3,300 protocol-cohort-years) drawn from the public DeFi exploit history, including bridges, lending, and governance protocols. Severity is modelled separately from frequency under standard credibility-theory pooling (Solvency&nbsp;II / Basel&nbsp;III convention), producing a probabilistic risk adjustment grounded in real-world outcomes. Use the <strong>opacity slider</strong> above to specify the weighting of this actuarial overlay, adjustable in 10% increments from 0% (base score only) to 100% (full actuarial refinement).
         </div>
       </details>
 

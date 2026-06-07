@@ -134,7 +134,7 @@ export function PostDemoHero() {
             </div>
 
             <div className="foundation-stat">
-              <span className="foundation-number">67+</span>
+              <span className="foundation-number">75+</span>
               <span className="foundation-label">Universal detection rules</span>
               <span className="foundation-detail">
                 One rule set across EVM, SVM, and every future VM —
@@ -143,11 +143,12 @@ export function PostDemoHero() {
             </div>
 
             <div className="foundation-stat">
-              <span className="foundation-number">1,400+</span>
-              <span className="foundation-label">Historical exploit incidents</span>
+              <span className="foundation-number">3,300</span>
+              <span className="foundation-label">Protocol-cohort-years</span>
               <span className="foundation-detail">
-                Bayesian actuarial refinement trained on the full
-                history of DeFi exploitation — frequency, severity, and loss
+                Heavy-tail-aware actuarial panel across 22 canonical exploit
+                cohorts — severity modelled separately from frequency under
+                standard credibility-theory pooling (Solvency&nbsp;II / Basel&nbsp;III convention)
               </span>
             </div>
           </div>
@@ -157,9 +158,9 @@ export function PostDemoHero() {
             The engine's rule set is mapped against a peer-reviewed 13-category
             vulnerability ontology, then extended to cover cross-chain and multi-VM
             attack surfaces that the academic literature doesn't yet address.
-            On top of the rules sits an actuarial layer that refines scores based
-            on how often vulnerabilities like these have actually been exploited
-            in the wild.
+            On top of the rules sits a heavy-tail-aware actuarial layer that
+            refines scores by how often vulnerabilities like these have been
+            exploited in the wild — and how severe the losses ran when they were.
           </p>
         </div>
       </section>

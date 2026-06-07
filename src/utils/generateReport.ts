@@ -157,11 +157,11 @@ export function generateReport({ data, currentScore, delta, weight }: ReportOpti
   // Build actuarial footer text
   let actuarialFooter: string;
   if (actuarial.show_max_risk_message) {
-    actuarialFooter = `Contract reached maximum risk score (100). Actuarial amplification was not applied as the base heuristic analysis already indicates maximum risk. Loss-risk index scaled 0-100 (0 = no recorded loss, 100 = all similar contracts exploited). 12-month horizon based on 1,400+ historical incidents.`;
+    actuarialFooter = `Contract reached maximum risk score (100). Actuarial amplification was not applied as the base heuristic analysis already indicates maximum risk. Loss-risk index scaled 0-100 (0 = no recorded loss, 100 = all similar contracts exploited). Actuarial Model v3.0.0 (snapshot 2026-06-01): heavy-tail-aware methodology, severity modelled separately from frequency across a 22-cohort canonical exposure panel.`;
   } else {
     const fullDelta = actuarial.full_delta;
     const fullRefined = Math.min(actuarial.base + fullDelta, 100);
-    actuarialFooter = `Actuarial Model v2.1 (dataset as-of 2025-08-01). 12-month horizon; 1,400+ incidents. Scale: loss-risk index 0\u2013100 (0 = no recorded loss, 100 = all similar contracts exploited). Current: Base ${actuarial.base} \u2192 Refined ${currentScore} (${delta >= 0 ? '+' : ''}${delta} at w = ${weightPct}%).${weightPct < 100 ? ` Full-intensity equivalent: ${actuarial.base} \u2192 ${fullRefined} (${fullDelta >= 0 ? '+' : ''}${fullDelta}).` : ''} Rounded at end; fractional deltas &lt;1 display as 0.`;
+    actuarialFooter = `Actuarial Model v3.0.0 (snapshot 2026-06-01). Heavy-tail-aware methodology: severity modelled separately from frequency, calibrated against a 22-cohort canonical exposure panel (~3,300 protocol-cohort-years) under standard credibility-theory pooling (Solvency II / Basel III convention). Scale: loss-risk index 0\u2013100 (0 = no recorded loss, 100 = all similar contracts exploited). Current: Base ${actuarial.base} \u2192 Refined ${currentScore} (${delta >= 0 ? '+' : ''}${delta} at w = ${weightPct}%).${weightPct < 100 ? ` Full-intensity equivalent: ${actuarial.base} \u2192 ${fullRefined} (${fullDelta >= 0 ? '+' : ''}${fullDelta}).` : ''} Rounded at end; fractional deltas &lt;1 display as 0.`;
   }
 
   const html = `<!DOCTYPE html>

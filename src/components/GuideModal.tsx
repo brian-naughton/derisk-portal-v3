@@ -40,7 +40,8 @@ export function GuideModal({ isOpen, onClose }: GuideModalProps) {
             standards. Below that, a <strong>Time Machine Post-Mortem</strong> explains how
             the actual attack played out and what vulnerabilities it exploited. On the right,
             exploit intelligence, contract metadata, and the actuarial model that refines
-            scores using data from 1,400+ historical incidents.
+            scores across 22 canonical exploit cohorts, severity modelled separately from
+            frequency.
           </p>
           <p>
             The colour system maps directly to risk: <strong style={{color:'#a10b2b'}}>red</strong> for
